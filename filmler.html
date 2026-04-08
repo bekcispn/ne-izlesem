@@ -202,8 +202,17 @@
 
 <script>
     const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
+    const TMDB_READ_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNDI5Yzk3M2M2Yzk4NDM5Y2Y2ZTUwNGU3ZmZlMTY3OCIsIm5iZiI6MTc3NTY3MzQ0NS42OTcsInN1YiI6IjY5ZDZhMDY1NTI4NTljYmM5ZWY4YjI1NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.oBzy5-Cm4bu6Me6X-yJR22D_BTsyGiwhJ5PvmQHdcz0";
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
+
+    // Tür ID → isim haritası (genres endpoint çağırmaya gerek yok)
+    const GENRE_MAP = {
+        28:"Action",18:"Drama",35:"Comedy",27:"Horror",878:"Sci-Fi",
+        10749:"Romance",53:"Thriller",16:"Animation",80:"Crime",
+        14:"Fantasy",12:"Adventure",36:"History",10402:"Music",
+        9648:"Mystery",10751:"Family",37:"Western",10752:"War",99:"Documentary"
+    };
 
     function getDeviceId() {
         try {
@@ -222,86 +231,74 @@
     }
 
     const deviceId = getDeviceId();
-    const STORAGE_WATCHED_KEY = `watched_${deviceId}`;
+    const STORAGE_WATCHED_KEY = `watched_film_${deviceId}`;
     let watchedIds = [];
     let currentItems = [];
     let currentGenreId = "";
     const cache = {};
 
-    // Paralel yükleme ile 25 sayfa = 500+ film
-    async function fetchMoviesByGenre(genreId, page = 1) {
+    // Bearer token ile tek sayfa fetch
+    async function fetchPage(genreId, page) {
         const cacheKey = `movie_${genreId}_${page}`;
         if (cache[cacheKey]) return cache[cacheKey];
-        
         try {
             let url;
             if (genreId === "") {
-                url = `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`;
+                // Tümü: vote_average sıralamasıyla yüksek puanlı filmler
+                url = `${TMDB_BASE_URL}/discover/movie?sort_by=vote_average.desc&vote_count.gte=1000&language=en-US&page=${page}`;
             } else {
-                url = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&sort_by=vote_average.desc&vote_count.gte=500&language=en-US&page=${page}`;
+                url = `${TMDB_BASE_URL}/discover/movie?with_genres=${genreId}&sort_by=vote_average.desc&vote_count.gte=500&language=en-US&page=${page}`;
             }
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data && data.results) {
-                cache[cacheKey] = data.results;
-                return data.results;
-            }
-            return [];
-        } catch (error) {
-            console.error("Error:", error);
+            const res = await fetch(url, {
+                headers: { "Authorization": `Bearer ${TMDB_READ_TOKEN}`, "Content-Type": "application/json" }
+            });
+            const data = await res.json();
+            const results = (data && data.results) ? data.results : [];
+            cache[cacheKey] = results;
+            return results;
+        } catch (e) {
+            console.error("Fetch error:", e);
             return [];
         }
     }
 
-    async function fetchMovieDetails(movieId) {
-        if (cache[`detail_${movieId}`]) return cache[`detail_${movieId}`];
-        try {
-            const url = `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`;
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data) {
-                cache[`detail_${movieId}`] = data;
-                return data;
-            }
-            return null;
-        } catch (error) {
-            console.error("Detail error:", error);
-            return null;
-        }
-    }
-
+    // 13 sayfayı 3'erli batch ile çek → ~250 film hızlıca
     async function loadMoviesByGenre(genreId) {
+        const TOTAL_PAGES = 25; // 25 × 20 = 500 film
+        const BATCH_SIZE = 5;
+        const seen = new Set();
         const allResults = [];
-        const maxPages = 25; // 25 sayfa = 500 film
-        
-        for (let page = 1; page <= maxPages; page++) {
-            const results = await fetchMoviesByGenre(genreId, page);
-            if (results.length === 0) break;
-            
-            for (const movie of results) {
-                if (watchedIds.includes(movie.id.toString())) continue;
-                const details = await fetchMovieDetails(movie.id);
-                if (details && details.vote_average > 0) {
-                    allResults.push(details);
+
+        for (let batch = 0; batch < Math.ceil(TOTAL_PAGES / BATCH_SIZE); batch++) {
+            const pages = [];
+            for (let i = 0; i < BATCH_SIZE; i++) {
+                const page = batch * BATCH_SIZE + i + 1;
+                if (page <= TOTAL_PAGES) pages.push(page);
+            }
+            const batchResults = await Promise.all(pages.map(p => fetchPage(genreId, p)));
+            for (const pageData of batchResults) {
+                for (const movie of pageData) {
+                    if (seen.has(movie.id)) continue;
+                    if (watchedIds.includes(movie.id.toString())) continue;
+                    if (!movie.vote_average || movie.vote_average === 0) continue;
+                    seen.add(movie.id);
+                    // genre_ids → isimler
+                    movie._genreNames = (movie.genre_ids || []).map(id => GENRE_MAP[id]).filter(Boolean).join(", ") || "Genel";
+                    allResults.push(movie);
                 }
             }
-            
-            // Her 5 sayfada bir grid'i güncelle (kullanıcı beklemek zorunda kalmasın)
-            if (page % 5 === 0) {
-                const sorted = [...allResults].sort((a, b) => b.vote_average - a.vote_average);
-                currentItems = sorted;
-                renderItems(true); // update only
-            }
+            // Her batch sonrası ekranı güncelle
+            currentItems = [...allResults].sort((a, b) => b.vote_average - a.vote_average);
+            renderItems(true);
         }
-        
-        allResults.sort((a, b) => b.vote_average - a.vote_average);
-        return allResults;
+
+        currentItems = allResults.sort((a, b) => b.vote_average - a.vote_average);
+        return currentItems;
     }
 
     async function loadContent() {
         const grid = document.getElementById("resultsGrid");
         grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 500+ film yükleniyor...</div>';
-        
         currentItems = await loadMoviesByGenre(currentGenreId);
         renderItems(false);
     }
@@ -365,7 +362,7 @@
                         <div class="card-title">${movie.title}</div>
                         <div class="card-year">${year}</div>
                         <div class="imdb-rating">⭐ ${rating}</div>
-                        <div class="card-detail">🎬 ${runtime}</div>
+                        <div class="card-detail">🎬 ${runtime} &nbsp;|&nbsp; ${movie._genreNames || ''}</div>
                         <div class="platform-badge">${platformHtml}</div>
                         <button class="watched-btn" data-id="${movie.id}">
                             <i class="fas fa-check-circle"></i> İzledim
@@ -432,7 +429,7 @@
         const year = movie.release_date ? movie.release_date.split('-')[0] : "Bilinmiyor";
         const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "?";
         const runtime = formatRuntime(movie.runtime);
-        const genres = movie.genres ? movie.genres.map(g => g.name).join(", ") : "Bilinmiyor";
+        const genres = movie._genreNames || (movie.genres ? movie.genres.map(g => g.name).join(", ") : "Bilinmiyor");
 
         detailContent.innerHTML = `
             <div class="detail-poster">
