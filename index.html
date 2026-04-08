@@ -19,6 +19,7 @@
             min-height: 100vh;
         }
 
+        /* LOADING EKRANI */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -106,6 +107,7 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
+        /* HOŞGELDİN EKRANI */
         .welcome-overlay {
             position: fixed;
             top: 0;
@@ -154,6 +156,7 @@
             margin-top: 10px;
         }
 
+        /* ANA İÇERİK */
         .main-content {
             padding: 20px;
             display: none;
@@ -164,6 +167,129 @@
             margin: 0 auto;
         }
 
+        /* DETAY SAYFASI */
+        .detail-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a1628, #0a0f1a);
+            z-index: 1100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .detail-card {
+            background: #111c2e;
+            border-radius: 32px;
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid #3b82f6;
+            animation: detailFade 0.3s ease;
+            overflow: hidden;
+        }
+
+        @keyframes detailFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .detail-poster {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #1e3a5f, #0f2b44);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .detail-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-poster i {
+            font-size: 80px;
+            color: #3b82f6;
+        }
+
+        .detail-info {
+            padding: 25px;
+        }
+
+        .detail-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .detail-year {
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .detail-imdb {
+            display: inline-block;
+            background: #f5c518;
+            color: #000;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .detail-genre, .detail-director, .detail-actors, .detail-plot, .detail-duration, .detail-seasons {
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .detail-genre i, .detail-director i, .detail-actors i, .detail-plot i, .detail-duration i, .detail-seasons i {
+            color: #3b82f6;
+            width: 28px;
+            margin-right: 8px;
+        }
+
+        .detail-watched-btn {
+            background: #1e293b;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .detail-watched-btn.watched {
+            background: #10b981;
+        }
+
+        .back-btn {
+            background: #334155;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* HEADER */
         .header {
             background: linear-gradient(135deg, #1e3a5f, #0f2b44);
             border-radius: 28px;
@@ -207,6 +333,7 @@
             color: #60a5fa;
         }
 
+        /* SEÇİM KARTLARI */
         .choice-cards {
             display: flex;
             gap: 25px;
@@ -249,6 +376,7 @@
             font-size: 13px;
         }
 
+        /* KATEGORİLER */
         .categories-section {
             background: #111c2e;
             border-radius: 24px;
@@ -298,6 +426,7 @@
             color: white;
         }
 
+        /* SONUÇLAR */
         .results-header {
             display: flex;
             justify-content: space-between;
@@ -342,6 +471,7 @@
             border: 1px solid #1e3a5f;
             transition: 0.3s;
             animation: cardFade 0.3s ease;
+            cursor: pointer;
         }
 
         @keyframes cardFade {
@@ -483,6 +613,9 @@
             .categories-wrapper { gap: 8px; }
             .cat-btn { padding: 6px 14px; font-size: 11px; }
             .card-poster { height: 200px; }
+            .detail-card { margin: 20px; }
+            .detail-poster { height: 250px; }
+            .detail-title { font-size: 22px; }
         }
     </style>
 </head>
@@ -513,6 +646,14 @@
     <div class="welcome-card">
         <h1><i class="fas fa-ticket-alt"></i> Hoşgeldin Abican!</h1>
         <p>Filmini Seçmeye Başla.</p>
+    </div>
+</div>
+
+<!-- DETAY SAYFASI -->
+<div id="detailOverlay" class="detail-overlay">
+    <div class="detail-card">
+        <button class="back-btn" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> Geri Dön</button>
+        <div id="detailContent"></div>
     </div>
 </div>
 
@@ -556,9 +697,6 @@
                 <button class="cat-btn" data-cat="Animation">🐭 Animasyon</button>
                 <button class="cat-btn" data-cat="Crime">🔫 Suç</button>
                 <button class="cat-btn" data-cat="Fantasy">🐉 Fantastik</button>
-                <button class="cat-btn" data-cat="Adventure">🏔️ Macera</button>
-                <button class="cat-btn" data-cat="Mystery">🕵️ Gizem</button>
-                <button class="cat-btn" data-cat="Family">👨‍👩‍👧‍👦 Aile</button>
             </div>
         </div>
 
@@ -582,7 +720,6 @@
 
 <script>
     // ========== OMDb API KONFIGÜASYONU ==========
-    // 🔑 SENİN API KEY'İN - HAZIR!
     const OMDB_API_KEY = "aee8123e";
     const OMDB_BASE_URL = "https://www.omdbapi.com/";
     
@@ -608,62 +745,42 @@
     let watchedIds = [];
     let currentType = "movie";
     let currentCategory = "all";
-    let currentPage = 1;
     let currentItems = [];
     let isLoading = false;
-    let totalResults = 0;
+    let currentPage = 1;
 
-    // IMDb ID'leri (En yüksek puanlı filmler/diziler)
+    // IMDb ID'leri (En yüksek puanlı filmler - TEKİL, TEKRAR YOK)
     const topMovieIDs = [
-        "tt0111161", // Esaretin Bedeli - 9.3
-        "tt0068646", // Baba - 9.2
-        "tt0468569", // Kara Şövalye - 9.0
-        "tt1375666", // Başlangıç - 8.8
-        "tt0133093", // Matrix - 8.7
-        "tt0167260", // Yüzüklerin Efendisi: Kralın Dönüşü - 8.9
-        "tt0110912", // Pulp Fiction - 8.9
-        "tt0109830", // Forrest Gump - 8.8
-        "tt0120737", // Yüzüklerin Efendisi: Yüzük Kardeşliği - 8.8
-        "tt0108052", // Schindler'in Listesi - 8.9
-        "tt0071562", // Baba II - 9.0
-        "tt0110357", // Toy Story - 8.3
-        "tt0080684", // Yıldız Savaşları: Bölüm V - 8.7
-        "tt0102926", // Kuzuların Sessizliği - 8.6
-        "tt0120815", // Er Ryan'ı Kurtarmak - 8.6
-        "tt0209144", // Gladyatör - 8.5
-        "tt0118799", // Hayat Güzeldir - 8.6
-        "tt0119217", // İyi Will Hunting - 8.3
-        "tt0114369", // Yedi - 8.6
-        "tt0137523", // Fight Club - 8.8"
+        "tt0111161", "tt0068646", "tt0468569", "tt1375666", "tt0133093",
+        "tt0167260", "tt0110912", "tt0109830", "tt0120737", "tt0108052",
+        "tt0071562", "tt0110357", "tt0080684", "tt0102926", "tt0120815",
+        "tt0209144", "tt0118799", "tt0119217", "tt0114369", "tt0137523"
     ];
 
     const topSeriesIDs = [
-        "tt0903747", // Breaking Bad - 9.5
-        "tt0944947", // Game of Thrones - 9.2
-        "tt7366338", // Chernobyl - 9.3
-        "tt0306414", // The Wire - 9.3
-        "tt0141842", // Sopranos - 9.2
-        "tt0108778", // Friends - 8.9
-        "tt1475582", // Sherlock - 9.1
-        "tt4574334", // Stranger Things - 8.7
-        "tt4786824", // The Crown - 8.6
-        "tt2085059", // Black Mirror - 8.7
-        "tt0386676", // The Office - 8.9
-        "tt5753856", // Dark - 8.8
-        "tt8111088", // The Mandalorian - 8.7
-        "tt2861424", // Rick and Morty - 9.1
-        "tt3581920", // The Last of Us - 8.8
-        "tt0411008", // Lost - 8.3
-        "tt0472954", // It's Always Sunny - 8.8
-        "tt0773262", // Dexter - 8.6
-        "tt0455275", // Prison Break - 8.3
-        "tt1856010", // House of Cards - 8.7"
+        "tt0903747", "tt0944947", "tt7366338", "tt0306414", "tt0141842",
+        "tt0108778", "tt1475582", "tt4574334", "tt4786824", "tt2085059",
+        "tt0386676", "tt5753856", "tt8111088", "tt2861424", "tt3581920"
     ];
 
-    // ========== API İSTEKLERİ ==========
+    // Daha fazla film/dizi için ID'ler (TEKRAR YOK)
+    const moreMovieIDs = [
+        "tt0088763", "tt0076759", "tt0082971", "tt0099685", "tt0073486",
+        "tt0081505", "tt0095327", "tt0112573", "tt0167261", "tt0317248"
+    ];
+
+    const moreSeriesIDs = [
+        "tt0106145", "tt0436992", "tt0185906", "tt0407362", "tt0496424",
+        "tt0412142", "tt0098904", "tt1239251", "tt2707408", "tt0773262"
+    ];
+
+    // Tüm film ID'lerini birleştir (tekrar yok)
+    const allMovieIDs = [...new Set([...topMovieIDs, ...moreMovieIDs])];
+    const allSeriesIDs = [...new Set([...topSeriesIDs, ...moreSeriesIDs])];
+
     async function fetchMovieByID(imdbID) {
         try {
-            const url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&i=${imdbID}&plot=short`;
+            const url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&i=${imdbID}&plot=full`;
             const response = await fetch(url);
             const data = await response.json();
             return data;
@@ -673,118 +790,95 @@
         }
     }
 
-    async function fetchMoviesByCategory(category) {
-        // OMDb'de kategoriye göre arama yapalım
-        const searchTerm = category === "all" ? "movie" : `${category} movie`;
-        try {
-            const url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(searchTerm)}&type=movie&page=${currentPage}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data.Response === "True") {
-                // Her film için detayları çek
-                const movies = [];
-                for (const item of data.Search.slice(0, 10)) {
-                    const detail = await fetchMovieByID(item.imdbID);
-                    if (detail && detail.Response === "True") {
-                        movies.push(detail);
-                    }
-                }
-                return movies;
-            }
-            return [];
-        } catch (error) {
-            console.error("Filmler alınamadı:", error);
-            return [];
-        }
-    }
-
     async function loadInitialItems() {
         isLoading = true;
         const grid = document.getElementById("resultsGrid");
         grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> OMDb\'den veriler alınıyor...</div>';
         
-        const ids = currentType === "movie" ? topMovieIDs : topSeriesIDs;
-        currentItems = [];
-        
-        for (const id of ids) {
-            const data = await fetchMovieByID(id);
-            if (data && data.Response === "True") {
-                // İzlenmeyenleri ekle
-                if (!watchedIds.includes(id)) {
-                    currentItems.push(data);
-                }
-            }
-        }
-        
-        // Kategori filtresi uygula
-        if (currentCategory !== "all") {
-            currentItems = currentItems.filter(item => {
-                const genre = item.Genre || "";
-                return genre.toLowerCase().includes(currentCategory.toLowerCase());
-            });
-        }
-        
-        renderItems();
-        isLoading = false;
-    }
-
-    async function loadMoreItems() {
-        if (isLoading) return;
-        isLoading = true;
-        
-        const btn = document.querySelector(".btn-load-more");
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yükleniyor...';
-        
-        // Daha fazla film/dizi ekleyelim (alternatif IMDb ID'leri)
-        const moreMovieIDs = [
-            "tt0088763", // Geleceğe Dönüş
-            "tt0076759", // Yıldız Savaşları
-            "tt0082971", // Raiders of the Lost Ark
-            "tt0099685", // Goodfellas
-            "tt0073486", // Rocky
-            "tt0081505", // The Shining
-            "tt0095327", // Die Hard
-            "tt0112573", // Braveheart
-            "tt0120737", // LOTR: Fellowship
-            "tt0167261"  // LOTR: Two Towers
-        ];
-        
-        const moreSeriesIDs = [
-            "tt0106145", // Star Trek: Deep Space Nine
-            "tt0436992", // Doctor Who
-            "tt0185906", // Band of Brothers
-            "tt0407362", // Battlestar Galactica
-            "tt0496424", // 30 Rock
-            "tt0412142", // House
-            "tt0098904", // Seinfeld
-            "tt1239251", // Shameless
-            "tt2707408", // Narcos
-            "tt0773262"  // Dexter
-        ];
-        
-        const ids = currentType === "movie" ? moreMovieIDs : moreSeriesIDs;
+        const ids = currentType === "movie" ? allMovieIDs : allSeriesIDs;
+        const items = [];
         
         for (const id of ids) {
             const data = await fetchMovieByID(id);
             if (data && data.Response === "True" && !watchedIds.includes(id)) {
-                // Kategori filtresi
-                if (currentCategory !== "all") {
+                if (currentCategory === "all") {
+                    items.push(data);
+                } else {
                     const genre = data.Genre || "";
                     if (genre.toLowerCase().includes(currentCategory.toLowerCase())) {
-                        currentItems.push(data);
+                        items.push(data);
                     }
-                } else {
-                    currentItems.push(data);
                 }
             }
         }
         
+        currentItems = items;
         renderItems();
         isLoading = false;
-        btn.innerHTML = '<i class="fas fa-arrow-down"></i> Daha Fazla Yükle';
     }
 
-    // ========== LOADING VE HOŞGELDİN ==========
+    // DETAY SAYFASI GÖSTER
+    function showDetail(item) {
+        const detailOverlay = document.getElementById("detailOverlay");
+        const detailContent = document.getElementById("detailContent");
+        
+        const posterUrl = item.Poster !== "N/A" ? item.Poster : null;
+        const isWatched = watchedIds.includes(item.imdbID);
+        const type = currentType;
+        const detail = type === "movie" ? 
+            `<i class="fas fa-clock"></i> Süre: ${item.Runtime !== "N/A" ? item.Runtime : "Bilinmiyor"}` :
+            `<i class="fas fa-layer-group"></i> Sezon: ${item.totalSeasons !== "N/A" && item.totalSeasons ? item.totalSeasons + " Sezon" : "Bilgi yok"}`;
+        
+        detailContent.innerHTML = `
+            <div class="detail-poster">
+                ${posterUrl ? `<img src="${posterUrl}" alt="${item.Title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+                <i class="fas ${type === 'movie' ? 'fa-film' : 'fa-tv'}" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
+            </div>
+            <div class="detail-info">
+                <div class="detail-title">${item.Title}</div>
+                <div class="detail-year">${item.Year || "Bilinmiyor"}</div>
+                <div class="detail-imdb">⭐ ${item.imdbRating !== "N/A" ? item.imdbRating : "?"}</div>
+                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${item.Genre !== "N/A" ? item.Genre : "Bilinmiyor"}</div>
+                <div class="detail-duration"><i class="fas ${type === 'movie' ? 'fa-clock' : 'fa-layer-group'}"></i> ${type === 'movie' ? `Süre: ${item.Runtime !== "N/A" ? item.Runtime : "Bilinmiyor"}` : `Sezon: ${item.totalSeasons !== "N/A" && item.totalSeasons ? item.totalSeasons + " Sezon" : "Bilgi yok"}`}</div>
+                <div class="detail-director"><i class="fas fa-user"></i> Yönetmen: ${item.Director !== "N/A" ? item.Director : "Bilinmiyor"}</div>
+                <div class="detail-actors"><i class="fas fa-users"></i> Oyuncular: ${item.Actors !== "N/A" ? item.Actors.substring(0, 100) + "..." : "Bilinmiyor"}</div>
+                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${item.Plot !== "N/A" ? item.Plot : "Bilgi yok"}</div>
+                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${item.imdbID}">
+                    <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
+                </button>
+            </div>
+        `;
+        
+        detailOverlay.style.display = "flex";
+        
+        // Detay sayfasındaki izledim butonu
+        const detailWatchedBtn = detailContent.querySelector(".detail-watched-btn");
+        if (detailWatchedBtn) {
+            detailWatchedBtn.addEventListener("click", (e) => {
+                const id = detailWatchedBtn.getAttribute("data-id");
+                if (!watchedIds.includes(id)) {
+                    watchedIds.push(id);
+                    localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
+                    updateWatchedCount();
+                    detailWatchedBtn.classList.add("watched");
+                    detailWatchedBtn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
+                    // Ana listeden kaldır
+                    const index = currentItems.findIndex(i => i.imdbID === id);
+                    if (index !== -1) {
+                        currentItems.splice(index, 1);
+                        renderItems();
+                    }
+                }
+            });
+        }
+    }
+
+    // DETAY SAYFASINI KAPAT
+    document.getElementById("closeDetailBtn").addEventListener("click", () => {
+        document.getElementById("detailOverlay").style.display = "none";
+    });
+
+    // SAYFA YÜKLENİŞ
     setTimeout(() => {
         document.getElementById("loadingScreen").style.display = "none";
         document.getElementById("welcomeScreen").style.display = "flex";
@@ -802,20 +896,6 @@
         const saved = localStorage.getItem(STORAGE_WATCHED_KEY);
         watchedIds = saved ? JSON.parse(saved) : [];
         updateWatchedCount();
-    }
-
-    function markAsWatched(id) {
-        if (!watchedIds.includes(id)) {
-            watchedIds.push(id);
-            localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
-            updateWatchedCount();
-            // İzleneni listeden kaldır
-            const index = currentItems.findIndex(item => item.imdbID === id);
-            if (index !== -1) {
-                currentItems.splice(index, 1);
-                renderItems();
-            }
-        }
     }
 
     function updateWatchedCount() {
@@ -858,11 +938,12 @@
             const title = item.Title;
             const year = item.Year || "Bilinmiyor";
             const rating = item.imdbRating !== "N/A" ? item.imdbRating : "?";
-            const runtime = item.Runtime !== "N/A" ? item.Runtime : "Süre bilinmiyor";
-            const genre = item.Genre !== "N/A" ? item.Genre.split(",")[0] : "Genel";
+            const detail = currentType === "movie" ? 
+                `🎬 ${item.Runtime !== "N/A" ? item.Runtime : "Süre bilinmiyor"}` : 
+                `📺 ${item.totalSeasons !== "N/A" && item.totalSeasons ? item.totalSeasons + " Sezon" : "Sezon bilgisi yok"}`;
             
             return `
-                <div class="${currentType === 'movie' ? 'movie-card' : 'series-card'}">
+                <div class="${currentType === 'movie' ? 'movie-card' : 'series-card'}" data-id="${item.imdbID}">
                     <div class="card-poster">
                         ${posterUrl ? `<img src="${posterUrl}" alt="${title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
                         <i class="fas ${currentType === 'movie' ? 'fa-film' : 'fa-tv'}" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
@@ -871,7 +952,7 @@
                         <div class="card-title" title="${title}">${title}</div>
                         <div class="card-year">${year}</div>
                         <div class="imdb-rating">⭐ ${rating}</div>
-                        <div class="card-detail">${currentType === 'movie' ? `🎬 ${runtime}` : `📺 ${genre}`}</div>
+                        <div class="card-detail">${detail}</div>
                         <button class="watched-btn" data-id="${item.imdbID}">
                             <i class="fas fa-check-circle"></i> İzledim
                         </button>
@@ -880,7 +961,17 @@
             `;
         }).join("");
         
-        // Buton olaylarını ekle
+        // Kartlara tıklama olayı (detay için)
+        document.querySelectorAll(".movie-card, .series-card").forEach(card => {
+            card.addEventListener("click", (e) => {
+                if (e.target.classList.contains("watched-btn")) return;
+                const id = card.getAttribute("data-id");
+                const item = currentItems.find(i => i.imdbID === id);
+                if (item) showDetail(item);
+            });
+        });
+        
+        // İzledim butonları
         document.querySelectorAll(".watched-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -888,17 +979,50 @@
                 if (!btn.classList.contains("watched")) {
                     btn.classList.add("watched");
                     btn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
-                    markAsWatched(id);
+                    watchedIds.push(id);
+                    localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
+                    updateWatchedCount();
+                    // İzleneni listeden kaldır
+                    const index = currentItems.findIndex(item => item.imdbID === id);
+                    if (index !== -1) {
+                        currentItems.splice(index, 1);
+                        renderItems();
+                    }
                 }
             });
         });
         
-        loadMoreBtn.style.display = "block";
+        loadMoreBtn.style.display = currentItems.length >= 20 ? "block" : "none";
     }
 
     async function loadMore() {
         if (isLoading) return;
-        await loadMoreItems();
+        isLoading = true;
+        const btn = document.querySelector(".btn-load-more");
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yükleniyor...';
+        
+        // Zaten yüklenmiş ID'leri al
+        const existingIds = currentItems.map(i => i.imdbID);
+        const allIds = currentType === "movie" ? allMovieIDs : allSeriesIDs;
+        const newIds = allIds.filter(id => !existingIds.includes(id) && !watchedIds.includes(id));
+        
+        for (const id of newIds.slice(0, 10)) {
+            const data = await fetchMovieByID(id);
+            if (data && data.Response === "True") {
+                if (currentCategory === "all") {
+                    currentItems.push(data);
+                } else {
+                    const genre = data.Genre || "";
+                    if (genre.toLowerCase().includes(currentCategory.toLowerCase())) {
+                        currentItems.push(data);
+                    }
+                }
+            }
+        }
+        
+        renderItems();
+        isLoading = false;
+        btn.innerHTML = '<i class="fas fa-arrow-down"></i> Daha Fazla Yükle';
     }
 
     function setupEventListeners() {
