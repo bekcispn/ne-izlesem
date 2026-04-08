@@ -19,6 +19,107 @@
             min-height: 100vh;
         }
 
+        /* LOADING EKRANI */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #0f1117, #1a1d2b);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-card {
+            background: #1e212e;
+            border-radius: 32px;
+            padding: 50px 60px;
+            text-align: center;
+            border: 1px solid rgba(255, 107, 0, 0.4);
+            animation: fadeInScale 0.4s ease;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .loading-animation {
+            margin-bottom: 30px;
+        }
+
+        .loading-animation i {
+            font-size: 60px;
+            background: linear-gradient(135deg, #ff6b00, #ffb347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b00, #ffb347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 25px;
+        }
+
+        .loading-messages {
+            text-align: left;
+        }
+
+        .loading-msg {
+            color: #9ca3af;
+            font-size: 13px;
+            margin: 8px 0;
+            opacity: 0;
+            animation: slideIn 0.4s ease forwards;
+        }
+
+        .loading-msg i {
+            background: linear-gradient(135deg, #ff6b00, #ffb347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            width: 25px;
+            margin-right: 8px;
+        }
+
+        .loading-msg:nth-child(1) { animation-delay: 0s; }
+        .loading-msg:nth-child(2) { animation-delay: 0.5s; }
+        .loading-msg:nth-child(3) { animation-delay: 1s; }
+        .loading-msg:nth-child(4) { animation-delay: 1.5s; }
+        .loading-msg:nth-child(5) { animation-delay: 2s; }
+        .loading-msg:nth-child(6) { animation-delay: 2.5s; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ANA İÇERİK */
+        .main-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
         .header {
             background: #1e212e;
             border-radius: 28px;
@@ -239,6 +340,27 @@
             margin-bottom: 12px;
         }
 
+        .platform-badge {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .platform {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: #2a2e3d;
+            color: #9ca3af;
+        }
+
+        .platform.netflix { background: #e50914; color: white; }
+        .platform.disney { background: #113ccf; color: white; }
+        .platform.hbo { background: #6a0dad; color: white; }
+        .platform.prime { background: #00a8e1; color: white; }
+        .platform.apple { background: #000; color: white; }
+
         .watched-btn {
             width: 100%;
             background: #2a2e3d;
@@ -267,15 +389,6 @@
             text-align: center;
             padding: 50px;
             color: #6b7280;
-        }
-
-        .loading-state i {
-            font-size: 40px;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
         }
 
         .detail-overlay {
@@ -366,6 +479,13 @@
             margin-right: 8px;
         }
 
+        .detail-platforms {
+            margin: 15px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
         .detail-watched-btn {
             background: linear-gradient(135deg, #ff6b00, #ffb347);
             border: none;
@@ -402,15 +522,6 @@
             color: white;
         }
 
-        .main-content {
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
         @media (max-width: 768px) {
             .main-content { padding: 12px; }
             .header h1 { font-size: 22px; }
@@ -420,11 +531,31 @@
             .detail-poster { height: 250px; }
             .detail-title { font-size: 22px; }
             .category-btn { padding: 6px 12px; font-size: 11px; }
+            .loading-card { padding: 30px 25px; margin: 20px; }
         }
     </style>
 </head>
 <body>
 
+<!-- LOADING EKRANI -->
+<div id="loadingScreen" class="loading-overlay">
+    <div class="loading-card">
+        <div class="loading-animation">
+            <i class="fas fa-film"></i>
+        </div>
+        <div class="loading-title">Filmler hazırlanıyor...</div>
+        <div class="loading-messages">
+            <div class="loading-msg"><i class="fas fa-search"></i> En iyi filmler taranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-star"></i> IMDB puanları toplanıyor...</div>
+            <div class="loading-msg"><i class="fas fa-trophy"></i> Oscar ödüllüler seçiliyor...</div>
+            <div class="loading-msg"><i class="fas fa-globe"></i> Yayın platformları belirleniyor...</div>
+            <div class="loading-msg"><i class="fas fa-film"></i> Görseller yükleniyor...</div>
+            <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
+        </div>
+    </div>
+</div>
+
+<!-- DETAY SAYFASI -->
 <div id="detailOverlay" class="detail-overlay">
     <div class="detail-card">
         <button class="close-detail" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> Geri Dön</button>
@@ -432,7 +563,8 @@
     </div>
 </div>
 
-<div class="main-content">
+<!-- ANA İÇERİK -->
+<div id="mainContent" class="main-content">
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-film"></i> Ne İzlesem? <span class="highlight">Abican</span></h1>
@@ -477,6 +609,12 @@
     const OMDB_API_KEY = "aee8123e";
     const OMDB_BASE_URL = "https://www.omdbapi.com/";
 
+    // LOADING EKRANI GÖSTER (2 saniye)
+    setTimeout(() => {
+        document.getElementById("loadingScreen").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+    }, 2500);
+
     function getDeviceId() {
         try {
             const screenRes = `${screen.width}x${screen.height}`;
@@ -502,46 +640,57 @@
     let currentCategory = "all";
     const cache = {};
 
-    const allMovieIDs = [
-        "tt0111161", "tt0068646", "tt0468569", "tt1375666", "tt0133093",
-        "tt0167260", "tt0110912", "tt0109830", "tt0120737", "tt0108052",
-        "tt0071562", "tt0110357", "tt0080684", "tt0102926", "tt0120815",
-        "tt0209144", "tt0118799", "tt0119217", "tt0114369", "tt0137523",
-        "tt0088763", "tt0076759", "tt0082971", "tt0099685", "tt0073486"
+    // Filmler ve yayın platformları
+    const movies = [
+        { id: "tt0111161", title: "Esaretin Bedeli", year: 1994, rating: 9.3, runtime: "2s 22dk", genre: "Drama", platform: ["netflix"] },
+        { id: "tt0068646", title: "Baba", year: 1972, rating: 9.2, runtime: "2s 55dk", genre: "Drama", platform: ["prime", "hbo"] },
+        { id: "tt0468569", title: "Kara Şövalye", year: 2008, rating: 9.0, runtime: "2s 32dk", genre: "Action", platform: ["netflix", "prime"] },
+        { id: "tt1375666", title: "Başlangıç", year: 2010, rating: 8.8, runtime: "2s 28dk", genre: "Sci-Fi", platform: ["netflix", "prime"] },
+        { id: "tt0133093", title: "Matrix", year: 1999, rating: 8.7, runtime: "2s 16dk", genre: "Sci-Fi", platform: ["hbo", "prime"] },
+        { id: "tt0167260", title: "Yüzüklerin Efendisi: Kralın Dönüşü", year: 2003, rating: 8.9, runtime: "3s 21dk", genre: "Fantasy", platform: ["hbo", "prime"] },
+        { id: "tt0110912", title: "Pulp Fiction", year: 1994, rating: 8.9, runtime: "2s 34dk", genre: "Crime", platform: ["netflix", "prime"] },
+        { id: "tt0109830", title: "Forrest Gump", year: 1994, rating: 8.8, runtime: "2s 22dk", genre: "Drama", platform: ["netflix", "prime"] },
+        { id: "tt0120737", title: "Yüzüklerin Efendisi: Yüzük Kardeşliği", year: 2001, rating: 8.8, runtime: "2s 58dk", genre: "Fantasy", platform: ["hbo", "prime"] },
+        { id: "tt0108052", title: "Schindler'in Listesi", year: 1993, rating: 8.9, runtime: "3s 15dk", genre: "Drama", platform: ["netflix"] },
+        { id: "tt0071562", title: "Baba II", year: 1974, rating: 9.0, runtime: "3s 22dk", genre: "Drama", platform: ["prime", "hbo"] },
+        { id: "tt0110357", title: "Oyuncak Hikayesi", year: 1995, rating: 8.3, runtime: "1s 21dk", genre: "Animation", platform: ["disney"] },
+        { id: "tt0080684", title: "Yıldız Savaşları: Bölüm V", year: 1980, rating: 8.7, runtime: "2s 4dk", genre: "Sci-Fi", platform: ["disney"] },
+        { id: "tt0102926", title: "Kuzuların Sessizliği", year: 1991, rating: 8.6, runtime: "1s 58dk", genre: "Thriller", platform: ["netflix", "prime"] },
+        { id: "tt0120815", title: "Er Ryan'ı Kurtarmak", year: 1998, rating: 8.6, runtime: "2s 49dk", genre: "Action", platform: ["netflix", "prime"] },
+        { id: "tt0209144", title: "Gladyatör", year: 2000, rating: 8.5, runtime: "2s 35dk", genre: "Action", platform: ["netflix", "prime"] },
+        { id: "tt0118799", title: "Hayat Güzeldir", year: 1997, rating: 8.6, runtime: "1s 56dk", genre: "Drama", platform: ["prime"] },
+        { id: "tt0119217", title: "İyi Will Hunting", year: 1997, rating: 8.3, runtime: "2s 6dk", genre: "Drama", platform: ["apple", "prime"] },
+        { id: "tt0114369", title: "Yedi", year: 1995, rating: 8.6, runtime: "2s 7dk", genre: "Crime", platform: ["netflix", "prime"] },
+        { id: "tt0137523", title: "Dövüş Kulübü", year: 1999, rating: 8.8, runtime: "2s 19dk", genre: "Drama", platform: ["netflix", "prime"] },
+        { id: "tt0088763", title: "Geleceğe Dönüş", year: 1985, rating: 8.5, runtime: "1s 56dk", genre: "Sci-Fi", platform: ["netflix", "prime"] },
+        { id: "tt0076759", title: "Yıldız Savaşları", year: 1977, rating: 8.6, runtime: "2s 1dk", genre: "Sci-Fi", platform: ["disney"] },
+        { id: "tt0082971", title: "Kutsal Hazine Avcıları", year: 1981, rating: 8.4, runtime: "1s 55dk", genre: "Action", platform: ["disney", "prime"] },
+        { id: "tt0099685", title: "Sıkı Dostlar", year: 1990, rating: 8.5, runtime: "2s 25dk", genre: "Crime", platform: ["hbo", "prime"] },
+        { id: "tt0073486", title: "Rocky", year: 1976, rating: 8.1, runtime: "2s", genre: "Drama", platform: ["netflix", "prime"] }
     ];
 
-    async function fetchMovieByID(imdbID) {
-        if (cache[imdbID]) return cache[imdbID];
-        try {
-            const url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&i=${imdbID}&plot=short`;
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data && data.Response === "True") {
-                cache[imdbID] = data;
-                return data;
-            }
-            return null;
-        } catch (error) {
-            console.error("Hata:", error);
-            return null;
-        }
+    function getPlatformIcon(platform) {
+        const icons = {
+            netflix: '<span class="platform netflix">📺 Netflix</span>',
+            disney: '<span class="platform disney">✨ Disney+</span>',
+            hbo: '<span class="platform hbo">⚡ HBO Max</span>',
+            prime: '<span class="platform prime">📦 Prime Video</span>',
+            apple: '<span class="platform apple">🍎 Apple TV+</span>'
+        };
+        return icons[platform] || '';
     }
 
     function matchesCategory(item, category) {
         if (category === "all") return true;
-        const genre = item.Genre || "";
-        return genre.toLowerCase().includes(category.toLowerCase());
+        return item.genre.toLowerCase().includes(category.toLowerCase());
     }
 
     async function loadAllMovies() {
-        const results = [];
-        for (const id of allMovieIDs) {
-            if (watchedIds.includes(id)) continue;
-            const data = await fetchMovieByID(id);
-            if (data && matchesCategory(data, currentCategory)) {
-                results.push(data);
-            }
-        }
+        const results = movies.filter(movie => {
+            if (watchedIds.includes(movie.id)) return false;
+            if (!matchesCategory(movie, currentCategory)) return false;
+            return true;
+        });
         currentItems = results;
         renderItems();
     }
@@ -552,20 +701,20 @@
             grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
             return;
         }
-        grid.innerHTML = currentItems.map(item => {
-            const posterUrl = item.Poster !== "N/A" ? item.Poster : null;
+        grid.innerHTML = currentItems.map(movie => {
+            const platformHtml = movie.platform.map(p => getPlatformIcon(p)).join('');
             return `
-                <div class="movie-card" data-id="${item.imdbID}">
+                <div class="movie-card" data-id="${movie.id}">
                     <div class="card-poster">
-                        ${posterUrl ? `<img src="${posterUrl}" alt="${item.Title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                        <i class="fas fa-film" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
+                        <i class="fas fa-film"></i>
                     </div>
                     <div class="card-info">
-                        <div class="card-title">${item.Title}</div>
-                        <div class="card-year">${item.Year || "Bilinmiyor"}</div>
-                        <div class="imdb-rating">⭐ ${item.imdbRating !== "N/A" ? item.imdbRating : "?"}</div>
-                        <div class="card-detail">🎬 ${item.Runtime !== "N/A" ? item.Runtime : "Süre bilinmiyor"}</div>
-                        <button class="watched-btn" data-id="${item.imdbID}">
+                        <div class="card-title">${movie.title}</div>
+                        <div class="card-year">${movie.year}</div>
+                        <div class="imdb-rating">⭐ ${movie.rating}</div>
+                        <div class="card-detail">🎬 ${movie.runtime}</div>
+                        <div class="platform-badge">${platformHtml}</div>
+                        <button class="watched-btn" data-id="${movie.id}">
                             <i class="fas fa-check-circle"></i> İzledim
                         </button>
                     </div>
@@ -577,8 +726,8 @@
             card.addEventListener("click", (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
                 const id = card.getAttribute("data-id");
-                const item = currentItems.find(i => i.imdbID === id);
-                if (item) showDetail(item);
+                const movie = currentItems.find(m => m.id === id);
+                if (movie) showDetail(movie);
             });
         });
 
@@ -592,7 +741,7 @@
                     watchedIds.push(id);
                     localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
                     updateWatchedCount();
-                    const index = currentItems.findIndex(i => i.imdbID === id);
+                    const index = currentItems.findIndex(m => m.id === id);
                     if (index !== -1) {
                         currentItems.splice(index, 1);
                         renderItems();
@@ -602,27 +751,24 @@
         });
     }
 
-    function showDetail(item) {
+    function showDetail(movie) {
         const detailOverlay = document.getElementById("detailOverlay");
         const detailContent = document.getElementById("detailContent");
-        const posterUrl = item.Poster !== "N/A" ? item.Poster : null;
-        const isWatched = watchedIds.includes(item.imdbID);
+        const isWatched = watchedIds.includes(movie.id);
+        const platformHtml = movie.platform.map(p => getPlatformIcon(p)).join('');
 
         detailContent.innerHTML = `
             <div class="detail-poster">
-                ${posterUrl ? `<img src="${posterUrl}" alt="${item.Title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                <i class="fas fa-film" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
+                <i class="fas fa-film"></i>
             </div>
             <div class="detail-info">
-                <div class="detail-title">${item.Title}</div>
-                <div class="detail-year">${item.Year || "Bilinmiyor"}</div>
-                <div class="detail-imdb">⭐ ${item.imdbRating !== "N/A" ? item.imdbRating : "?"}</div>
-                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${item.Genre !== "N/A" ? item.Genre : "Bilinmiyor"}</div>
-                <div class="detail-duration"><i class="fas fa-clock"></i> Süre: ${item.Runtime !== "N/A" ? item.Runtime : "Bilinmiyor"}</div>
-                <div class="detail-director"><i class="fas fa-user"></i> Yönetmen: ${item.Director !== "N/A" ? item.Director : "Bilinmiyor"}</div>
-                <div class="detail-actors"><i class="fas fa-users"></i> Oyuncular: ${item.Actors !== "N/A" ? item.Actors.substring(0, 100) + "..." : "Bilinmiyor"}</div>
-                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${item.Plot !== "N/A" ? item.Plot : "Bilgi yok"}</div>
-                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${item.imdbID}">
+                <div class="detail-title">${movie.title}</div>
+                <div class="detail-year">${movie.year}</div>
+                <div class="detail-imdb">⭐ ${movie.rating}</div>
+                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${movie.genre}</div>
+                <div class="detail-duration"><i class="fas fa-clock"></i> Süre: ${movie.runtime}</div>
+                <div class="detail-platforms">${platformHtml}</div>
+                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${movie.id}">
                     <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
                 </button>
             </div>
@@ -640,7 +786,7 @@
                     updateWatchedCount();
                     detailBtn.classList.add("watched");
                     detailBtn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
-                    const index = currentItems.findIndex(i => i.imdbID === id);
+                    const index = currentItems.findIndex(m => m.id === id);
                     if (index !== -1) {
                         currentItems.splice(index, 1);
                         renderItems();
