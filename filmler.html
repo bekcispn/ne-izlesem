@@ -10,7 +10,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(145deg, #0f1117 0%, #1a1d2b 100%); font-family: 'Inter', sans-serif; min-height: 100vh; }
 
-        /* LOADING EKRANI */
         .loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(145deg, #0f1117, #1a1d2b); z-index: 2000;
@@ -77,7 +76,6 @@
         .watched-btn.watched { background: #10b981; color: white; cursor: default; }
         .loading-state { text-align: center; padding: 50px; color: #6b7280; }
         
-        /* DETAY SAYFASI - BELİRGİN GERİ BUTONU */
         .detail-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(145deg, #0f1117, #1a1d2b); z-index: 1100;
@@ -86,7 +84,6 @@
         .detail-card {
             background: #1e212e; border-radius: 32px; max-width: 600px; width: 100%;
             border: 2px solid #ff6b00; overflow: hidden;
-            position: relative;
             animation: slideUp 0.3s ease;
         }
         @keyframes slideUp {
@@ -133,73 +130,69 @@
 </head>
 <body>
 
-<!-- LOADING EKRANI -->
 <div id="loadingScreen" class="loading-overlay">
     <div class="loading-card">
         <div class="loading-animation"><i class="fas fa-film"></i></div>
         <div class="loading-title">Filmler hazırlanıyor...</div>
         <div class="loading-messages">
-            <div class="loading-msg"><i class="fas fa-database"></i> OMDb veritabanına bağlanılıyor...</div>
-            <div class="loading-msg"><i class="fas fa-search"></i> En iyi filmler aranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-star"></i> IMDB puanları toplanıyor...</div>
-            <div class="loading-msg"><i class="fas fa-trophy"></i> Oscar ödüllüler seçiliyor...</div>
+            <div class="loading-msg"><i class="fas fa-database"></i> TMDB veritabanına bağlanılıyor...</div>
+            <div class="loading-msg"><i class="fas fa-search"></i> Filmler türlerine göre aranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-star"></i> Puanlar toplanıyor...</div>
+            <div class="loading-msg"><i class="fas fa-trophy"></i> En iyi filmler seçiliyor...</div>
             <div class="loading-msg"><i class="fas fa-film"></i> Afişler yükleniyor...</div>
             <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
         </div>
     </div>
 </div>
 
-<!-- DETAY SAYFASI - BELİRGİN GERİ BUTONU -->
 <div id="detailOverlay" class="detail-overlay">
     <div class="detail-card">
-        <button class="detail-back-btn" id="closeDetailBtn">
-            <i class="fas fa-arrow-left"></i> ← GERİ DÖN
-        </button>
+        <button class="detail-back-btn" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> ← GERİ DÖN</button>
         <div id="detailContent"></div>
     </div>
 </div>
 
-<!-- ANA İÇERİK -->
 <div id="mainContent" class="main-content">
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-film"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>Top rated movies - IMDB Top Rated (50+ per category)</p>
+            <p>Top rated movies by genre - TMDB</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
         <div class="category-menu">
             <div class="category-header"><i class="fas fa-tags"></i> Kategoriler</div>
             <div class="category-wrapper">
-                <button class="category-btn active" data-cat="all" data-search="">🔥 All</button>
-                <button class="category-btn" data-cat="action" data-search="action">⚡ Action</button>
-                <button class="category-btn" data-cat="comedy" data-search="comedy">😂 Comedy</button>
-                <button class="category-btn" data-cat="drama" data-search="drama">🎭 Drama</button>
-                <button class="category-btn" data-cat="horror" data-search="horror">👻 Horror</button>
-                <button class="category-btn" data-cat="sci-fi" data-search="sci-fi">🚀 Sci-Fi</button>
-                <button class="category-btn" data-cat="romance" data-search="romance">💕 Romance</button>
-                <button class="category-btn" data-cat="thriller" data-search="thriller">🔪 Thriller</button>
-                <button class="category-btn" data-cat="animation" data-search="animation">🐭 Animation</button>
-                <button class="category-btn" data-cat="crime" data-search="crime">🔫 Crime</button>
-                <button class="category-btn" data-cat="fantasy" data-search="fantasy">🐉 Fantasy</button>
-                <button class="category-btn" data-cat="adventure" data-search="adventure">🗺️ Adventure</button>
+                <button class="category-btn active" data-genre-id="">🔥 Tümü</button>
+                <button class="category-btn" data-genre-id="28">⚡ Aksiyon</button>
+                <button class="category-btn" data-genre-id="35">😂 Komedi</button>
+                <button class="category-btn" data-genre-id="18">🎭 Dram</button>
+                <button class="category-btn" data-genre-id="27">👻 Korku</button>
+                <button class="category-btn" data-genre-id="878">🚀 Bilim Kurgu</button>
+                <button class="category-btn" data-genre-id="10749">💕 Romantik</button>
+                <button class="category-btn" data-genre-id="53">🔪 Gerilim</button>
+                <button class="category-btn" data-genre-id="16">🐭 Animasyon</button>
+                <button class="category-btn" data-genre-id="80">🔫 Suç</button>
+                <button class="category-btn" data-genre-id="14">🐉 Fantastik</button>
             </div>
         </div>
 
         <div class="results-header">
-            <h2 id="resultTitle"><i class="fas fa-star"></i> Top Rated Movies</h2>
-            <div class="watched-badge"><i class="fas fa-check-circle"></i><span id="watchedCount">0</span> watched</div>
+            <h2 id="resultTitle"><i class="fas fa-star"></i> En Yüksek Puanlı Filmler</h2>
+            <div class="watched-badge"><i class="fas fa-check-circle"></i><span id="watchedCount">0</span> izledim</div>
         </div>
 
         <div id="resultsGrid" class="results-grid">
-            <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Fetching movies from OMDb API...</div>
+            <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Filmler yükleniyor...</div>
         </div>
     </div>
 </div>
 
 <script>
-    const OMDB_API_KEY = "aee8123e";
-    const OMDB_BASE_URL = "https://www.omdbapi.com/";
+    // TMDB API - SENİN API KEY'İN
+    const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
+    const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+    const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
     function getDeviceId() {
         try {
@@ -220,63 +213,44 @@
     const deviceId = getDeviceId();
     const STORAGE_WATCHED_KEY = `watched_${deviceId}`;
     let watchedIds = [];
-    let allMovies = [];
     let currentItems = [];
-    let currentCategory = "all";
-    let currentSearchTerm = "";
+    let currentGenreId = "";
     const cache = {};
 
-    // Kategori eşleştirme
-    const categoryMap = {
-        "all": "",
-        "action": "action",
-        "comedy": "comedy",
-        "drama": "drama",
-        "horror": "horror",
-        "sci-fi": "sci-fi",
-        "romance": "romance",
-        "thriller": "thriller",
-        "animation": "animation",
-        "crime": "crime",
-        "fantasy": "fantasy",
-        "adventure": "adventure"
-    };
-
-    // OMDb API'den arama yap
-    async function searchMovies(searchTerm, page = 1) {
-        const cacheKey = `${searchTerm}_${page}`;
+    // TMDB'den türe göre film çek (GERÇEK TÜR FİLTRESİ!)
+    async function fetchMoviesByGenre(genreId, page = 1) {
+        const cacheKey = `genre_${genreId}_${page}`;
         if (cache[cacheKey]) return cache[cacheKey];
         
         try {
             let url;
-            if (searchTerm === "") {
-                // Tüm filmler için popüler filmleri çek
-                url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&s=movie&type=movie&page=${page}`;
+            if (genreId === "") {
+                url = `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`;
             } else {
-                url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(searchTerm)}&type=movie&page=${page}`;
+                url = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&sort_by=vote_average.desc&vote_count.gte=500&language=en-US&page=${page}`;
             }
             const response = await fetch(url);
             const data = await response.json();
-            if (data && data.Response === "True") {
-                cache[cacheKey] = data.Search || [];
-                return data.Search || [];
+            if (data && data.results) {
+                cache[cacheKey] = data.results;
+                return data.results;
             }
             return [];
         } catch (error) {
-            console.error("Search error:", error);
+            console.error("Error:", error);
             return [];
         }
     }
 
     // Detaylı film bilgisi al
-    async function fetchMovieDetails(imdbID) {
-        if (cache[`detail_${imdbID}`]) return cache[`detail_${imdbID}`];
+    async function fetchMovieDetails(movieId) {
+        if (cache[`detail_${movieId}`]) return cache[`detail_${movieId}`];
         try {
-            const url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&i=${imdbID}&plot=short`;
+            const url = `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`;
             const response = await fetch(url);
             const data = await response.json();
-            if (data && data.Response === "True") {
-                cache[`detail_${imdbID}`] = data;
+            if (data) {
+                cache[`detail_${movieId}`] = data;
                 return data;
             }
             return null;
@@ -286,46 +260,30 @@
         }
     }
 
-    // Kategoriye göre filmleri yükle
-    async function loadMoviesByCategory(searchTerm) {
+    async function loadMoviesByGenre(genreId) {
         const allResults = [];
-        // 3 sayfa çek (yaklaşık 30-40 film)
         for (let page = 1; page <= 3; page++) {
-            const results = await searchMovies(searchTerm, page);
+            const results = await fetchMoviesByGenre(genreId, page);
             if (results.length === 0) break;
             
             for (const movie of results) {
-                if (watchedIds.includes(movie.imdbID)) continue;
-                // Detayları al (runtime, rating, genre için)
-                const details = await fetchMovieDetails(movie.imdbID);
-                if (details && details.imdbRating !== "N/A") {
+                if (watchedIds.includes(movie.id.toString())) continue;
+                const details = await fetchMovieDetails(movie.id);
+                if (details) {
                     allResults.push(details);
                 }
             }
         }
         
-        // Puanlara göre sırala (yüksekten düşüğe)
-        allResults.sort((a, b) => parseFloat(b.imdbRating || 0) - parseFloat(a.imdbRating || 0));
+        allResults.sort((a, b) => b.vote_average - a.vote_average);
         return allResults;
     }
 
-    async function loadAllMovies() {
+    async function loadContent() {
         const grid = document.getElementById("resultsGrid");
-        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Fetching movies from OMDb API...</div>';
+        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Filmler yükleniyor...</div>';
         
-        allMovies = await loadMoviesByCategory(currentSearchTerm);
-        filterByCategory();
-    }
-
-    function filterByCategory() {
-        if (currentCategory === "all") {
-            currentItems = [...allMovies];
-        } else {
-            currentItems = allMovies.filter(movie => {
-                const genre = movie.Genre ? movie.Genre.toLowerCase() : "";
-                return genre.includes(currentCategory);
-            });
-        }
+        currentItems = await loadMoviesByGenre(currentGenreId);
         renderItems();
     }
 
@@ -351,32 +309,42 @@
         return icons[platform] || '';
     }
 
+    function formatRuntime(minutes) {
+        if (!minutes) return "Süre bilinmiyor";
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hours}h ${mins}m`;
+    }
+
     function renderItems() {
         const grid = document.getElementById("resultsGrid");
         if (currentItems.length === 0) {
-            grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>No unwatched movies in this category! 🎉<br><small>Try another category</small></div>`;
+            grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
             return;
         }
         
         grid.innerHTML = currentItems.map(movie => {
-            const posterUrl = movie.Poster !== "N/A" ? movie.Poster : null;
+            const posterUrl = movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : null;
             const platforms = getRandomPlatform();
             const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
+            const year = movie.release_date ? movie.release_date.split('-')[0] : "Bilinmiyor";
+            const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "?";
+            const runtime = formatRuntime(movie.runtime);
             
             return `
-                <div class="movie-card" data-id="${movie.imdbID}">
+                <div class="movie-card" data-id="${movie.id}">
                     <div class="card-poster">
-                        ${posterUrl ? `<img src="${posterUrl}" alt="${movie.Title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+                        ${posterUrl ? `<img src="${posterUrl}" alt="${movie.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
                         <i class="fas fa-film" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
                     </div>
                     <div class="card-info">
-                        <div class="card-title">${movie.Title}</div>
-                        <div class="card-year">${movie.Year || "Unknown"}</div>
-                        <div class="imdb-rating">⭐ ${movie.imdbRating !== "N/A" ? movie.imdbRating : "?"}</div>
-                        <div class="card-detail">🎬 ${movie.Runtime !== "N/A" ? movie.Runtime : "Unknown"}</div>
+                        <div class="card-title">${movie.title}</div>
+                        <div class="card-year">${year}</div>
+                        <div class="imdb-rating">⭐ ${rating}</div>
+                        <div class="card-detail">🎬 ${runtime}</div>
                         <div class="platform-badge">${platformHtml}</div>
-                        <button class="watched-btn" data-id="${movie.imdbID}">
-                            <i class="fas fa-check-circle"></i> Watched
+                        <button class="watched-btn" data-id="${movie.id}">
+                            <i class="fas fa-check-circle"></i> İzledim
                         </button>
                     </div>
                 </div>
@@ -386,8 +354,8 @@
         document.querySelectorAll(".movie-card").forEach(card => {
             card.addEventListener("click", (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
-                const id = card.getAttribute("data-id");
-                const movie = currentItems.find(m => m.imdbID === id);
+                const id = parseInt(card.getAttribute("data-id"));
+                const movie = currentItems.find(m => m.id === id);
                 if (movie) showDetail(movie);
             });
         });
@@ -398,11 +366,11 @@
                 const id = btn.getAttribute("data-id");
                 if (!btn.classList.contains("watched")) {
                     btn.classList.add("watched");
-                    btn.innerHTML = '<i class="fas fa-check"></i> Watched ✓';
+                    btn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
                     watchedIds.push(id);
                     localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
                     updateWatchedCount();
-                    const index = currentItems.findIndex(m => m.imdbID === id);
+                    const index = currentItems.findIndex(m => m.id.toString() === id);
                     if (index !== -1) {
                         currentItems.splice(index, 1);
                         renderItems();
@@ -415,28 +383,32 @@
     function showDetail(movie) {
         const detailOverlay = document.getElementById("detailOverlay");
         const detailContent = document.getElementById("detailContent");
-        const posterUrl = movie.Poster !== "N/A" ? movie.Poster : null;
-        const isWatched = watchedIds.includes(movie.imdbID);
+        const posterUrl = movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : null;
+        const isWatched = watchedIds.includes(movie.id.toString());
         const platforms = getRandomPlatform();
         const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
+        const year = movie.release_date ? movie.release_date.split('-')[0] : "Bilinmiyor";
+        const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "?";
+        const runtime = formatRuntime(movie.runtime);
+        const genres = movie.genres ? movie.genres.map(g => g.name).join(", ") : "Bilinmiyor";
 
         detailContent.innerHTML = `
             <div class="detail-poster">
-                ${posterUrl ? `<img src="${posterUrl}" alt="${movie.Title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+                ${posterUrl ? `<img src="${posterUrl}" alt="${movie.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
                 <i class="fas fa-film" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
             </div>
             <div class="detail-info">
-                <div class="detail-title">${movie.Title}</div>
-                <div class="detail-year">${movie.Year || "Unknown"}</div>
-                <div class="detail-imdb">⭐ ${movie.imdbRating !== "N/A" ? movie.imdbRating : "?"}</div>
-                <div class="detail-genre"><i class="fas fa-tag"></i> Genre: ${movie.Genre !== "N/A" ? movie.Genre : "Unknown"}</div>
-                <div class="detail-duration"><i class="fas fa-clock"></i> Runtime: ${movie.Runtime !== "N/A" ? movie.Runtime : "Unknown"}</div>
-                <div class="detail-director"><i class="fas fa-user"></i> Director: ${movie.Director !== "N/A" ? movie.Director : "Unknown"}</div>
-                <div class="detail-actors"><i class="fas fa-users"></i> Actors: ${movie.Actors !== "N/A" ? movie.Actors.substring(0, 100) + "..." : "Unknown"}</div>
-                <div class="detail-plot"><i class="fas fa-align-left"></i> Plot: ${movie.Plot !== "N/A" ? movie.Plot : "No plot available"}</div>
+                <div class="detail-title">${movie.title}</div>
+                <div class="detail-year">${year}</div>
+                <div class="detail-imdb">⭐ ${rating}</div>
+                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genres}</div>
+                <div class="detail-duration"><i class="fas fa-clock"></i> Süre: ${runtime}</div>
+                <div class="detail-director"><i class="fas fa-user"></i> Yönetmen: -</div>
+                <div class="detail-actors"><i class="fas fa-users"></i> Oyuncular: -</div>
+                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${movie.overview || "Bilgi yok"}</div>
                 <div class="detail-platforms">${platformHtml}</div>
-                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${movie.imdbID}">
-                    <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'Watched ✓' : 'Watched'}
+                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${movie.id}">
+                    <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
                 </button>
             </div>
         `;
@@ -452,8 +424,8 @@
                     localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
                     updateWatchedCount();
                     detailBtn.classList.add("watched");
-                    detailBtn.innerHTML = '<i class="fas fa-check"></i> Watched ✓';
-                    const index = currentItems.findIndex(m => m.imdbID === id);
+                    detailBtn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
+                    const index = currentItems.findIndex(m => m.id.toString() === id);
                     if (index !== -1) {
                         currentItems.splice(index, 1);
                         renderItems();
@@ -473,34 +445,28 @@
         updateWatchedCount();
     }
 
-    // Loading ekranı ve ana yükleme
     setTimeout(() => {
         document.getElementById("loadingScreen").style.display = "none";
         document.getElementById("mainContent").style.display = "block";
         loadWatchedData();
-        loadAllMovies();
+        loadContent();
     }, 2500);
 
-    // Geri butonu - BELİRGİN VE ÇALIŞIR
     document.getElementById("closeDetailBtn").addEventListener("click", () => {
         document.getElementById("detailOverlay").style.display = "none";
     });
 
-    // Kategori butonları
     document.querySelectorAll(".category-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
-            currentCategory = btn.getAttribute("data-cat");
-            const searchValue = btn.getAttribute("data-search");
-            currentSearchTerm = searchValue;
+            currentGenreId = btn.getAttribute("data-genre-id");
             
-            // Loading göster
             const grid = document.getElementById("resultsGrid");
-            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Fetching movies...</div>';
+            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Filmler yükleniyor...</div>';
             
-            allMovies = await loadMoviesByCategory(currentSearchTerm);
-            filterByCategory();
+            currentItems = await loadMoviesByGenre(currentGenreId);
+            renderItems();
         });
     });
 </script>
