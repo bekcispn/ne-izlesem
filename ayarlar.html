@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Ne İzlesem? | Ayarlar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(145deg, #0f1117 0%, #1a1d2b 100%); font-family: 'Inter', sans-serif; min-height: 100vh; }
+        .header { background: #1e212e; border-radius: 28px; padding: 25px 30px; margin-bottom: 25px; border: 1px solid rgba(255, 107, 0, 0.3); position: relative; }
+        .header h1 { font-size: 28px; color: white; }
+        .header h1 i { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; margin-right: 12px; }
+        .header h1 .highlight { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 8px; }
+        .header p { color: #9ca3af; margin-top: 8px; font-size: 14px; }
+        .badge-date { position: absolute; top: 20px; right: 25px; background: rgba(255, 107, 0, 0.2); padding: 6px 14px; border-radius: 40px; font-size: 11px; color: #ffb347; }
+        .nav-menu { background: #1e212e; border-radius: 60px; padding: 10px 20px; margin-bottom: 30px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; border: 1px solid #2a2e3d; }
+        .nav-link { background: #2a2e3d; color: #9ca3af; text-decoration: none; padding: 8px 18px; border-radius: 40px; font-size: 13px; transition: 0.2s; }
+        .nav-link:hover { background: #ff6b00; color: white; }
+        .nav-link.active { background: linear-gradient(135deg, #ff6b00, #ffb347); color: #000; font-weight: 600; }
+        .settings-card { background: #1e212e; border-radius: 24px; padding: 30px; border: 1px solid #2a2e3d; margin-bottom: 25px; }
+        .settings-title { font-size: 20px; color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .settings-title i { color: #ff6b00; }
+        .settings-item { background: #2a2e3d; border-radius: 16px; padding: 15px 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .settings-item-label { color: white; font-weight: 500; }
+        .settings-item-desc { color: #9ca3af; font-size: 12px; margin-top: 5px; }
+        .settings-btn { background: linear-gradient(135deg, #ff6b00, #ffb347); border: none; padding: 10px 20px; border-radius: 40px; color: #000; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .settings-btn:hover { transform: scale(0.98); }
+        .settings-btn.danger { background: #ef4444; color: white; }
+        .device-info-card { background: #1e212e; border-radius: 24px; padding: 25px; border: 1px solid #ff6b00; text-align: center; }
+        .device-id { font-family: monospace; font-size: 18px; background: #0f1117; padding: 10px; border-radius: 12px; margin-top: 10px; color: #ffb347; }
+        .main-content { padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        @media (max-width: 768px) { .main-content { padding: 12px; } .header h1 { font-size: 22px; } .badge-date { position: static; display: inline-block; margin-top: 15px; } .settings-item { flex-direction: column; text-align: center; } .settings-btn { width: 100%; } }
+    </style>
+</head>
+<body>
+
+<div class="main-content">
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-cog"></i> Ne İzlesem? <span class="highlight">Abican</span></h1>
+            <p>Ayarlar ve tercihler</p>
+            <div class="badge-date">
+                <i class="fas fa-desktop"></i> <span id="deviceId">Cihaz ID alınıyor...</span>
+            </div>
+        </div>
+
+        <div class="nav-menu">
+            <a href="index.html" class="nav-link"><i class="fas fa-film"></i> Filmler</a>
+            <a href="diziler.html" class="nav-link"><i class="fas fa-tv"></i> Diziler</a>
+            <a href="ayarlar.html" class="nav-link active"><i class="fas fa-cog"></i> Ayarlar</a>
+        </div>
+
+        <div class="settings-card">
+            <div class="settings-title">
+                <i class="fas fa-database"></i> Veri Yönetimi
+            </div>
+            <div class="settings-item">
+                <div>
+                    <div class="settings-item-label"><i class="fas fa-trash-alt"></i> Tüm İzlenenleri Sıfırla</div>
+                    <div class="settings-item-desc">"İzledim" olarak işaretlediğin tüm film ve dizileri siler.</div>
+                </div>
+                <button class="settings-btn danger" id="resetWatchedBtn"><i class="fas fa-eraser"></i> Sıfırla</button>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <div class="settings-title">
+                <i class="fas fa-info-circle"></i> Cihaz Bilgisi
+            </div>
+            <div class="device-info-card">
+                <i class="fas fa-fingerprint" style="font-size: 30px; color: #ff6b00;"></i>
+                <p style="color:#9ca3af; margin-top: 10px;">Bu cihazın kimlik numarası:</p>
+                <div class="device-id" id="deviceIdDisplay">Yükleniyor...</div>
+                <p style="color:#6b7280; font-size: 11px; margin-top: 15px;">Bu ID ile izlediğin filmler kaydedilir. Farklı cihazda farklı liste olur.</p>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <div class="settings-title">
+                <i class="fas fa-chart-line"></i> İstatistikler
+            </div>
+            <div class="settings-item">
+                <div>
+                    <div class="settings-item-label"><i class="fas fa-check-circle"></i> İzlenen Film/Dizi Sayısı</div>
+                    <div class="settings-item-desc">Toplam izlediğin içerik sayısı</div>
+                </div>
+                <div style="font-size: 24px; font-weight: 700; color: #ffb347;" id="watchedStat">0</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function getDeviceId() {
+        try {
+            const screenRes = `${screen.width}x${screen.height}`;
+            const userAgent = navigator.userAgent;
+            const language = navigator.language;
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            let str = `${screenRes}|${language}|${timezone}|${userAgent.substring(0, 80)}`;
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash).toString(16).substring(0, 8);
+        } catch (e) {
+            return "default";
+        }
+    }
+
+    const deviceId = getDeviceId();
+    const STORAGE_WATCHED_KEY = `watched_${deviceId}`;
+    let watchedIds = [];
+
+    function loadWatchedData() {
+        const saved = localStorage.getItem(STORAGE_WATCHED_KEY);
+        watchedIds = saved ? JSON.parse(saved) : [];
+        document.getElementById("watchedStat").innerText = watchedIds.length;
+    }
+
+    document.getElementById("deviceId").innerText = deviceId;
+    document.getElementById("deviceIdDisplay").innerText = deviceId;
+    loadWatchedData();
+
+    document.getElementById("resetWatchedBtn").addEventListener("click", () => {
+        if (confirm("Tüm izlediklerini silmek istediğine emin misin? Bu işlem geri alınamaz!")) {
+            watchedIds = [];
+            localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
+            document.getElementById("watchedStat").innerText = 0;
+            alert("✅ Tüm izlenenler silindi!");
+        }
+    });
+</script>
+</body>
+</html>
