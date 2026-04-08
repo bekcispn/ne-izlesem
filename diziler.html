@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Aynı stiller - filmler.html ile aynı */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(145deg, #0f1117 0%, #1a1d2b 100%); font-family: 'Inter', sans-serif; min-height: 100vh; }
 
@@ -49,8 +50,9 @@
         .category-btn:hover { border-color: #ff6b00; color: #ffb347; }
         .category-btn.active { background: linear-gradient(135deg, #ff6b00, #ffb347); border-color: transparent; color: #000; font-weight: 600; }
         .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        .results-header h2 { font-size: 20px; color: white; }
+        .results-header h2 { font-size: 20px; color: white; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .results-header h2 i { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; margin-right: 10px; }
+        .item-count-badge { background: #ff6b00; color: #000; padding: 4px 12px; border-radius: 40px; font-size: 14px; font-weight: 700; }
         .watched-badge { background: #2a2e3d; padding: 8px 18px; border-radius: 40px; font-size: 13px; color: #ffb347; }
         .watched-badge i { margin-right: 8px; }
         .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
@@ -125,6 +127,8 @@
             .category-btn { padding: 6px 12px; font-size: 11px; }
             .loading-card { padding: 30px 25px; margin: 20px; }
             .detail-back-btn { padding: 10px 20px; font-size: 14px; }
+            .results-header h2 { font-size: 16px; }
+            .item-count-badge { font-size: 11px; }
         }
     </style>
 </head>
@@ -156,7 +160,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-tv"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>Top rated TV series by genre - TMDB</p>
+            <p>Top rated TV series by genre - TMDB (100+ series per category)</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
@@ -174,11 +178,22 @@
                 <button class="category-btn" data-genre-id="16">🐭 Animasyon</button>
                 <button class="category-btn" data-genre-id="80">🔫 Suç</button>
                 <button class="category-btn" data-genre-id="14">🐉 Fantastik</button>
+                <button class="category-btn" data-genre-id="12">🗺️ Macera</button>
+                <button class="category-btn" data-genre-id="36">📜 Tarih</button>
+                <button class="category-btn" data-genre-id="10402">🎵 Müzik</button>
+                <button class="category-btn" data-genre-id="9648">🕵️ Gizem</button>
+                <button class="category-btn" data-genre-id="10751">👨‍👩‍👧‍👦 Aile</button>
+                <button class="category-btn" data-genre-id="37">🤠 Western</button>
+                <button class="category-btn" data-genre-id="10770">📺 TV Film</button>
+                <button class="category-btn" data-genre-id="99">📽️ Belgesel</button>
             </div>
         </div>
 
         <div class="results-header">
-            <h2 id="resultTitle"><i class="fas fa-star"></i> En Yüksek Puanlı Diziler</h2>
+            <h2 id="resultTitle">
+                <i class="fas fa-star"></i> En Yüksek Puanlı Diziler
+                <span class="item-count-badge" id="itemCount">0</span>
+            </h2>
             <div class="watched-badge"><i class="fas fa-check-circle"></i><span id="watchedCount">0</span> izledim</div>
         </div>
 
@@ -217,7 +232,7 @@
     let currentGenreId = "";
     const cache = {};
 
-    // TMDB'den türe göre dizi çek (GERÇEK TÜR FİLTRESİ!)
+    // TMDB'den türe göre dizi çek (5 sayfa = 100+ dizi)
     async function fetchSeriesByGenre(genreId, page = 1) {
         const cacheKey = `series_genre_${genreId}_${page}`;
         if (cache[cacheKey]) return cache[cacheKey];
@@ -262,14 +277,15 @@
 
     async function loadSeriesByGenre(genreId) {
         const allResults = [];
-        for (let page = 1; page <= 3; page++) {
+        // 5 sayfa = 100+ dizi (20x5=100)
+        for (let page = 1; page <= 5; page++) {
             const results = await fetchSeriesByGenre(genreId, page);
             if (results.length === 0) break;
             
             for (const series of results) {
                 if (watchedIds.includes(series.id.toString())) continue;
                 const details = await fetchSeriesDetails(series.id);
-                if (details) {
+                if (details && details.vote_average > 0) {
                     allResults.push(details);
                 }
             }
@@ -316,10 +332,15 @@
 
     function renderItems() {
         const grid = document.getElementById("resultsGrid");
+        const countSpan = document.getElementById("itemCount");
+        
         if (currentItems.length === 0) {
+            if (countSpan) countSpan.innerText = "0";
             grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin dizi kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
             return;
         }
+        
+        if (countSpan) countSpan.innerText = currentItems.length;
         
         grid.innerHTML = currentItems.map(series => {
             const posterUrl = series.poster_path ? `${IMAGE_BASE_URL}${series.poster_path}` : null;
