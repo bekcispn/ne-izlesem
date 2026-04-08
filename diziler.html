@@ -7,10 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Aynı stiller - filmler.html ile aynı */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(145deg, #0f1117 0%, #1a1d2b 100%); font-family: 'Inter', sans-serif; min-height: 100vh; }
 
+        /* LOADING EKRANI */
         .loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(145deg, #0f1117, #1a1d2b); z-index: 2000;
@@ -77,6 +77,7 @@
         .watched-btn.watched { background: #10b981; color: white; cursor: default; }
         .loading-state { text-align: center; padding: 50px; color: #6b7280; }
         
+        /* DETAY SAYFASI - BELİRGİN GERİ BUTONU */
         .detail-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(145deg, #0f1117, #1a1d2b); z-index: 1100;
@@ -84,15 +85,25 @@
         }
         .detail-card {
             background: #1e212e; border-radius: 32px; max-width: 600px; width: 100%;
-            border: 1px solid #ff6b00; overflow: hidden;
+            border: 2px solid #ff6b00; overflow: hidden;
             position: relative;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .detail-back-btn {
-            background: #2a2e3d; border: none; padding: 10px 20px; border-radius: 40px;
-            color: #ffb347; cursor: pointer; margin: 20px 20px 0 20px;
-            display: inline-flex; align-items: center; gap: 8px; font-size: 14px;
+            background: linear-gradient(135deg, #ff6b00, #ffb347);
+            border: none; padding: 12px 24px; border-radius: 50px;
+            color: #000; font-weight: 700; cursor: pointer; margin: 20px 20px 0 20px;
+            display: inline-flex; align-items: center; gap: 10px; font-size: 16px;
+            transition: 0.2s; width: calc(100% - 40px);
+            justify-content: center;
         }
-        .detail-back-btn:hover { background: #ff6b00; color: white; }
+        .detail-back-btn:hover { background: #ffb347; transform: scale(0.98); }
+        .detail-back-btn i { font-size: 18px; }
+        
         .detail-poster { width: 100%; height: 400px; background: linear-gradient(135deg, #1e212e, #2a2e3d); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .detail-poster img { width: 100%; height: 100%; object-fit: cover; }
         .detail-poster i { font-size: 80px; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -116,18 +127,20 @@
             .detail-title { font-size: 22px; }
             .category-btn { padding: 6px 12px; font-size: 11px; }
             .loading-card { padding: 30px 25px; margin: 20px; }
+            .detail-back-btn { padding: 10px 20px; font-size: 14px; }
         }
     </style>
 </head>
 <body>
 
+<!-- LOADING EKRANI -->
 <div id="loadingScreen" class="loading-overlay">
     <div class="loading-card">
         <div class="loading-animation"><i class="fas fa-tv"></i></div>
         <div class="loading-title">Diziler hazırlanıyor...</div>
         <div class="loading-messages">
             <div class="loading-msg"><i class="fas fa-database"></i> OMDb veritabanına bağlanılıyor...</div>
-            <div class="loading-msg"><i class="fas fa-search"></i> En iyi diziler taranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-search"></i> En iyi diziler aranıyor...</div>
             <div class="loading-msg"><i class="fas fa-star"></i> IMDB puanları toplanıyor...</div>
             <div class="loading-msg"><i class="fas fa-trophy"></i> Emmy ödüllüler seçiliyor...</div>
             <div class="loading-msg"><i class="fas fa-tv"></i> Afişler yükleniyor...</div>
@@ -136,44 +149,48 @@
     </div>
 </div>
 
+<!-- DETAY SAYFASI - BELİRGİN GERİ BUTONU -->
 <div id="detailOverlay" class="detail-overlay">
     <div class="detail-card">
-        <button class="detail-back-btn" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> ← Geri Dön</button>
+        <button class="detail-back-btn" id="closeDetailBtn">
+            <i class="fas fa-arrow-left"></i> ← GERİ DÖN
+        </button>
         <div id="detailContent"></div>
     </div>
 </div>
 
+<!-- ANA İÇERİK -->
 <div id="mainContent" class="main-content">
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-tv"></i> Ne İzlesem? <span class="highlight">Abican</span></h1>
-            <p>En yüksek puanlı diziler - IMDB Top Rated</p>
+            <h1><i class="fas fa-tv"></i> What to Watch? <span class="highlight">Abican</span></h1>
+            <p>Top rated TV series - IMDB Top Rated (50+ per category)</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
         <div class="category-menu">
             <div class="category-header"><i class="fas fa-tags"></i> Kategoriler</div>
             <div class="category-wrapper">
-                <button class="category-btn active" data-cat="all">🔥 Tümü</button>
-                <button class="category-btn" data-cat="action">⚡ Aksiyon</button>
-                <button class="category-btn" data-cat="comedy">😂 Komedi</button>
-                <button class="category-btn" data-cat="crime">🔫 Suç</button>
-                <button class="category-btn" data-cat="drama">🎭 Dram</button>
-                <button class="category-btn" data-cat="fantasy">🐉 Fantastik</button>
-                <button class="category-btn" data-cat="horror">👻 Korku</button>
-                <button class="category-btn" data-cat="sci-fi">🚀 Bilim Kurgu</button>
-                <button class="category-btn" data-cat="thriller">🔪 Gerilim</button>
-                <button class="category-btn" data-cat="animation">🐭 Animasyon</button>
+                <button class="category-btn active" data-cat="all" data-search="">🔥 All</button>
+                <button class="category-btn" data-cat="action" data-search="action">⚡ Action</button>
+                <button class="category-btn" data-cat="comedy" data-search="comedy">😂 Comedy</button>
+                <button class="category-btn" data-cat="drama" data-search="drama">🎭 Drama</button>
+                <button class="category-btn" data-cat="horror" data-search="horror">👻 Horror</button>
+                <button class="category-btn" data-cat="sci-fi" data-search="sci-fi">🚀 Sci-Fi</button>
+                <button class="category-btn" data-cat="crime" data-search="crime">🔫 Crime</button>
+                <button class="category-btn" data-cat="fantasy" data-search="fantasy">🐉 Fantasy</button>
+                <button class="category-btn" data-cat="animation" data-search="animation">🐭 Animation</button>
+                <button class="category-btn" data-cat="thriller" data-search="thriller">🔪 Thriller</button>
             </div>
         </div>
 
         <div class="results-header">
-            <h2 id="resultTitle"><i class="fas fa-star"></i> En Yüksek Puanlı Diziler</h2>
-            <div class="watched-badge"><i class="fas fa-check-circle"></i><span id="watchedCount">0</span> izledim</div>
+            <h2 id="resultTitle"><i class="fas fa-star"></i> Top Rated TV Series</h2>
+            <div class="watched-badge"><i class="fas fa-check-circle"></i><span id="watchedCount">0</span> watched</div>
         </div>
 
         <div id="resultsGrid" class="results-grid">
-            <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Diziler yükleniyor...</div>
+            <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Fetching series from OMDb API...</div>
         </div>
     </div>
 </div>
@@ -181,12 +198,6 @@
 <script>
     const OMDB_API_KEY = "aee8123e";
     const OMDB_BASE_URL = "https://www.omdbapi.com/";
-
-    const topSeriesIDs = [
-        "tt0903747", "tt0944947", "tt7366338", "tt0306414", "tt0141842",
-        "tt0108778", "tt1475582", "tt4574334", "tt4786824", "tt2085059",
-        "tt0386676", "tt5753856", "tt8111088", "tt2861424", "tt3581920"
-    ];
 
     function getDeviceId() {
         try {
@@ -210,33 +221,80 @@
     let allSeries = [];
     let currentItems = [];
     let currentCategory = "all";
+    let currentSearchTerm = "";
     const cache = {};
 
-    async function fetchSeriesByID(imdbID) {
-        if (cache[imdbID]) return cache[imdbID];
+    // OMDb API'den dizi arama yap (type=series)
+    async function searchSeries(searchTerm, page = 1) {
+        const cacheKey = `series_${searchTerm}_${page}`;
+        if (cache[cacheKey]) return cache[cacheKey];
+        
+        try {
+            let url;
+            if (searchTerm === "") {
+                url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&s=series&type=series&page=${page}`;
+            } else {
+                url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(searchTerm)}&type=series&page=${page}`;
+            }
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data && data.Response === "True") {
+                cache[cacheKey] = data.Search || [];
+                return data.Search || [];
+            }
+            return [];
+        } catch (error) {
+            console.error("Search error:", error);
+            return [];
+        }
+    }
+
+    // Detaylı dizi bilgisi al
+    async function fetchSeriesDetails(imdbID) {
+        if (cache[`detail_${imdbID}`]) return cache[`detail_${imdbID}`];
         try {
             const url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&i=${imdbID}&plot=short`;
             const response = await fetch(url);
             const data = await response.json();
             if (data && data.Response === "True") {
-                cache[imdbID] = data;
+                cache[`detail_${imdbID}`] = data;
                 return data;
             }
             return null;
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Detail error:", error);
             return null;
         }
     }
 
-    async function loadAllSeries() {
-        const results = [];
-        for (const id of topSeriesIDs) {
-            if (watchedIds.includes(id)) continue;
-            const data = await fetchSeriesByID(id);
-            if (data) results.push(data);
+    // Kategoriye göre dizileri yükle
+    async function loadSeriesByCategory(searchTerm) {
+        const allResults = [];
+        // 3 sayfa çek (yaklaşık 30-40 dizi)
+        for (let page = 1; page <= 3; page++) {
+            const results = await searchSeries(searchTerm, page);
+            if (results.length === 0) break;
+            
+            for (const series of results) {
+                if (watchedIds.includes(series.imdbID)) continue;
+                // Detayları al
+                const details = await fetchSeriesDetails(series.imdbID);
+                if (details && details.imdbRating !== "N/A") {
+                    allResults.push(details);
+                }
+            }
         }
-        allSeries = results;
+        
+        // Puanlara göre sırala (yüksekten düşüğe)
+        allResults.sort((a, b) => parseFloat(b.imdbRating || 0) - parseFloat(a.imdbRating || 0));
+        return allResults;
+    }
+
+    async function loadAllSeries() {
+        const grid = document.getElementById("resultsGrid");
+        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Fetching series from OMDb API...</div>';
+        
+        allSeries = await loadSeriesByCategory(currentSearchTerm);
         filterByCategory();
     }
 
@@ -246,7 +304,7 @@
         } else {
             currentItems = allSeries.filter(series => {
                 const genre = series.Genre ? series.Genre.toLowerCase() : "";
-                return genre.includes(currentCategory.toLowerCase());
+                return genre.includes(currentCategory);
             });
         }
         renderItems();
@@ -277,7 +335,7 @@
     function renderItems() {
         const grid = document.getElementById("resultsGrid");
         if (currentItems.length === 0) {
-            grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin dizi kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
+            grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>No unwatched series in this category! 🎉<br><small>Try another category</small></div>`;
             return;
         }
         
@@ -295,12 +353,12 @@
                     </div>
                     <div class="card-info">
                         <div class="card-title">${series.Title}</div>
-                        <div class="card-year">${series.Year || "Bilinmiyor"}</div>
+                        <div class="card-year">${series.Year || "Unknown"}</div>
                         <div class="imdb-rating">⭐ ${series.imdbRating !== "N/A" ? series.imdbRating : "?"}</div>
-                        <div class="card-detail">📺 ${seasons} Sezon</div>
+                        <div class="card-detail">📺 ${seasons} Seasons</div>
                         <div class="platform-badge">${platformHtml}</div>
                         <button class="watched-btn" data-id="${series.imdbID}">
-                            <i class="fas fa-check-circle"></i> İzledim
+                            <i class="fas fa-check-circle"></i> Watched
                         </button>
                     </div>
                 </div>
@@ -322,11 +380,15 @@
                 const id = btn.getAttribute("data-id");
                 if (!btn.classList.contains("watched")) {
                     btn.classList.add("watched");
-                    btn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
+                    btn.innerHTML = '<i class="fas fa-check"></i> Watched ✓';
                     watchedIds.push(id);
                     localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
                     updateWatchedCount();
-                    filterByCategory();
+                    const index = currentItems.findIndex(s => s.imdbID === id);
+                    if (index !== -1) {
+                        currentItems.splice(index, 1);
+                        renderItems();
+                    }
                 }
             });
         });
@@ -348,16 +410,16 @@
             </div>
             <div class="detail-info">
                 <div class="detail-title">${series.Title}</div>
-                <div class="detail-year">${series.Year || "Bilinmiyor"}</div>
+                <div class="detail-year">${series.Year || "Unknown"}</div>
                 <div class="detail-imdb">⭐ ${series.imdbRating !== "N/A" ? series.imdbRating : "?"}</div>
-                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${series.Genre !== "N/A" ? series.Genre : "Bilinmiyor"}</div>
-                <div class="detail-duration"><i class="fas fa-layer-group"></i> ${seasons} Sezon</div>
-                <div class="detail-director"><i class="fas fa-user"></i> Yaratıcı: ${series.Director !== "N/A" ? series.Director : "Bilinmiyor"}</div>
-                <div class="detail-actors"><i class="fas fa-users"></i> Oyuncular: ${series.Actors !== "N/A" ? series.Actors.substring(0, 100) + "..." : "Bilinmiyor"}</div>
-                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${series.Plot !== "N/A" ? series.Plot : "Bilgi yok"}</div>
+                <div class="detail-genre"><i class="fas fa-tag"></i> Genre: ${series.Genre !== "N/A" ? series.Genre : "Unknown"}</div>
+                <div class="detail-duration"><i class="fas fa-layer-group"></i> ${seasons} Seasons</div>
+                <div class="detail-director"><i class="fas fa-user"></i> Creator: ${series.Director !== "N/A" ? series.Director : "Unknown"}</div>
+                <div class="detail-actors"><i class="fas fa-users"></i> Cast: ${series.Actors !== "N/A" ? series.Actors.substring(0, 100) + "..." : "Unknown"}</div>
+                <div class="detail-plot"><i class="fas fa-align-left"></i> Plot: ${series.Plot !== "N/A" ? series.Plot : "No plot available"}</div>
                 <div class="detail-platforms">${platformHtml}</div>
                 <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${series.imdbID}">
-                    <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
+                    <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'Watched ✓' : 'Watched'}
                 </button>
             </div>
         `;
@@ -373,8 +435,12 @@
                     localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
                     updateWatchedCount();
                     detailBtn.classList.add("watched");
-                    detailBtn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
-                    filterByCategory();
+                    detailBtn.innerHTML = '<i class="fas fa-check"></i> Watched ✓';
+                    const index = currentItems.findIndex(s => s.imdbID === id);
+                    if (index !== -1) {
+                        currentItems.splice(index, 1);
+                        renderItems();
+                    }
                 }
             });
         }
@@ -390,6 +456,7 @@
         updateWatchedCount();
     }
 
+    // Loading ekranı ve ana yükleme
     setTimeout(() => {
         document.getElementById("loadingScreen").style.display = "none";
         document.getElementById("mainContent").style.display = "block";
@@ -397,15 +464,25 @@
         loadAllSeries();
     }, 2500);
 
+    // Geri butonu - BELİRGİN VE ÇALIŞIR
     document.getElementById("closeDetailBtn").addEventListener("click", () => {
         document.getElementById("detailOverlay").style.display = "none";
     });
 
+    // Kategori butonları
     document.querySelectorAll(".category-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
             document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             currentCategory = btn.getAttribute("data-cat");
+            const searchValue = btn.getAttribute("data-search");
+            currentSearchTerm = searchValue;
+            
+            // Loading göster
+            const grid = document.getElementById("resultsGrid");
+            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Fetching series...</div>';
+            
+            allSeries = await loadSeriesByCategory(currentSearchTerm);
             filterByCategory();
         });
     });
