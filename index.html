@@ -19,7 +19,6 @@
             min-height: 100vh;
         }
 
-        /* LOADING EKRANI */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -107,7 +106,6 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* HOŞGELDİN EKRANI */
         .welcome-overlay {
             position: fixed;
             top: 0;
@@ -156,7 +154,6 @@
             margin-top: 10px;
         }
 
-        /* ANA İÇERİK */
         .main-content {
             padding: 20px;
             display: none;
@@ -167,7 +164,6 @@
             margin: 0 auto;
         }
 
-        /* DETAY SAYFASI */
         .detail-overlay {
             position: fixed;
             top: 0;
@@ -283,13 +279,12 @@
             border-radius: 40px;
             color: white;
             cursor: pointer;
-            margin-bottom: 20px;
+            margin: 20px 20px 0 20px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
 
-        /* HEADER */
         .header {
             background: linear-gradient(135deg, #1e3a5f, #0f2b44);
             border-radius: 28px;
@@ -333,7 +328,6 @@
             color: #60a5fa;
         }
 
-        /* SEÇİM KARTLARI */
         .choice-cards {
             display: flex;
             gap: 25px;
@@ -376,7 +370,6 @@
             font-size: 13px;
         }
 
-        /* KATEGORİLER */
         .categories-section {
             background: #111c2e;
             border-radius: 24px;
@@ -426,7 +419,6 @@
             color: white;
         }
 
-        /* SONUÇLAR */
         .results-header {
             display: flex;
             justify-content: space-between;
@@ -569,7 +561,6 @@
         .load-more-btn {
             text-align: center;
             margin-top: 30px;
-            display: none;
         }
 
         .btn-load-more {
@@ -629,7 +620,7 @@
             <i class="fas fa-tv"></i>
             <i class="fas fa-ticket-alt"></i>
         </div>
-        <div class="loading-title" id="loadingTitle">Filmler hazırlanıyor...</div>
+        <div class="loading-title">Filmler hazırlanıyor...</div>
         <div class="loading-messages">
             <div class="loading-msg"><i class="fas fa-database"></i> OMDb veritabanına bağlanılıyor...</div>
             <div class="loading-msg"><i class="fas fa-star"></i> En yüksek puanlı filmler aranıyor...</div>
@@ -748,35 +739,26 @@
     let currentItems = [];
     let isLoading = false;
     let currentPage = 1;
+    let allItemsLoaded = false;
 
-    // IMDb ID'leri (En yüksek puanlı filmler - TEKİL, TEKRAR YOK)
-    const topMovieIDs = [
+    // TÜM FİLM ID'LERİ (TEKRAR YOK)
+    const allMovieIDs = [
         "tt0111161", "tt0068646", "tt0468569", "tt1375666", "tt0133093",
         "tt0167260", "tt0110912", "tt0109830", "tt0120737", "tt0108052",
         "tt0071562", "tt0110357", "tt0080684", "tt0102926", "tt0120815",
-        "tt0209144", "tt0118799", "tt0119217", "tt0114369", "tt0137523"
+        "tt0209144", "tt0118799", "tt0119217", "tt0114369", "tt0137523",
+        "tt0088763", "tt0076759", "tt0082971", "tt0099685", "tt0073486",
+        "tt0081505", "tt0095327", "tt0112573", "tt0167261", "tt0317248",
+        "tt0120735", "tt0407887", "tt0435761", "tt0499549", "tt0848228"
     ];
 
-    const topSeriesIDs = [
+    const allSeriesIDs = [
         "tt0903747", "tt0944947", "tt7366338", "tt0306414", "tt0141842",
         "tt0108778", "tt1475582", "tt4574334", "tt4786824", "tt2085059",
-        "tt0386676", "tt5753856", "tt8111088", "tt2861424", "tt3581920"
-    ];
-
-    // Daha fazla film/dizi için ID'ler (TEKRAR YOK)
-    const moreMovieIDs = [
-        "tt0088763", "tt0076759", "tt0082971", "tt0099685", "tt0073486",
-        "tt0081505", "tt0095327", "tt0112573", "tt0167261", "tt0317248"
-    ];
-
-    const moreSeriesIDs = [
+        "tt0386676", "tt5753856", "tt8111088", "tt2861424", "tt3581920",
         "tt0106145", "tt0436992", "tt0185906", "tt0407362", "tt0496424",
         "tt0412142", "tt0098904", "tt1239251", "tt2707408", "tt0773262"
     ];
-
-    // Tüm film ID'lerini birleştir (tekrar yok)
-    const allMovieIDs = [...new Set([...topMovieIDs, ...moreMovieIDs])];
-    const allSeriesIDs = [...new Set([...topSeriesIDs, ...moreSeriesIDs])];
 
     async function fetchMovieByID(imdbID) {
         try {
@@ -790,34 +772,61 @@
         }
     }
 
-    async function loadInitialItems() {
+    // Kategori filtresi uygulama
+    function matchesCategory(item, category) {
+        if (category === "all") return true;
+        const genre = item.Genre || "";
+        return genre.toLowerCase().includes(category.toLowerCase());
+    }
+
+    // Verileri yükle
+    async function loadItems(reset = true) {
+        if (isLoading) return;
         isLoading = true;
-        const grid = document.getElementById("resultsGrid");
-        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> OMDb\'den veriler alınıyor...</div>';
+        
+        if (reset) {
+            currentPage = 1;
+            currentItems = [];
+            allItemsLoaded = false;
+            document.getElementById("resultsGrid").innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> OMDb\'den veriler alınıyor...</div>';
+        }
         
         const ids = currentType === "movie" ? allMovieIDs : allSeriesIDs;
-        const items = [];
+        const startIndex = (currentPage - 1) * 12;
+        const endIndex = startIndex + 12;
+        const pageIds = ids.slice(startIndex, endIndex);
         
-        for (const id of ids) {
+        if (pageIds.length === 0) {
+            allItemsLoaded = true;
+            renderItems();
+            isLoading = false;
+            return;
+        }
+        
+        const newItems = [];
+        for (const id of pageIds) {
+            if (watchedIds.includes(id)) continue;
             const data = await fetchMovieByID(id);
-            if (data && data.Response === "True" && !watchedIds.includes(id)) {
-                if (currentCategory === "all") {
-                    items.push(data);
-                } else {
-                    const genre = data.Genre || "";
-                    if (genre.toLowerCase().includes(currentCategory.toLowerCase())) {
-                        items.push(data);
-                    }
+            if (data && data.Response === "True") {
+                if (matchesCategory(data, currentCategory)) {
+                    newItems.push(data);
                 }
             }
         }
         
-        currentItems = items;
+        currentItems = reset ? newItems : [...currentItems, ...newItems];
         renderItems();
         isLoading = false;
     }
 
-    // DETAY SAYFASI GÖSTER
+    // Daha fazla yükle
+    async function loadMore() {
+        if (isLoading || allItemsLoaded) return;
+        currentPage++;
+        await loadItems(false);
+    }
+
+    // DETAY SAYFASI
     function showDetail(item) {
         const detailOverlay = document.getElementById("detailOverlay");
         const detailContent = document.getElementById("detailContent");
@@ -825,9 +834,6 @@
         const posterUrl = item.Poster !== "N/A" ? item.Poster : null;
         const isWatched = watchedIds.includes(item.imdbID);
         const type = currentType;
-        const detail = type === "movie" ? 
-            `<i class="fas fa-clock"></i> Süre: ${item.Runtime !== "N/A" ? item.Runtime : "Bilinmiyor"}` :
-            `<i class="fas fa-layer-group"></i> Sezon: ${item.totalSeasons !== "N/A" && item.totalSeasons ? item.totalSeasons + " Sezon" : "Bilgi yok"}`;
         
         detailContent.innerHTML = `
             <div class="detail-poster">
@@ -851,7 +857,6 @@
         
         detailOverlay.style.display = "flex";
         
-        // Detay sayfasındaki izledim butonu
         const detailWatchedBtn = detailContent.querySelector(".detail-watched-btn");
         if (detailWatchedBtn) {
             detailWatchedBtn.addEventListener("click", (e) => {
@@ -873,7 +878,6 @@
         }
     }
 
-    // DETAY SAYFASINI KAPAT
     document.getElementById("closeDetailBtn").addEventListener("click", () => {
         document.getElementById("detailOverlay").style.display = "none";
     });
@@ -888,7 +892,7 @@
             document.getElementById("deviceId").innerText = deviceId;
             loadWatchedData();
             setupEventListeners();
-            loadInitialItems();
+            loadItems(true);
         }, 2000);
     }, 3500);
 
@@ -902,34 +906,19 @@
         document.getElementById("watchedCount").innerText = watchedIds.length;
     }
 
-    async function showMovies() {
-        currentType = "movie";
-        currentCategory = "all";
-        document.getElementById("resultTitle").innerHTML = '<i class="fas fa-star"></i> En Yüksek Puanlı Filmler';
-        document.getElementById("categoriesSection").style.display = "flex";
-        await loadInitialItems();
-    }
-
-    async function showSeries() {
-        currentType = "series";
-        currentCategory = "all";
-        document.getElementById("resultTitle").innerHTML = '<i class="fas fa-tv"></i> En Yüksek Puanlı Diziler';
-        document.getElementById("categoriesSection").style.display = "flex";
-        await loadInitialItems();
-    }
-
-    async function filterByCategory(category) {
-        currentCategory = category;
-        await loadInitialItems();
-    }
-
     function renderItems() {
         const grid = document.getElementById("resultsGrid");
         const loadMoreBtn = document.getElementById("loadMoreBtn");
         
-        if (currentItems.length === 0) {
+        if (currentItems.length === 0 && allItemsLoaded) {
             grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
             loadMoreBtn.style.display = "none";
+            return;
+        }
+        
+        if (currentItems.length === 0 && !allItemsLoaded) {
+            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> OMDb\'den veriler alınıyor...</div>';
+            loadMoreBtn.style.display = "block";
             return;
         }
         
@@ -961,7 +950,7 @@
             `;
         }).join("");
         
-        // Kartlara tıklama olayı (detay için)
+        // Kartlara tıklama
         document.querySelectorAll(".movie-card, .series-card").forEach(card => {
             card.addEventListener("click", (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
@@ -982,7 +971,6 @@
                     watchedIds.push(id);
                     localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
                     updateWatchedCount();
-                    // İzleneni listeden kaldır
                     const index = currentItems.findIndex(item => item.imdbID === id);
                     if (index !== -1) {
                         currentItems.splice(index, 1);
@@ -992,42 +980,33 @@
             });
         });
         
-        loadMoreBtn.style.display = currentItems.length >= 20 ? "block" : "none";
+        loadMoreBtn.style.display = allItemsLoaded ? "none" : "block";
     }
 
-    async function loadMore() {
-        if (isLoading) return;
-        isLoading = true;
-        const btn = document.querySelector(".btn-load-more");
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yükleniyor...';
-        
-        // Zaten yüklenmiş ID'leri al
-        const existingIds = currentItems.map(i => i.imdbID);
-        const allIds = currentType === "movie" ? allMovieIDs : allSeriesIDs;
-        const newIds = allIds.filter(id => !existingIds.includes(id) && !watchedIds.includes(id));
-        
-        for (const id of newIds.slice(0, 10)) {
-            const data = await fetchMovieByID(id);
-            if (data && data.Response === "True") {
-                if (currentCategory === "all") {
-                    currentItems.push(data);
-                } else {
-                    const genre = data.Genre || "";
-                    if (genre.toLowerCase().includes(currentCategory.toLowerCase())) {
-                        currentItems.push(data);
-                    }
-                }
-            }
-        }
-        
-        renderItems();
-        isLoading = false;
-        btn.innerHTML = '<i class="fas fa-arrow-down"></i> Daha Fazla Yükle';
+    async function changeType(type) {
+        currentType = type;
+        currentCategory = "all";
+        currentPage = 1;
+        allItemsLoaded = false;
+        document.getElementById("resultTitle").innerHTML = type === "movie" ? 
+            '<i class="fas fa-star"></i> En Yüksek Puanlı Filmler' : 
+            '<i class="fas fa-tv"></i> En Yüksek Puanlı Diziler';
+        document.getElementById("categoriesSection").style.display = "flex";
+        document.querySelectorAll(".cat-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelector(".cat-btn[data-cat='all']").classList.add("active");
+        await loadItems(true);
+    }
+
+    async function filterByCategory(category) {
+        currentCategory = category;
+        currentPage = 1;
+        allItemsLoaded = false;
+        await loadItems(true);
     }
 
     function setupEventListeners() {
-        document.getElementById("movieCard").addEventListener("click", showMovies);
-        document.getElementById("seriesCard").addEventListener("click", showSeries);
+        document.getElementById("movieCard").addEventListener("click", () => changeType("movie"));
+        document.getElementById("seriesCard").addEventListener("click", () => changeType("series"));
         document.querySelector(".btn-load-more").addEventListener("click", loadMore);
         
         document.querySelectorAll(".cat-btn").forEach(btn => {
