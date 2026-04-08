@@ -140,8 +140,8 @@
         <div class="loading-title">Diziler hazırlanıyor...</div>
         <div class="loading-messages">
             <div class="loading-msg"><i class="fas fa-database"></i> TMDB veritabanına bağlanılıyor...</div>
-            <div class="loading-msg"><i class="fas fa-search"></i> Diziler türlerine göre aranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-star"></i> Puanlar toplanıyor...</div>
+            <div class="loading-msg"><i class="fas fa-search"></i> 500+ dizi taranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-star"></i> IMDB puanları toplanıyor...</div>
             <div class="loading-msg"><i class="fas fa-trophy"></i> En iyi diziler seçiliyor...</div>
             <div class="loading-msg"><i class="fas fa-tv"></i> Afişler yükleniyor...</div>
             <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
@@ -160,7 +160,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-tv"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>Top rated TV series by genre - TMDB (100+ series per category)</p>
+            <p>500+ top rated TV series by genre - TMDB</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
@@ -184,8 +184,6 @@
                 <button class="category-btn" data-genre-id="9648">🕵️ Gizem</button>
                 <button class="category-btn" data-genre-id="10751">👨‍👩‍👧‍👦 Aile</button>
                 <button class="category-btn" data-genre-id="37">🤠 Western</button>
-                <button class="category-btn" data-genre-id="10770">📺 TV Film</button>
-                <button class="category-btn" data-genre-id="99">📽️ Belgesel</button>
             </div>
         </div>
 
@@ -204,7 +202,6 @@
 </div>
 
 <script>
-    // TMDB API - SENİN API KEY'İN
     const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
@@ -232,9 +229,9 @@
     let currentGenreId = "";
     const cache = {};
 
-    // TMDB'den türe göre dizi çek (5 sayfa = 100+ dizi)
+    // Paralel yükleme ile 25 sayfa = 500+ dizi
     async function fetchSeriesByGenre(genreId, page = 1) {
-        const cacheKey = `series_genre_${genreId}_${page}`;
+        const cacheKey = `series_${genreId}_${page}`;
         if (cache[cacheKey]) return cache[cacheKey];
         
         try {
@@ -257,7 +254,6 @@
         }
     }
 
-    // Detaylı dizi bilgisi al
     async function fetchSeriesDetails(seriesId) {
         if (cache[`detail_${seriesId}`]) return cache[`detail_${seriesId}`];
         try {
@@ -277,8 +273,9 @@
 
     async function loadSeriesByGenre(genreId) {
         const allResults = [];
-        // 5 sayfa = 100+ dizi (20x5=100)
-        for (let page = 1; page <= 5; page++) {
+        const maxPages = 25; // 25 sayfa = 500 dizi
+        
+        for (let page = 1; page <= maxPages; page++) {
             const results = await fetchSeriesByGenre(genreId, page);
             if (results.length === 0) break;
             
@@ -289,6 +286,13 @@
                     allResults.push(details);
                 }
             }
+            
+            // Her 5 sayfada bir grid'i güncelle
+            if (page % 5 === 0) {
+                const sorted = [...allResults].sort((a, b) => b.vote_average - a.vote_average);
+                currentItems = sorted;
+                renderItems(true);
+            }
         }
         
         allResults.sort((a, b) => b.vote_average - a.vote_average);
@@ -297,10 +301,10 @@
 
     async function loadContent() {
         const grid = document.getElementById("resultsGrid");
-        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Diziler yükleniyor...</div>';
+        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 500+ dizi yükleniyor...</div>';
         
         currentItems = await loadSeriesByGenre(currentGenreId);
-        renderItems();
+        renderItems(false);
     }
 
     function getRandomPlatform() {
@@ -325,30 +329,25 @@
         return icons[platform] || '';
     }
 
-    function formatSeasons(seasons) {
-        if (!seasons || seasons.length === 0) return "?";
-        return seasons.length;
-    }
-
-    function renderItems() {
+    function renderItems(updateOnly = false) {
         const grid = document.getElementById("resultsGrid");
         const countSpan = document.getElementById("itemCount");
         
         if (currentItems.length === 0) {
             if (countSpan) countSpan.innerText = "0";
-            grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin dizi kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
+            if (!updateOnly) grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin dizi kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
             return;
         }
         
         if (countSpan) countSpan.innerText = currentItems.length;
         
-        grid.innerHTML = currentItems.map(series => {
+        const itemsHtml = currentItems.map(series => {
             const posterUrl = series.poster_path ? `${IMAGE_BASE_URL}${series.poster_path}` : null;
             const platforms = getRandomPlatform();
             const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
             const year = series.first_air_date ? series.first_air_date.split('-')[0] : "Bilinmiyor";
             const rating = series.vote_average ? series.vote_average.toFixed(1) : "?";
-            const seasons = formatSeasons(series.seasons);
+            const seasons = series.number_of_seasons ? series.number_of_seasons : "?";
             
             return `
                 <div class="series-card" data-id="${series.id}">
@@ -369,18 +368,34 @@
                 </div>
             `;
         }).join("");
-
+        
+        if (updateOnly) {
+            grid.innerHTML = itemsHtml;
+        } else {
+            grid.innerHTML = itemsHtml;
+        }
+        
+        attachCardEvents();
+        attachWatchedEvents();
+    }
+    
+    function attachCardEvents() {
         document.querySelectorAll(".series-card").forEach(card => {
-            card.addEventListener("click", (e) => {
+            card.removeEventListener("click", card.clickHandler);
+            card.clickHandler = (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
                 const id = parseInt(card.getAttribute("data-id"));
                 const series = currentItems.find(s => s.id === id);
                 if (series) showDetail(series);
-            });
+            };
+            card.addEventListener("click", card.clickHandler);
         });
-
+    }
+    
+    function attachWatchedEvents() {
         document.querySelectorAll(".watched-btn").forEach(btn => {
-            btn.addEventListener("click", (e) => {
+            btn.removeEventListener("click", btn.clickHandler);
+            btn.clickHandler = (e) => {
                 e.stopPropagation();
                 const id = btn.getAttribute("data-id");
                 if (!btn.classList.contains("watched")) {
@@ -392,10 +407,11 @@
                     const index = currentItems.findIndex(s => s.id.toString() === id);
                     if (index !== -1) {
                         currentItems.splice(index, 1);
-                        renderItems();
+                        renderItems(false);
                     }
                 }
-            });
+            };
+            btn.addEventListener("click", btn.clickHandler);
         });
     }
 
@@ -408,7 +424,7 @@
         const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
         const year = series.first_air_date ? series.first_air_date.split('-')[0] : "Bilinmiyor";
         const rating = series.vote_average ? series.vote_average.toFixed(1) : "?";
-        const seasons = formatSeasons(series.seasons);
+        const seasons = series.number_of_seasons ? series.number_of_seasons : "?";
         const genres = series.genres ? series.genres.map(g => g.name).join(", ") : "Bilinmiyor";
 
         detailContent.innerHTML = `
@@ -436,7 +452,8 @@
 
         const detailBtn = detailContent.querySelector(".detail-watched-btn");
         if (detailBtn) {
-            detailBtn.addEventListener("click", (e) => {
+            detailBtn.removeEventListener("click", detailBtn.clickHandler);
+            detailBtn.clickHandler = (e) => {
                 const id = detailBtn.getAttribute("data-id");
                 if (!watchedIds.includes(id)) {
                     watchedIds.push(id);
@@ -447,10 +464,11 @@
                     const index = currentItems.findIndex(s => s.id.toString() === id);
                     if (index !== -1) {
                         currentItems.splice(index, 1);
-                        renderItems();
+                        renderItems(false);
                     }
                 }
-            });
+            };
+            detailBtn.addEventListener("click", detailBtn.clickHandler);
         }
     }
 
@@ -482,10 +500,10 @@
             currentGenreId = btn.getAttribute("data-genre-id");
             
             const grid = document.getElementById("resultsGrid");
-            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Diziler yükleniyor...</div>';
+            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 500+ dizi yükleniyor...</div>';
             
             currentItems = await loadSeriesByGenre(currentGenreId);
-            renderItems();
+            renderItems(false);
         });
     });
 </script>

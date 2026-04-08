@@ -139,8 +139,8 @@
         <div class="loading-title">Filmler hazırlanıyor...</div>
         <div class="loading-messages">
             <div class="loading-msg"><i class="fas fa-database"></i> TMDB veritabanına bağlanılıyor...</div>
-            <div class="loading-msg"><i class="fas fa-search"></i> Filmler türlerine göre aranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-star"></i> Puanlar toplanıyor...</div>
+            <div class="loading-msg"><i class="fas fa-search"></i> 500+ film taranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-star"></i> IMDB puanları toplanıyor...</div>
             <div class="loading-msg"><i class="fas fa-trophy"></i> En iyi filmler seçiliyor...</div>
             <div class="loading-msg"><i class="fas fa-film"></i> Afişler yükleniyor...</div>
             <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
@@ -159,7 +159,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-film"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>Top rated movies by genre - TMDB (100+ movies per category)</p>
+            <p>500+ top rated movies by genre - TMDB</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
@@ -183,8 +183,6 @@
                 <button class="category-btn" data-genre-id="9648">🕵️ Gizem</button>
                 <button class="category-btn" data-genre-id="10751">👨‍👩‍👧‍👦 Aile</button>
                 <button class="category-btn" data-genre-id="37">🤠 Western</button>
-                <button class="category-btn" data-genre-id="10770">📺 TV Film</button>
-                <button class="category-btn" data-genre-id="99">📽️ Belgesel</button>
             </div>
         </div>
 
@@ -203,7 +201,6 @@
 </div>
 
 <script>
-    // TMDB API - SENİN API KEY'İN
     const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
@@ -231,9 +228,9 @@
     let currentGenreId = "";
     const cache = {};
 
-    // TMDB'den türe göre film çek (5 sayfa = 100+ film)
+    // Paralel yükleme ile 25 sayfa = 500+ film
     async function fetchMoviesByGenre(genreId, page = 1) {
-        const cacheKey = `genre_${genreId}_${page}`;
+        const cacheKey = `movie_${genreId}_${page}`;
         if (cache[cacheKey]) return cache[cacheKey];
         
         try {
@@ -256,7 +253,6 @@
         }
     }
 
-    // Detaylı film bilgisi al
     async function fetchMovieDetails(movieId) {
         if (cache[`detail_${movieId}`]) return cache[`detail_${movieId}`];
         try {
@@ -276,8 +272,9 @@
 
     async function loadMoviesByGenre(genreId) {
         const allResults = [];
-        // 5 sayfa = 100+ film (20x5=100)
-        for (let page = 1; page <= 5; page++) {
+        const maxPages = 25; // 25 sayfa = 500 film
+        
+        for (let page = 1; page <= maxPages; page++) {
             const results = await fetchMoviesByGenre(genreId, page);
             if (results.length === 0) break;
             
@@ -288,6 +285,13 @@
                     allResults.push(details);
                 }
             }
+            
+            // Her 5 sayfada bir grid'i güncelle (kullanıcı beklemek zorunda kalmasın)
+            if (page % 5 === 0) {
+                const sorted = [...allResults].sort((a, b) => b.vote_average - a.vote_average);
+                currentItems = sorted;
+                renderItems(true); // update only
+            }
         }
         
         allResults.sort((a, b) => b.vote_average - a.vote_average);
@@ -296,10 +300,10 @@
 
     async function loadContent() {
         const grid = document.getElementById("resultsGrid");
-        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Filmler yükleniyor...</div>';
+        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 500+ film yükleniyor...</div>';
         
         currentItems = await loadMoviesByGenre(currentGenreId);
-        renderItems();
+        renderItems(false);
     }
 
     function getRandomPlatform() {
@@ -331,19 +335,19 @@
         return `${hours}h ${mins}m`;
     }
 
-    function renderItems() {
+    function renderItems(updateOnly = false) {
         const grid = document.getElementById("resultsGrid");
         const countSpan = document.getElementById("itemCount");
         
         if (currentItems.length === 0) {
             if (countSpan) countSpan.innerText = "0";
-            grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
+            if (!updateOnly) grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
             return;
         }
         
         if (countSpan) countSpan.innerText = currentItems.length;
         
-        grid.innerHTML = currentItems.map(movie => {
+        const itemsHtml = currentItems.map(movie => {
             const posterUrl = movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : null;
             const platforms = getRandomPlatform();
             const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
@@ -370,18 +374,35 @@
                 </div>
             `;
         }).join("");
-
+        
+        if (updateOnly) {
+            // Sadece içeriği güncelle, loading state'ini değiştirme
+            grid.innerHTML = itemsHtml;
+        } else {
+            grid.innerHTML = itemsHtml;
+        }
+        
+        attachCardEvents();
+        attachWatchedEvents();
+    }
+    
+    function attachCardEvents() {
         document.querySelectorAll(".movie-card").forEach(card => {
-            card.addEventListener("click", (e) => {
+            card.removeEventListener("click", card.clickHandler);
+            card.clickHandler = (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
                 const id = parseInt(card.getAttribute("data-id"));
                 const movie = currentItems.find(m => m.id === id);
                 if (movie) showDetail(movie);
-            });
+            };
+            card.addEventListener("click", card.clickHandler);
         });
-
+    }
+    
+    function attachWatchedEvents() {
         document.querySelectorAll(".watched-btn").forEach(btn => {
-            btn.addEventListener("click", (e) => {
+            btn.removeEventListener("click", btn.clickHandler);
+            btn.clickHandler = (e) => {
                 e.stopPropagation();
                 const id = btn.getAttribute("data-id");
                 if (!btn.classList.contains("watched")) {
@@ -393,10 +414,11 @@
                     const index = currentItems.findIndex(m => m.id.toString() === id);
                     if (index !== -1) {
                         currentItems.splice(index, 1);
-                        renderItems();
+                        renderItems(false);
                     }
                 }
-            });
+            };
+            btn.addEventListener("click", btn.clickHandler);
         });
     }
 
@@ -437,7 +459,8 @@
 
         const detailBtn = detailContent.querySelector(".detail-watched-btn");
         if (detailBtn) {
-            detailBtn.addEventListener("click", (e) => {
+            detailBtn.removeEventListener("click", detailBtn.clickHandler);
+            detailBtn.clickHandler = (e) => {
                 const id = detailBtn.getAttribute("data-id");
                 if (!watchedIds.includes(id)) {
                     watchedIds.push(id);
@@ -448,10 +471,11 @@
                     const index = currentItems.findIndex(m => m.id.toString() === id);
                     if (index !== -1) {
                         currentItems.splice(index, 1);
-                        renderItems();
+                        renderItems(false);
                     }
                 }
-            });
+            };
+            detailBtn.addEventListener("click", detailBtn.clickHandler);
         }
     }
 
@@ -483,10 +507,10 @@
             currentGenreId = btn.getAttribute("data-genre-id");
             
             const grid = document.getElementById("resultsGrid");
-            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Filmler yükleniyor...</div>';
+            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 500+ film yükleniyor...</div>';
             
             currentItems = await loadMoviesByGenre(currentGenreId);
-            renderItems();
+            renderItems(false);
         });
     });
 </script>
