@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Ne İzlesem? | Abican İçin Film & Dizi Öneri</title>
+    <title>Ne İzlesem? | Ana Sayfa</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -17,135 +17,24 @@
             background: linear-gradient(145deg, #0f1117 0%, #1a1d2b 100%);
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
-        }
-
-        /* LOADING EKRANI */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, #0f1117, #1a1d2b);
-            z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .loading-card {
-            background: #1e212e;
-            border-radius: 32px;
-            padding: 45px 55px;
-            text-align: center;
-            border: 1px solid rgba(255, 107, 0, 0.4);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            animation: fadeInScale 0.4s ease;
-        }
-
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .loading-animation {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        .loading-animation i {
-            font-size: 45px;
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: bounce 0.8s ease infinite alternate;
-        }
-
-        .loading-animation i:nth-child(1) { animation-delay: 0s; }
-        .loading-animation i:nth-child(2) { animation-delay: 0.2s; }
-        .loading-animation i:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-15px); }
-        }
-
-        .loading-title {
-            font-size: 22px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 25px;
-        }
-
-        .loading-messages {
-            text-align: left;
-        }
-
-        .loading-msg {
-            color: #9ca3af;
-            font-size: 13px;
-            margin: 8px 0;
-            opacity: 0;
-            animation: slideIn 0.4s ease forwards;
-        }
-
-        .loading-msg i {
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            width: 25px;
-            margin-right: 8px;
-        }
-
-        .loading-msg:nth-child(1) { animation-delay: 0s; }
-        .loading-msg:nth-child(2) { animation-delay: 0.5s; }
-        .loading-msg:nth-child(3) { animation-delay: 1s; }
-        .loading-msg:nth-child(4) { animation-delay: 1.5s; }
-        .loading-msg:nth-child(5) { animation-delay: 2s; }
-        .loading-msg:nth-child(6) { animation-delay: 2.5s; }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        /* HOŞGELDİN EKRANI */
-        .welcome-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .container {
+            max-width: 1200px;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, #0f1117, #1a1d2b);
-            z-index: 999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 20px;
         }
 
-        .welcome-card {
-            background: #1e212e;
-            border-radius: 32px;
-            padding: 50px 60px;
+        .header {
             text-align: center;
-            border: 1px solid #ff6b00;
-            animation: welcomeAnim 0.5s ease;
+            margin-bottom: 60px;
         }
 
-        @keyframes welcomeAnim {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .welcome-card h1 {
-            font-size: 36px;
+        .header h1 {
+            font-size: 48px;
             background: linear-gradient(135deg, #ff6b00, #ffb347);
             -webkit-background-clip: text;
             background-clip: text;
@@ -153,201 +42,70 @@
             margin-bottom: 15px;
         }
 
-        .welcome-card h1 i {
+        .header h1 i {
             background: none;
             -webkit-background-clip: unset;
             color: #ff6b00;
         }
 
-        .welcome-card p {
-            font-size: 20px;
+        .header p {
             color: #9ca3af;
-            margin-top: 10px;
+            font-size: 18px;
         }
 
-        /* ANA İÇERİK */
-        .main-content {
-            padding: 20px;
-            display: none;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* DETAY SAYFASI */
-        .detail-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, #0f1117, #1a1d2b);
-            z-index: 1100;
-            display: none;
+        .choice-cards {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
             justify-content: center;
-            align-items: center;
-            overflow-y: auto;
-            padding: 20px;
         }
 
-        .detail-card {
+        .choice-card {
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
             background: #1e212e;
             border-radius: 32px;
-            max-width: 600px;
-            width: 100%;
-            border: 1px solid #ff6b00;
-            animation: detailFade 0.3s ease;
-            overflow: hidden;
+            padding: 50px 30px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #2a2e3d;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
         }
 
-        @keyframes detailFade {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+        .choice-card:hover {
+            border-color: #ff6b00;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 107, 0, 0.2);
         }
 
-        .detail-poster {
-            width: 100%;
-            height: 400px;
-            background: linear-gradient(135deg, #1e212e, #2a2e3d);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .detail-poster img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .detail-poster i {
-            font-size: 80px;
+        .choice-icon i {
+            font-size: 70px;
             background: linear-gradient(135deg, #ff6b00, #ffb347);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            margin-bottom: 20px;
         }
 
-        .detail-info {
-            padding: 25px;
-        }
-
-        .detail-title {
+        .choice-title {
             font-size: 28px;
             font-weight: 700;
             color: white;
             margin-bottom: 10px;
         }
 
-        .detail-year {
+        .choice-desc {
             color: #9ca3af;
-            margin-bottom: 15px;
-        }
-
-        .detail-imdb {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            color: #000;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .detail-genre, .detail-director, .detail-actors, .detail-plot, .detail-duration, .detail-seasons {
-            color: #cbd5e1;
-            font-size: 14px;
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-
-        .detail-genre i, .detail-director i, .detail-actors i, .detail-plot i, .detail-duration i, .detail-seasons i {
-            color: #ff6b00;
-            width: 28px;
-            margin-right: 8px;
-        }
-
-        .detail-watched-btn {
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 40px;
-            color: #000;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 20px;
-            width: 100%;
-            transition: 0.2s;
-        }
-
-        .detail-watched-btn.watched {
-            background: #10b981;
-            color: white;
-        }
-
-        .back-btn {
-            background: #2a2e3d;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 40px;
-            color: #ffb347;
-            cursor: pointer;
-            margin: 20px 20px 0 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .back-btn:hover {
-            background: #ff6b00;
-            color: white;
-        }
-
-        /* HEADER */
-        .header {
-            background: #1e212e;
-            border-radius: 28px;
-            padding: 25px 30px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255, 107, 0, 0.3);
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            color: white;
-        }
-
-        .header h1 i {
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-right: 12px;
-        }
-
-        .header h1 .highlight {
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            padding: 0 8px;
-        }
-
-        .header p {
-            color: #9ca3af;
-            margin-top: 8px;
             font-size: 14px;
         }
 
         .badge-date {
-            position: absolute;
-            top: 20px;
-            right: 25px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
             background: rgba(255, 107, 0, 0.2);
             padding: 6px 14px;
             border-radius: 40px;
@@ -355,707 +113,45 @@
             color: #ffb347;
         }
 
-        /* SEÇİM KARTLARI */
-        .choice-cards {
-            display: flex;
-            gap: 25px;
-            margin-bottom: 35px;
-            flex-wrap: wrap;
-        }
-
-        .choice-card {
-            flex: 1;
-            background: #1e212e;
-            border-radius: 28px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            border: 1px solid #2a2e3d;
-            transition: all 0.3s;
-        }
-
-        .choice-card:hover {
-            border-color: #ff6b00;
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(255, 107, 0, 0.2);
-        }
-
-        .choice-icon i {
-            font-size: 55px;
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 15px;
-        }
-
-        .choice-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 8px;
-        }
-
-        .choice-desc {
-            color: #9ca3af;
-            font-size: 13px;
-        }
-
-        /* KATEGORİLER */
-        .categories-section {
-            background: #1e212e;
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid #2a2e3d;
-            display: none;
-        }
-
-        .categories-header {
-            margin-bottom: 15px;
-            color: #ffb347;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .categories-header i {
-            margin-right: 8px;
-            color: #ff6b00;
-        }
-
-        .categories-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .cat-btn {
-            background: #2a2e3d;
-            border: 1px solid #3a3e4d;
-            padding: 8px 18px;
-            border-radius: 40px;
-            color: #9ca3af;
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.2s;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .cat-btn:hover {
-            border-color: #ff6b00;
-            color: #ffb347;
-        }
-
-        .cat-btn.active {
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            border-color: transparent;
-            color: #000;
-            font-weight: 600;
-        }
-
-        /* SONUÇLAR */
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .results-header h2 {
-            font-size: 20px;
-            color: white;
-        }
-
-        .results-header h2 i {
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-right: 10px;
-        }
-
-        .watched-badge {
-            background: #2a2e3d;
-            padding: 8px 18px;
-            border-radius: 40px;
-            font-size: 13px;
-            color: #ffb347;
-        }
-
-        .watched-badge i {
-            margin-right: 8px;
-            color: #ff6b00;
-        }
-
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .movie-card, .series-card {
-            background: #1e212e;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid #2a2e3d;
-            transition: 0.3s;
-            animation: cardFade 0.3s ease;
-            cursor: pointer;
-        }
-
-        @keyframes cardFade {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .movie-card:hover, .series-card:hover {
-            border-color: #ff6b00;
-            transform: translateY(-5px);
-        }
-
-        .card-poster {
-            height: 250px;
-            background: linear-gradient(135deg, #1e212e, #2a2e3d);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .card-poster img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .card-poster i {
-            font-size: 50px;
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .card-info {
-            padding: 16px;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .card-year {
-            font-size: 11px;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-
-        .imdb-rating {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            color: #000;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .card-detail {
-            font-size: 11px;
-            color: #9ca3af;
-            margin-bottom: 12px;
-        }
-
-        .watched-btn {
-            width: 100%;
-            background: #2a2e3d;
-            border: none;
-            padding: 8px;
-            border-radius: 40px;
-            color: #9ca3af;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-        }
-
-        .watched-btn:hover {
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            color: #000;
-        }
-
-        .watched-btn.watched {
-            background: #10b981;
-            color: white;
-            cursor: default;
-        }
-
-        .load-more-btn {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .btn-load-more {
-            background: #2a2e3d;
-            border: 1px solid #ff6b00;
-            padding: 12px 30px;
-            border-radius: 60px;
-            color: #ffb347;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-
-        .btn-load-more:hover {
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            color: #000;
-        }
-
-        .loading-state {
-            text-align: center;
-            padding: 50px;
-            color: #6b7280;
-        }
-
-        .loading-state i {
-            font-size: 40px;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
         @media (max-width: 768px) {
-            .main-content { padding: 12px; }
-            .header h1 { font-size: 22px; }
-            .badge-date { position: static; display: inline-block; margin-top: 15px; }
-            .choice-cards { flex-direction: column; }
-            .results-grid { grid-template-columns: 1fr; }
-            .loading-card { padding: 30px 25px; margin: 20px; }
-            .welcome-card { padding: 35px 30px; margin: 20px; }
-            .welcome-card h1 { font-size: 28px; }
-            .categories-wrapper { gap: 8px; }
-            .cat-btn { padding: 6px 14px; font-size: 11px; }
-            .card-poster { height: 200px; }
-            .detail-card { margin: 20px; }
-            .detail-poster { height: 250px; }
-            .detail-title { font-size: 22px; }
+            .header h1 {
+                font-size: 32px;
+            }
+            .choice-card {
+                padding: 35px 20px;
+            }
+            .choice-icon i {
+                font-size: 50px;
+            }
+            .choice-title {
+                font-size: 22px;
+            }
         }
     </style>
 </head>
 <body>
-
-<!-- LOADING EKRANI -->
-<div id="loadingScreen" class="loading-overlay">
-    <div class="loading-card">
-        <div class="loading-animation">
-            <i class="fas fa-film"></i>
-            <i class="fas fa-tv"></i>
-            <i class="fas fa-ticket-alt"></i>
-        </div>
-        <div class="loading-title">Filmler hazırlanıyor...</div>
-        <div class="loading-messages">
-            <div class="loading-msg"><i class="fas fa-database"></i> OMDb veritabanına bağlanılıyor...</div>
-            <div class="loading-msg"><i class="fas fa-star"></i> En yüksek puanlı filmler aranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-trophy"></i> Oscar ödüllüler taranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-film"></i> Binlerce film taranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-tv"></i> Popüler diziler taranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-check-circle"></i> En iyiler seçiliyor...</div>
-        </div>
-    </div>
-</div>
-
-<!-- HOŞGELDİN EKRANI -->
-<div id="welcomeScreen" class="welcome-overlay" style="display:none;">
-    <div class="welcome-card">
-        <h1><i class="fas fa-ticket-alt"></i> Hoşgeldin Abican!</h1>
-        <p>Filmini Seçmeye Başla.</p>
-    </div>
-</div>
-
-<!-- DETAY SAYFASI -->
-<div id="detailOverlay" class="detail-overlay">
-    <div class="detail-card">
-        <button class="back-btn" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> Geri Dön</button>
-        <div id="detailContent"></div>
-    </div>
-</div>
-
-<!-- ANA İÇERİK -->
-<div id="mainContent" class="main-content">
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-film"></i> Ne İzlesem? <span class="highlight">Abican</span></h1>
-            <p>OMDb API ile gerçek zamanlı veri - En yüksek puanlı filmler ve diziler</p>
-            <div class="badge-date">
-                <i class="fas fa-desktop"></i> <span id="deviceId">Cihaz ID alınıyor...</span>
-            </div>
+            <h1><i class="fas fa-ticket-alt"></i> Ne İzlesem? <span style="background: none; color:#ffb347;">Abican</span></h1>
+            <p>Ne izlemek istiyorsun? Seçimini yap!</p>
         </div>
 
         <div class="choice-cards">
-            <div class="choice-card" id="movieCard">
+            <a href="filmler.html" class="choice-card">
                 <div class="choice-icon"><i class="fas fa-film"></i></div>
                 <div class="choice-title">Filmler</div>
-                <div class="choice-desc">Sinema filmleri • IMDB puanları</div>
-            </div>
-            <div class="choice-card" id="seriesCard">
+                <div class="choice-desc">En yüksek puanlı filmler • IMDB Top Rated</div>
+            </a>
+            <a href="diziler.html" class="choice-card">
                 <div class="choice-icon"><i class="fas fa-tv"></i></div>
                 <div class="choice-title">Diziler</div>
-                <div class="choice-desc">TV dizileri • IMDB puanları</div>
-            </div>
+                <div class="choice-desc">En yüksek puanlı diziler • IMDB Top Rated</div>
+            </a>
         </div>
 
-        <div id="categoriesSection" class="categories-section">
-            <div class="categories-header">
-                <i class="fas fa-tags"></i> Kategoriler
-            </div>
-            <div class="categories-wrapper">
-                <button class="cat-btn active" data-cat="all">🔥 Tümü</button>
-                <button class="cat-btn" data-cat="Action">⚡ Aksiyon</button>
-                <button class="cat-btn" data-cat="Comedy">😂 Komedi</button>
-                <button class="cat-btn" data-cat="Drama">🎭 Dram</button>
-                <button class="cat-btn" data-cat="Horror">👻 Korku</button>
-                <button class="cat-btn" data-cat="Sci-Fi">🚀 Bilim Kurgu</button>
-                <button class="cat-btn" data-cat="Romance">💕 Romantik</button>
-                <button class="cat-btn" data-cat="Thriller">🔪 Gerilim</button>
-                <button class="cat-btn" data-cat="Animation">🐭 Animasyon</button>
-                <button class="cat-btn" data-cat="Crime">🔫 Suç</button>
-                <button class="cat-btn" data-cat="Fantasy">🐉 Fantastik</button>
-            </div>
-        </div>
-
-        <div class="results-header">
-            <h2 id="resultTitle"><i class="fas fa-star"></i> En Yüksek Puanlı Filmler</h2>
-            <div class="watched-badge">
-                <i class="fas fa-check-circle"></i>
-                <span id="watchedCount">0</span> izledim
-            </div>
-        </div>
-
-        <div id="resultsGrid" class="results-grid">
-            <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> OMDb'den veriler alınıyor...</div>
-        </div>
-
-        <div id="loadMoreBtn" class="load-more-btn">
-            <button class="btn-load-more"><i class="fas fa-arrow-down"></i> Daha Fazla Yükle</button>
+        <div class="badge-date">
+            <i class="fas fa-film"></i> Abican için özel
         </div>
     </div>
-</div>
-
-<script>
-    // ========== OMDb API KONFIGÜASYONU ==========
-    const OMDB_API_KEY = "aee8123e";
-    const OMDB_BASE_URL = "https://www.omdbapi.com/";
-    
-    // ========== CİHAZ KİMLİĞİ ==========
-    function getDeviceId() {
-        try {
-            const screenRes = `${screen.width}x${screen.height}`;
-            const userAgent = navigator.userAgent;
-            const language = navigator.language;
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            let str = `${screenRes}|${language}|${timezone}|${userAgent.substring(0, 80)}`;
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                hash |= 0;
-            }
-            return Math.abs(hash).toString(16).substring(0, 8);
-        } catch(e) { return "default"; }
-    }
-
-    const deviceId = getDeviceId();
-    const STORAGE_WATCHED_KEY = `watched_${deviceId}`;
-    let watchedIds = [];
-    let currentType = "movie";
-    let currentCategory = "all";
-    let currentItems = [];
-    let isLoading = false;
-    let currentPage = 1;
-    let allItemsLoaded = false;
-
-    // TÜM FİLM ID'LERİ (TEKRAR YOK)
-    const allMovieIDs = [
-        "tt0111161", "tt0068646", "tt0468569", "tt1375666", "tt0133093",
-        "tt0167260", "tt0110912", "tt0109830", "tt0120737", "tt0108052",
-        "tt0071562", "tt0110357", "tt0080684", "tt0102926", "tt0120815",
-        "tt0209144", "tt0118799", "tt0119217", "tt0114369", "tt0137523",
-        "tt0088763", "tt0076759", "tt0082971", "tt0099685", "tt0073486",
-        "tt0081505", "tt0095327", "tt0112573", "tt0167261", "tt0317248",
-        "tt0120735", "tt0407887", "tt0435761", "tt0499549", "tt0848228"
-    ];
-
-    const allSeriesIDs = [
-        "tt0903747", "tt0944947", "tt7366338", "tt0306414", "tt0141842",
-        "tt0108778", "tt1475582", "tt4574334", "tt4786824", "tt2085059",
-        "tt0386676", "tt5753856", "tt8111088", "tt2861424", "tt3581920",
-        "tt0106145", "tt0436992", "tt0185906", "tt0407362", "tt0496424",
-        "tt0412142", "tt0098904", "tt1239251", "tt2707408", "tt0773262"
-    ];
-
-    async function fetchMovieByID(imdbID) {
-        try {
-            const url = `${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&i=${imdbID}&plot=full`;
-            const response = await fetch(url);
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Film alınamadı:", error);
-            return null;
-        }
-    }
-
-    function matchesCategory(item, category) {
-        if (category === "all") return true;
-        const genre = item.Genre || "";
-        return genre.toLowerCase().includes(category.toLowerCase());
-    }
-
-    async function loadItems(reset = true) {
-        if (isLoading) return;
-        isLoading = true;
-        
-        if (reset) {
-            currentPage = 1;
-            currentItems = [];
-            allItemsLoaded = false;
-            document.getElementById("resultsGrid").innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> OMDb\'den veriler alınıyor...</div>';
-        }
-        
-        const ids = currentType === "movie" ? allMovieIDs : allSeriesIDs;
-        const startIndex = (currentPage - 1) * 12;
-        const endIndex = startIndex + 12;
-        const pageIds = ids.slice(startIndex, endIndex);
-        
-        if (pageIds.length === 0) {
-            allItemsLoaded = true;
-            renderItems();
-            isLoading = false;
-            return;
-        }
-        
-        const newItems = [];
-        for (const id of pageIds) {
-            if (watchedIds.includes(id)) continue;
-            const data = await fetchMovieByID(id);
-            if (data && data.Response === "True") {
-                if (matchesCategory(data, currentCategory)) {
-                    newItems.push(data);
-                }
-            }
-        }
-        
-        currentItems = reset ? newItems : [...currentItems, ...newItems];
-        renderItems();
-        isLoading = false;
-    }
-
-    async function loadMore() {
-        if (isLoading || allItemsLoaded) return;
-        currentPage++;
-        await loadItems(false);
-    }
-
-    function showDetail(item) {
-        const detailOverlay = document.getElementById("detailOverlay");
-        const detailContent = document.getElementById("detailContent");
-        
-        const posterUrl = item.Poster !== "N/A" ? item.Poster : null;
-        const isWatched = watchedIds.includes(item.imdbID);
-        const type = currentType;
-        
-        detailContent.innerHTML = `
-            <div class="detail-poster">
-                ${posterUrl ? `<img src="${posterUrl}" alt="${item.Title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                <i class="fas ${type === 'movie' ? 'fa-film' : 'fa-tv'}" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
-            </div>
-            <div class="detail-info">
-                <div class="detail-title">${item.Title}</div>
-                <div class="detail-year">${item.Year || "Bilinmiyor"}</div>
-                <div class="detail-imdb">⭐ ${item.imdbRating !== "N/A" ? item.imdbRating : "?"}</div>
-                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${item.Genre !== "N/A" ? item.Genre : "Bilinmiyor"}</div>
-                <div class="detail-duration"><i class="fas ${type === 'movie' ? 'fa-clock' : 'fa-layer-group'}"></i> ${type === 'movie' ? `Süre: ${item.Runtime !== "N/A" ? item.Runtime : "Bilinmiyor"}` : `Sezon: ${item.totalSeasons !== "N/A" && item.totalSeasons ? item.totalSeasons + " Sezon" : "Bilgi yok"}`}</div>
-                <div class="detail-director"><i class="fas fa-user"></i> Yönetmen: ${item.Director !== "N/A" ? item.Director : "Bilinmiyor"}</div>
-                <div class="detail-actors"><i class="fas fa-users"></i> Oyuncular: ${item.Actors !== "N/A" ? item.Actors.substring(0, 100) + "..." : "Bilinmiyor"}</div>
-                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${item.Plot !== "N/A" ? item.Plot : "Bilgi yok"}</div>
-                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${item.imdbID}">
-                    <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
-                </button>
-            </div>
-        `;
-        
-        detailOverlay.style.display = "flex";
-        
-        const detailWatchedBtn = detailContent.querySelector(".detail-watched-btn");
-        if (detailWatchedBtn) {
-            detailWatchedBtn.addEventListener("click", (e) => {
-                const id = detailWatchedBtn.getAttribute("data-id");
-                if (!watchedIds.includes(id)) {
-                    watchedIds.push(id);
-                    localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
-                    updateWatchedCount();
-                    detailWatchedBtn.classList.add("watched");
-                    detailWatchedBtn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
-                    const index = currentItems.findIndex(i => i.imdbID === id);
-                    if (index !== -1) {
-                        currentItems.splice(index, 1);
-                        renderItems();
-                    }
-                }
-            });
-        }
-    }
-
-    document.getElementById("closeDetailBtn").addEventListener("click", () => {
-        document.getElementById("detailOverlay").style.display = "none";
-    });
-
-    setTimeout(() => {
-        document.getElementById("loadingScreen").style.display = "none";
-        document.getElementById("welcomeScreen").style.display = "flex";
-        setTimeout(() => {
-            document.getElementById("welcomeScreen").style.display = "none";
-            document.getElementById("mainContent").style.display = "block";
-            document.getElementById("deviceId").innerText = deviceId;
-            loadWatchedData();
-            setupEventListeners();
-            loadItems(true);
-        }, 2000);
-    }, 3500);
-
-    function loadWatchedData() {
-        const saved = localStorage.getItem(STORAGE_WATCHED_KEY);
-        watchedIds = saved ? JSON.parse(saved) : [];
-        updateWatchedCount();
-    }
-
-    function updateWatchedCount() {
-        document.getElementById("watchedCount").innerText = watchedIds.length;
-    }
-
-    function renderItems() {
-        const grid = document.getElementById("resultsGrid");
-        const loadMoreBtn = document.getElementById("loadMoreBtn");
-        
-        if (currentItems.length === 0 && allItemsLoaded) {
-            grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
-            loadMoreBtn.style.display = "none";
-            return;
-        }
-        
-        if (currentItems.length === 0 && !allItemsLoaded) {
-            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> OMDb\'den veriler alınıyor...</div>';
-            loadMoreBtn.style.display = "block";
-            return;
-        }
-        
-        grid.innerHTML = currentItems.map(item => {
-            const posterUrl = item.Poster !== "N/A" ? item.Poster : null;
-            const title = item.Title;
-            const year = item.Year || "Bilinmiyor";
-            const rating = item.imdbRating !== "N/A" ? item.imdbRating : "?";
-            const detail = currentType === "movie" ? 
-                `🎬 ${item.Runtime !== "N/A" ? item.Runtime : "Süre bilinmiyor"}` : 
-                `📺 ${item.totalSeasons !== "N/A" && item.totalSeasons ? item.totalSeasons + " Sezon" : "Sezon bilgisi yok"}`;
-            
-            return `
-                <div class="${currentType === 'movie' ? 'movie-card' : 'series-card'}" data-id="${item.imdbID}">
-                    <div class="card-poster">
-                        ${posterUrl ? `<img src="${posterUrl}" alt="${title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                        <i class="fas ${currentType === 'movie' ? 'fa-film' : 'fa-tv'}" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
-                    </div>
-                    <div class="card-info">
-                        <div class="card-title" title="${title}">${title}</div>
-                        <div class="card-year">${year}</div>
-                        <div class="imdb-rating">⭐ ${rating}</div>
-                        <div class="card-detail">${detail}</div>
-                        <button class="watched-btn" data-id="${item.imdbID}">
-                            <i class="fas fa-check-circle"></i> İzledim
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join("");
-        
-        document.querySelectorAll(".movie-card, .series-card").forEach(card => {
-            card.addEventListener("click", (e) => {
-                if (e.target.classList.contains("watched-btn")) return;
-                const id = card.getAttribute("data-id");
-                const item = currentItems.find(i => i.imdbID === id);
-                if (item) showDetail(item);
-            });
-        });
-        
-        document.querySelectorAll(".watched-btn").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const id = btn.getAttribute("data-id");
-                if (!btn.classList.contains("watched")) {
-                    btn.classList.add("watched");
-                    btn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
-                    watchedIds.push(id);
-                    localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
-                    updateWatchedCount();
-                    const index = currentItems.findIndex(item => item.imdbID === id);
-                    if (index !== -1) {
-                        currentItems.splice(index, 1);
-                        renderItems();
-                    }
-                }
-            });
-        });
-        
-        loadMoreBtn.style.display = allItemsLoaded ? "none" : "block";
-    }
-
-    async function changeType(type) {
-        currentType = type;
-        currentCategory = "all";
-        currentPage = 1;
-        allItemsLoaded = false;
-        document.getElementById("resultTitle").innerHTML = type === "movie" ? 
-            '<i class="fas fa-star"></i> En Yüksek Puanlı Filmler' : 
-            '<i class="fas fa-tv"></i> En Yüksek Puanlı Diziler';
-        document.getElementById("categoriesSection").style.display = "flex";
-        document.querySelectorAll(".cat-btn").forEach(btn => btn.classList.remove("active"));
-        document.querySelector(".cat-btn[data-cat='all']").classList.add("active");
-        await loadItems(true);
-    }
-
-    async function filterByCategory(category) {
-        currentCategory = category;
-        currentPage = 1;
-        allItemsLoaded = false;
-        await loadItems(true);
-    }
-
-    function setupEventListeners() {
-        document.getElementById("movieCard").addEventListener("click", () => changeType("movie"));
-        document.getElementById("seriesCard").addEventListener("click", () => changeType("series"));
-        document.querySelector(".btn-load-more").addEventListener("click", loadMore);
-        
-        document.querySelectorAll(".cat-btn").forEach(btn => {
-            btn.addEventListener("click", async () => {
-                document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                const category = btn.getAttribute("data-cat");
-                await filterByCategory(category);
-            });
-        });
-    }
-</script>
 </body>
 </html>

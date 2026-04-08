@@ -55,48 +55,26 @@
             font-size: 14px;
         }
 
-        .badge-date {
+        .back-btn {
             position: absolute;
             top: 20px;
             right: 25px;
-            background: rgba(255, 107, 0, 0.2);
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 11px;
-            color: #ffb347;
-        }
-
-        .nav-menu {
-            background: #1e212e;
-            border-radius: 60px;
-            padding: 10px 20px;
-            margin-bottom: 30px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            border: 1px solid #2a2e3d;
-        }
-
-        .nav-link {
             background: #2a2e3d;
-            color: #9ca3af;
-            text-decoration: none;
+            border: none;
             padding: 8px 18px;
             border-radius: 40px;
+            color: #ffb347;
+            cursor: pointer;
+            text-decoration: none;
             font-size: 13px;
-            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .nav-link:hover {
+        .back-btn:hover {
             background: #ff6b00;
             color: white;
-        }
-
-        .nav-link.active {
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            color: #000;
-            font-weight: 600;
         }
 
         .category-menu {
@@ -375,22 +353,14 @@
             margin-bottom: 15px;
         }
 
-        .detail-genre,
-        .detail-director,
-        .detail-actors,
-        .detail-plot,
-        .detail-duration {
+        .detail-genre, .detail-director, .detail-actors, .detail-plot, .detail-duration {
             color: #cbd5e1;
             font-size: 14px;
             margin-bottom: 12px;
             line-height: 1.5;
         }
 
-        .detail-genre i,
-        .detail-director i,
-        .detail-actors i,
-        .detail-plot i,
-        .detail-duration i {
+        .detail-genre i, .detail-director i, .detail-actors i, .detail-plot i, .detail-duration i {
             color: #ff6b00;
             width: 28px;
             margin-right: 8px;
@@ -414,7 +384,7 @@
             color: white;
         }
 
-        .back-btn {
+        .close-detail {
             background: #2a2e3d;
             border: none;
             padding: 10px 20px;
@@ -427,7 +397,7 @@
             gap: 8px;
         }
 
-        .back-btn:hover {
+        .close-detail:hover {
             background: #ff6b00;
             color: white;
         }
@@ -442,53 +412,14 @@
         }
 
         @media (max-width: 768px) {
-            .main-content {
-                padding: 12px;
-            }
-
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .badge-date {
-                position: static;
-                display: inline-block;
-                margin-top: 15px;
-            }
-
-            .results-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-menu {
-                border-radius: 20px;
-            }
-
-            .nav-link {
-                padding: 6px 12px;
-                font-size: 11px;
-            }
-
-            .category-btn {
-                padding: 6px 12px;
-                font-size: 11px;
-            }
-
-            .card-poster {
-                height: 200px;
-            }
-
-            .detail-card {
-                margin: 20px;
-            }
-
-            .detail-poster {
-                height: 250px;
-            }
-
-            .detail-title {
-                font-size: 22px;
-            }
+            .main-content { padding: 12px; }
+            .header h1 { font-size: 22px; }
+            .results-grid { grid-template-columns: 1fr; }
+            .card-poster { height: 200px; }
+            .detail-card { margin: 20px; }
+            .detail-poster { height: 250px; }
+            .detail-title { font-size: 22px; }
+            .category-btn { padding: 6px 12px; font-size: 11px; }
         }
     </style>
 </head>
@@ -496,7 +427,7 @@
 
 <div id="detailOverlay" class="detail-overlay">
     <div class="detail-card">
-        <button class="back-btn" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> Geri Dön</button>
+        <button class="close-detail" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> Geri Dön</button>
         <div id="detailContent"></div>
     </div>
 </div>
@@ -506,15 +437,7 @@
         <div class="header">
             <h1><i class="fas fa-film"></i> Ne İzlesem? <span class="highlight">Abican</span></h1>
             <p>En yüksek puanlı filmler - IMDB Top Rated</p>
-            <div class="badge-date">
-                <i class="fas fa-desktop"></i> <span id="deviceId">Cihaz ID alınıyor...</span>
-            </div>
-        </div>
-
-        <div class="nav-menu">
-            <a href="index.html" class="nav-link active"><i class="fas fa-film"></i> Filmler</a>
-            <a href="diziler.html" class="nav-link"><i class="fas fa-tv"></i> Diziler</a>
-            <a href="ayarlar.html" class="nav-link"><i class="fas fa-cog"></i> Ayarlar</a>
+            <a href="index.html" class="back-btn"><i class="fas fa-home"></i> Ana Sayfaya Dön</a>
         </div>
 
         <div class="category-menu">
@@ -554,7 +477,6 @@
     const OMDB_API_KEY = "aee8123e";
     const OMDB_BASE_URL = "https://www.omdbapi.com/";
 
-    // Cihaz Kimliği
     function getDeviceId() {
         try {
             const screenRes = `${screen.width}x${screen.height}`;
@@ -580,14 +502,12 @@
     let currentCategory = "all";
     const cache = {};
 
-    // Film ID'leri
     const allMovieIDs = [
         "tt0111161", "tt0068646", "tt0468569", "tt1375666", "tt0133093",
         "tt0167260", "tt0110912", "tt0109830", "tt0120737", "tt0108052",
         "tt0071562", "tt0110357", "tt0080684", "tt0102926", "tt0120815",
         "tt0209144", "tt0118799", "tt0119217", "tt0114369", "tt0137523",
-        "tt0088763", "tt0076759", "tt0082971", "tt0099685", "tt0073486",
-        "tt0081505", "tt0095327", "tt0112573", "tt0167261", "tt0317248"
+        "tt0088763", "tt0076759", "tt0082971", "tt0099685", "tt0073486"
     ];
 
     async function fetchMovieByID(imdbID) {
@@ -653,17 +573,15 @@
             `;
         }).join("");
 
-        // Kart tıklama
         document.querySelectorAll(".movie-card").forEach(card => {
             card.addEventListener("click", (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
                 const id = card.getAttribute("data-id");
                 const item = currentItems.find(i => i.imdbID === id);
-                if (item) showDetail(item, "movie");
+                if (item) showDetail(item);
             });
         });
 
-        // İzledim butonu
         document.querySelectorAll(".watched-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -684,7 +602,7 @@
         });
     }
 
-    function showDetail(item, type) {
+    function showDetail(item) {
         const detailOverlay = document.getElementById("detailOverlay");
         const detailContent = document.getElementById("detailContent");
         const posterUrl = item.Poster !== "N/A" ? item.Poster : null;
@@ -742,12 +660,13 @@
         updateWatchedCount();
     }
 
-    // Sayfa yükleme
-    document.getElementById("deviceId").innerText = deviceId;
+    document.getElementById("closeDetailBtn").addEventListener("click", () => {
+        document.getElementById("detailOverlay").style.display = "none";
+    });
+
     loadWatchedData();
     loadAllMovies();
 
-    // Kategori butonları
     document.querySelectorAll(".category-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
@@ -755,11 +674,6 @@
             currentCategory = btn.getAttribute("data-cat");
             await loadAllMovies();
         });
-    });
-
-    // Detay kapatma
-    document.getElementById("closeDetailBtn").addEventListener("click", () => {
-        document.getElementById("detailOverlay").style.display = "none";
     });
 </script>
 </body>

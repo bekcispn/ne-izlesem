@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* AYNI STILLER - index.html ile aynı */
+        /* AYNI STILLER - filmler.html ile aynı */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(145deg, #0f1117 0%, #1a1d2b 100%); font-family: 'Inter', sans-serif; min-height: 100vh; }
         .header { background: #1e212e; border-radius: 28px; padding: 25px 30px; margin-bottom: 25px; border: 1px solid rgba(255, 107, 0, 0.3); position: relative; }
@@ -15,11 +15,8 @@
         .header h1 i { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; margin-right: 12px; }
         .header h1 .highlight { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 8px; }
         .header p { color: #9ca3af; margin-top: 8px; font-size: 14px; }
-        .badge-date { position: absolute; top: 20px; right: 25px; background: rgba(255, 107, 0, 0.2); padding: 6px 14px; border-radius: 40px; font-size: 11px; color: #ffb347; }
-        .nav-menu { background: #1e212e; border-radius: 60px; padding: 10px 20px; margin-bottom: 30px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; border: 1px solid #2a2e3d; }
-        .nav-link { background: #2a2e3d; color: #9ca3af; text-decoration: none; padding: 8px 18px; border-radius: 40px; font-size: 13px; transition: 0.2s; }
-        .nav-link:hover { background: #ff6b00; color: white; }
-        .nav-link.active { background: linear-gradient(135deg, #ff6b00, #ffb347); color: #000; font-weight: 600; }
+        .back-btn { position: absolute; top: 20px; right: 25px; background: #2a2e3d; border: none; padding: 8px 18px; border-radius: 40px; color: #ffb347; cursor: pointer; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; }
+        .back-btn:hover { background: #ff6b00; color: white; }
         .category-menu { background: #1e212e; border-radius: 24px; padding: 20px; margin-bottom: 25px; border: 1px solid #2a2e3d; }
         .category-header { margin-bottom: 15px; color: #ffb347; font-weight: 600; font-size: 14px; }
         .category-header i { margin-right: 8px; }
@@ -61,18 +58,18 @@
         .detail-genre i, .detail-director i, .detail-actors i, .detail-plot i, .detail-duration i { color: #ff6b00; width: 28px; margin-right: 8px; }
         .detail-watched-btn { background: linear-gradient(135deg, #ff6b00, #ffb347); border: none; padding: 12px 24px; border-radius: 40px; color: #000; font-weight: 700; cursor: pointer; margin-top: 20px; width: 100%; transition: 0.2s; }
         .detail-watched-btn.watched { background: #10b981; color: white; }
-        .back-btn { background: #2a2e3d; border: none; padding: 10px 20px; border-radius: 40px; color: #ffb347; cursor: pointer; margin: 20px 20px 0 20px; display: inline-flex; align-items: center; gap: 8px; }
-        .back-btn:hover { background: #ff6b00; color: white; }
+        .close-detail { background: #2a2e3d; border: none; padding: 10px 20px; border-radius: 40px; color: #ffb347; cursor: pointer; margin: 20px 20px 0 20px; display: inline-flex; align-items: center; gap: 8px; }
+        .close-detail:hover { background: #ff6b00; color: white; }
         .main-content { padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; }
-        @media (max-width: 768px) { .main-content { padding: 12px; } .header h1 { font-size: 22px; } .badge-date { position: static; display: inline-block; margin-top: 15px; } .results-grid { grid-template-columns: 1fr; } .nav-menu { border-radius: 20px; } .nav-link { padding: 6px 12px; font-size: 11px; } .category-btn { padding: 6px 12px; font-size: 11px; } .card-poster { height: 200px; } .detail-card { margin: 20px; } .detail-poster { height: 250px; } .detail-title { font-size: 22px; } }
+        @media (max-width: 768px) { .main-content { padding: 12px; } .header h1 { font-size: 22px; } .results-grid { grid-template-columns: 1fr; } .card-poster { height: 200px; } .detail-card { margin: 20px; } .detail-poster { height: 250px; } .detail-title { font-size: 22px; } .category-btn { padding: 6px 12px; font-size: 11px; } }
     </style>
 </head>
 <body>
 
 <div id="detailOverlay" class="detail-overlay">
     <div class="detail-card">
-        <button class="back-btn" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> Geri Dön</button>
+        <button class="close-detail" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> Geri Dön</button>
         <div id="detailContent"></div>
     </div>
 </div>
@@ -82,15 +79,7 @@
         <div class="header">
             <h1><i class="fas fa-tv"></i> Ne İzlesem? <span class="highlight">Abican</span></h1>
             <p>En yüksek puanlı diziler - IMDB Top Rated</p>
-            <div class="badge-date">
-                <i class="fas fa-desktop"></i> <span id="deviceId">Cihaz ID alınıyor...</span>
-            </div>
-        </div>
-
-        <div class="nav-menu">
-            <a href="index.html" class="nav-link"><i class="fas fa-film"></i> Filmler</a>
-            <a href="diziler.html" class="nav-link active"><i class="fas fa-tv"></i> Diziler</a>
-            <a href="ayarlar.html" class="nav-link"><i class="fas fa-cog"></i> Ayarlar</a>
+            <a href="index.html" class="back-btn"><i class="fas fa-home"></i> Ana Sayfaya Dön</a>
         </div>
 
         <div class="category-menu">
@@ -155,7 +144,6 @@
     let currentCategory = "all";
     const cache = {};
 
-    // Dizi ID'leri
     const allSeriesIDs = [
         "tt0903747", "tt0944947", "tt7366338", "tt0306414", "tt0141842",
         "tt0108778", "tt1475582", "tt4574334", "tt4786824", "tt2085059",
@@ -231,7 +219,7 @@
                 if (e.target.classList.contains("watched-btn")) return;
                 const id = card.getAttribute("data-id");
                 const item = currentItems.find(i => i.imdbID === id);
-                if (item) showDetail(item, "series");
+                if (item) showDetail(item);
             });
         });
 
@@ -255,7 +243,7 @@
         });
     }
 
-    function showDetail(item, type) {
+    function showDetail(item) {
         const detailOverlay = document.getElementById("detailOverlay");
         const detailContent = document.getElementById("detailContent");
         const posterUrl = item.Poster !== "N/A" ? item.Poster : null;
@@ -313,7 +301,10 @@
         updateWatchedCount();
     }
 
-    document.getElementById("deviceId").innerText = deviceId;
+    document.getElementById("closeDetailBtn").addEventListener("click", () => {
+        document.getElementById("detailOverlay").style.display = "none";
+    });
+
     loadWatchedData();
     loadAllSeries();
 
@@ -324,10 +315,6 @@
             currentCategory = btn.getAttribute("data-cat");
             await loadAllSeries();
         });
-    });
-
-    document.getElementById("closeDetailBtn").addEventListener("click", () => {
-        document.getElementById("detailOverlay").style.display = "none";
     });
 </script>
 </body>
