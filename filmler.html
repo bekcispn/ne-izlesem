@@ -56,21 +56,13 @@
         .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .movie-card { background: #1e212e; border-radius: 20px; overflow: hidden; border: 1px solid #2a2e3d; transition: 0.3s; cursor: pointer; }
         .movie-card:hover { border-color: #ff6b00; transform: translateY(-5px); }
-        .card-poster { height: 250px; background: linear-gradient(135deg, #1e212e, #2a2e3d); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .card-poster img { width: 100%; height: 100%; object-fit: cover; }
+        .card-poster { height: 180px; background: linear-gradient(135deg, #1e212e, #2a2e3d); display: flex; align-items: center; justify-content: center; }
         .card-poster i { font-size: 50px; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .card-info { padding: 16px; }
         .card-title { font-size: 16px; font-weight: 700; color: white; margin-bottom: 5px; }
         .card-year { font-size: 11px; color: #6b7280; margin-bottom: 8px; }
         .imdb-rating { display: inline-block; background: linear-gradient(135deg, #ff6b00, #ffb347); color: #000; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 8px; }
         .card-detail { font-size: 11px; color: #9ca3af; margin-bottom: 12px; }
-        .platform-badge { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-        .platform { font-size: 10px; padding: 3px 8px; border-radius: 12px; background: #2a2e3d; color: #9ca3af; }
-        .platform.netflix { background: #e50914; color: white; }
-        .platform.disney { background: #113ccf; color: white; }
-        .platform.hbo { background: #6a0dad; color: white; }
-        .platform.prime { background: #00a8e1; color: white; }
-        .platform.apple { background: #000; color: white; }
         .watched-btn { width: 100%; background: #2a2e3d; border: none; padding: 8px; border-radius: 40px; color: #9ca3af; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 12px; }
         .watched-btn:hover { background: linear-gradient(135deg, #ff6b00, #ffb347); color: #000; }
         .watched-btn.watched { background: #10b981; color: white; cursor: default; }
@@ -99,8 +91,7 @@
             justify-content: center;
         }
         .detail-back-btn:hover { background: #ffb347; transform: scale(0.98); }
-        .detail-poster { width: 100%; height: 400px; background: linear-gradient(135deg, #1e212e, #2a2e3d); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .detail-poster img { width: 100%; height: 100%; object-fit: cover; }
+        .detail-poster { width: 100%; height: 300px; background: linear-gradient(135deg, #1e212e, #2a2e3d); display: flex; align-items: center; justify-content: center; }
         .detail-poster i { font-size: 80px; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .detail-info { padding: 25px; }
         .detail-title { font-size: 28px; font-weight: 700; color: white; margin-bottom: 10px; }
@@ -108,7 +99,6 @@
         .detail-imdb { display: inline-block; background: linear-gradient(135deg, #ff6b00, #ffb347); color: #000; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: 700; margin-bottom: 15px; }
         .detail-genre, .detail-plot, .detail-duration { color: #cbd5e1; font-size: 14px; margin-bottom: 12px; line-height: 1.5; }
         .detail-genre i, .detail-plot i, .detail-duration i { color: #ff6b00; width: 28px; margin-right: 8px; }
-        .detail-platforms { margin: 15px 0; display: flex; flex-wrap: wrap; gap: 10px; }
         .detail-watched-btn { background: linear-gradient(135deg, #ff6b00, #ffb347); border: none; padding: 12px 24px; border-radius: 40px; color: #000; font-weight: 700; cursor: pointer; margin-top: 20px; width: 100%; transition: 0.2s; }
         .detail-watched-btn.watched { background: #10b981; color: white; }
         
@@ -116,9 +106,9 @@
             .main-content { padding: 12px; }
             .header h1 { font-size: 22px; }
             .results-grid { grid-template-columns: 1fr; }
-            .card-poster { height: 200px; }
+            .card-poster { height: 150px; }
             .detail-card { margin: 20px; }
-            .detail-poster { height: 250px; }
+            .detail-poster { height: 200px; }
             .cat-btn { padding: 6px 12px; font-size: 11px; }
             .loading-card { padding: 30px 25px; margin: 20px; }
         }
@@ -134,7 +124,6 @@
             <div class="loading-msg"><i class="fas fa-database"></i> 600 bin film taranıyor...</div>
             <div class="loading-msg"><i class="fas fa-star"></i> IMDb puanları toplanıyor...</div>
             <div class="loading-msg"><i class="fas fa-trophy"></i> En iyi filmler seçiliyor...</div>
-            <div class="loading-msg"><i class="fas fa-film"></i> Afişler yükleniyor...</div>
             <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
         </div>
     </div>
@@ -188,7 +177,7 @@
 
 <script>
     // JSON DOSYANIN LİNKİ - BUNU KENDİ GITHUB LİNKİNLE DEĞİŞTİR!
-    const JSON_URL = 'https://github.com/bekcispn/ne-izlesem/blob/main/movies_batch_1.json';
+    const JSON_URL = 'https://raw.githubusercontent.com/bekcispn/ne-izlesem/main/movies_batch_1.json';
     
     let allMovies = [];
     let filteredMovies = [];
@@ -198,28 +187,6 @@
     const deviceId = localStorage.getItem('deviceId') || Math.random().toString(36).substring(2, 10);
     localStorage.setItem('deviceId', deviceId);
     const STORAGE_KEY = `watched_${deviceId}`;
-    
-    function getRandomPlatform() {
-        const platforms = ["netflix", "disney", "hbo", "prime", "apple"];
-        const randomPlatforms = [];
-        const num = Math.floor(Math.random() * 3) + 1;
-        for (let i = 0; i < num; i++) {
-            const p = platforms[Math.floor(Math.random() * platforms.length)];
-            if (!randomPlatforms.includes(p)) randomPlatforms.push(p);
-        }
-        return randomPlatforms;
-    }
-    
-    function getPlatformIcon(platform) {
-        const icons = {
-            netflix: '<span class="platform netflix">📺 Netflix</span>',
-            disney: '<span class="platform disney">✨ Disney+</span>',
-            hbo: '<span class="platform hbo">⚡ HBO Max</span>',
-            prime: '<span class="platform prime">📦 Prime Video</span>',
-            apple: '<span class="platform apple">🍎 Apple TV+</span>'
-        };
-        return icons[platform] || '';
-    }
     
     function formatRuntime(seconds) {
         if (!seconds || seconds === 0) return "Süre bilinmiyor";
@@ -273,22 +240,17 @@
             const rating = movie.ratingsSummary?.aggregateRating || "?";
             const runtime = formatRuntime(movie.runtime);
             const genres = movie.genres?.genres?.map(g => g.text).slice(0, 2).join(", ") || "Genel";
-            const posterUrl = movie.primaryImage?.url || null;
-            const platforms = getRandomPlatform();
-            const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
             
             return `
                 <div class="movie-card" data-id="${movie.id}">
                     <div class="card-poster">
-                        ${posterUrl ? `<img src="${posterUrl}" alt="${title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                        <i class="fas fa-film" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
+                        <i class="fas fa-film"></i>
                     </div>
                     <div class="card-info">
                         <div class="card-title">${title}</div>
                         <div class="card-year">${year}</div>
                         <div class="imdb-rating">⭐ ${rating}</div>
                         <div class="card-detail">🎬 ${runtime} | ${genres}</div>
-                        <div class="platform-badge">${platformHtml}</div>
                         <button class="watched-btn" data-id="${movie.id}">
                             <i class="fas fa-check-circle"></i> İzledim
                         </button>
@@ -341,15 +303,11 @@
         const runtime = formatRuntime(movie.runtime);
         const genres = movie.genres?.genres?.map(g => g.text).join(", ") || "Genel";
         const plot = movie.plot?.plotText?.plainText || "Konu bilgisi yok";
-        const posterUrl = movie.primaryImage?.url || null;
         const isWatched = watchedIds.includes(movie.id);
-        const platforms = getRandomPlatform();
-        const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
         
         detailContent.innerHTML = `
             <div class="detail-poster">
-                ${posterUrl ? `<img src="${posterUrl}" alt="${title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                <i class="fas fa-film" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
+                <i class="fas fa-film"></i>
             </div>
             <div class="detail-info">
                 <div class="detail-title">${title}</div>
@@ -358,7 +316,6 @@
                 <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genres}</div>
                 <div class="detail-duration"><i class="fas fa-clock"></i> Süre: ${runtime}</div>
                 <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${plot}</div>
-                <div class="detail-platforms">${platformHtml}</div>
                 <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${movie.id}">
                     <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
                 </button>
@@ -386,7 +343,10 @@
     
     // JSON'u yükle
     fetch(JSON_URL)
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
         .then(data => {
             allMovies = data;
             filterByCategory();
@@ -397,7 +357,7 @@
         })
         .catch(err => {
             console.error("JSON yüklenemedi:", err);
-            document.getElementById("resultsGrid").innerHTML = `<div class="loading-state">❌ Filmler yüklenemedi! JSON dosyasını kontrol et.<br><br>${err.message}</div>`;
+            document.getElementById("resultsGrid").innerHTML = `<div class="loading-state">❌ Filmler yüklenemedi!<br><br>Hata: ${err.message}<br><br>Link: ${JSON_URL}</div>`;
             setTimeout(() => {
                 document.getElementById("loadingScreen").style.display = "none";
                 document.getElementById("mainContent").style.display = "block";
