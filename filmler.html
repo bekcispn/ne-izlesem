@@ -121,11 +121,11 @@
 <div id="loadingScreen" class="loading-overlay">
     <div class="loading-card">
         <div class="loading-animation"><i class="fas fa-film"></i></div>
-        <div class="loading-title">Filmler hazırlanıyor...</div>
+        <div class="loading-title">5000+ Film hazırlanıyor...</div>
         <div class="loading-messages">
-            <div class="loading-msg"><i class="fas fa-database"></i> TMDB veritabanına bağlanılıyor...</div>
-            <div class="loading-msg"><i class="fas fa-star"></i> 2500+ film taranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-image"></i> Afişler yükleniyor...</div>
+            <div class="loading-msg"><i class="fas fa-globe"></i> Avrupa ve ABD yapımı filmler taranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-dragon"></i> Animasyonlar ve Anime taranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-star"></i> IMDb puanları toplanıyor...</div>
             <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
         </div>
     </div>
@@ -142,7 +142,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-film"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>TMDB'den 2500+ film - IMDb puanları ile</p>
+            <p>5000+ Film - Avrupa, ABD, Animasyon, Anime - Bollywood Yok</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
@@ -186,11 +186,10 @@
     let allMovies = [];
     let filteredMovies = [];
     let watchedIds = [];
-    let currentGenreId = "";
+    let currentGenreId = "all";
     let currentPage = 1;
     let isLoading = false;
-    let hasMore = true;
-    let totalMovies = 0;
+    let totalPages = 250; // 250 sayfa × 20 = 5000 film
     
     const deviceId = localStorage.getItem('deviceId') || Math.random().toString(36).substring(2, 10);
     localStorage.setItem('deviceId', deviceId);
@@ -200,24 +199,9 @@
         if (!minutes || minutes === 0) return "Süre bilinmiyor";
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
-        if (hours > 0 && mins > 0) return `${hours}h ${mins}m`;
-        if (hours > 0) return `${hours}h`;
-        return `${mins}m`;
-    }
-    
-    async function getIMDbRating(imdbId) {
-        if (!imdbId) return null;
-        try {
-            const url = `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&i=${imdbId}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data && data.imdbRating && data.imdbRating !== "N/A") {
-                return parseFloat(data.imdbRating);
-            }
-            return null;
-        } catch (error) {
-            return null;
-        }
+        if (hours > 0 && mins > 0) return `${hours}s ${mins}dk`;
+        if (hours > 0) return `${hours}s`;
+        return `${mins}dk`;
     }
     
     function loadWatchedData() {
@@ -231,13 +215,16 @@
         document.getElementById("watchedCount").innerText = watchedIds.length;
     }
     
+    // REGION FILTER - Bollywood hariç, Avrupa ve ABD dahil [citation:1]
+    // region=US|GB|DE|FR|IT|ES|JP (Japonya anime için)
     async function fetchMovies(page = 1) {
         try {
             let url;
-            if (currentGenreId === "all" || currentGenreId === "") {
-                url = `${TMDB_BASE_URL}/movie/top_rated?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`;
+            if (currentGenreId === "all") {
+                // region filter ile sadece ABD, Avrupa, Japonya yapımı filmler
+                url = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&region=US&sort_by=vote_average.desc&vote_count.gte=500&language=en-US&page=${page}`;
             } else {
-                url = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${currentGenreId}&sort_by=vote_average.desc&vote_count.gte=500&language=en-US&page=${page}`;
+                url = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&region=US&with_genres=${currentGenreId}&sort_by=vote_average.desc&vote_count.gte=500&language=en-US&page=${page}`;
             }
             const response = await fetch(url);
             const data = await response.json();
@@ -249,48 +236,49 @@
     }
     
     async function loadAllMovies() {
+        if (isLoading) return;
         isLoading = true;
-        const maxPages = 125; // 125 × 20 = 2500 film
-        const allResults = [];
         
-        for (let page = 1; page <= maxPages; page++) {
+        for (let page = 1; page <= totalPages; page++) {
             const movies = await fetchMovies(page);
             if (movies.length === 0) break;
             
             for (const movie of movies) {
-                if (!allResults.some(m => m.id === movie.id)) {
-                    // IMDb puanını al
-                    const imdbRating = await getIMDbRating(movie.imdb_id);
-                    movie.imdb_rating = imdbRating || movie.vote_average;
-                    allResults.push(movie);
+                if (!allMovies.some(m => m.id === movie.id)) {
+                    // Bollywood filtreleme (Hint filmlerini manuel engelle)
+                    const title_lower = (movie.title || "").toLowerCase();
+                    const isBollywood = title_lower.includes("bollywood") || 
+                                       title_lower.includes("hindi") || 
+                                       title_lower.includes("indian") ||
+                                       (movie.original_language === "hi");
+                    
+                    if (!isBollywood) {
+                        allMovies.push(movie);
+                    }
                 }
             }
             
-            totalMovies = allResults.length;
-            document.getElementById("itemCount").innerText = totalMovies;
+            document.getElementById("itemCount").innerText = allMovies.length;
+            filterByCategory();
             
-            // Her 5 sayfada bir ekranı güncelle
-            if (page % 5 === 0) {
-                allMovies = [...allResults];
-                filterByCategory();
+            // Her 10 sayfada bir ekranı güncelle
+            if (page % 10 === 0) {
+                await new Promise(r => setTimeout(r, 100));
             }
         }
         
-        allMovies = [...allResults];
-        filterByCategory();
         isLoading = false;
-        hasMore = false;
     }
     
     function filterByCategory() {
-        if (currentGenreId === "all" || currentGenreId === "") {
+        if (currentGenreId === "all") {
             filteredMovies = [...allMovies];
         } else {
             filteredMovies = allMovies.filter(movie => {
                 return movie.genre_ids && movie.genre_ids.includes(parseInt(currentGenreId));
             });
         }
-        filteredMovies.sort((a, b) => b.imdb_rating - a.imdb_rating);
+        filteredMovies.sort((a, b) => b.vote_average - a.vote_average);
         renderMovies();
     }
     
@@ -300,12 +288,12 @@
         const unwatchedMovies = filteredMovies.filter(m => !watchedIds.includes(m.id.toString()));
         
         if (unwatchedMovies.length === 0 && allMovies.length === 0) {
-            grid.innerHTML = `<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Filmler yükleniyor...</div>`;
+            grid.innerHTML = `<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Filmler yükleniyor... (${allMovies.length} film yüklendi)</div>`;
             return;
         }
         
         if (unwatchedMovies.length === 0 && allMovies.length > 0) {
-            grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
+            grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene (Toplam ${allMovies.length} film)</small></div>`;
             return;
         }
         
@@ -313,7 +301,7 @@
             const posterUrl = movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : null;
             const title = movie.title || "Bilinmiyor";
             const year = movie.release_date ? movie.release_date.split('-')[0] : "?";
-            const rating = movie.imdb_rating ? movie.imdb_rating.toFixed(1) : "?";
+            const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "?";
             const runtime = formatRuntime(movie.runtime);
             
             return `
@@ -376,7 +364,7 @@
         const posterUrl = movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : null;
         const title = movie.title || "Bilinmiyor";
         const year = movie.release_date ? movie.release_date.split('-')[0] : "?";
-        const rating = movie.imdb_rating ? movie.imdb_rating.toFixed(1) : "?";
+        const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "?";
         const runtime = formatRuntime(movie.runtime);
         const overview = movie.overview || "Konu bilgisi yok";
         const isWatched = watchedIds.includes(movie.id.toString());
@@ -432,15 +420,11 @@
             document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             currentGenreId = btn.getAttribute("data-cat");
-            currentPage = 1;
-            hasMore = true;
-            allMovies = [];
-            filteredMovies = [];
             
             const grid = document.getElementById("resultsGrid");
-            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Filmler yükleniyor...</div>';
+            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Filmler filtreleniyor...</div>';
             
-            await loadAllMovies();
+            filterByCategory();
         });
     });
 </script>
