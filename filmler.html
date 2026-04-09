@@ -142,7 +142,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-film"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>IMDb Top Rated Movies (2022 Güncel)</p>
+            <p>IMDb Top Rated Movies</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
@@ -178,7 +178,7 @@
 </div>
 
 <script>
-    // JSON DOSYANIN LİNKİ - KENDİ GITHUB LİNKİNLE DEĞİŞTİR!
+    // ESKI JSON - ÇALIŞIYOR!
     const JSON_URL = 'https://raw.githubusercontent.com/bekcispn/ne-izlesem/main/movies.json';
     
     let allMovies = [];
@@ -214,6 +214,11 @@
         return match ? match[0] : "?";
     }
     
+    function formatRuntime(runtimeStr) {
+        if (!runtimeStr) return "Süre bilinmiyor";
+        return runtimeStr;
+    }
+    
     function loadWatchedData() {
         const saved = localStorage.getItem(STORAGE_KEY);
         watchedIds = saved ? JSON.parse(saved) : [];
@@ -230,11 +235,11 @@
             filteredMovies = [...allMovies];
         } else {
             filteredMovies = allMovies.filter(movie => {
-                const genre = movie.Genre || "";
+                const genre = movie.genre || "";
                 return genre.toLowerCase().includes(currentCategory.toLowerCase());
             });
         }
-        filteredMovies.sort((a, b) => parseFloat(b.IMDB_Rating) - parseFloat(a.IMDB_Rating));
+        filteredMovies.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
         renderMovies();
     }
     
@@ -242,7 +247,7 @@
         const grid = document.getElementById("resultsGrid");
         const countSpan = document.getElementById("itemCount");
         
-        const unwatchedMovies = filteredMovies.filter(m => !watchedIds.includes(m.Title));
+        const unwatchedMovies = filteredMovies.filter(m => !watchedIds.includes(m.title));
         
         if (unwatchedMovies.length === 0) {
             grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
@@ -254,17 +259,17 @@
         
         // Posterleri al (ilk 20 film için)
         const moviesWithPosters = await Promise.all(unwatchedMovies.slice(0, 20).map(async (movie) => {
-            const posterPath = await fetchPoster(movie.Title);
+            const posterPath = await fetchPoster(movie.title);
             return { ...movie, posterPath };
         }));
         
         grid.innerHTML = moviesWithPosters.map(movie => {
             const posterUrl = movie.posterPath ? `${IMAGE_BASE_URL}${movie.posterPath}` : null;
-            const title = movie.Title || "Bilinmiyor";
-            const year = extractYear(movie.Runtime);
-            const rating = movie.IMDB_Rating || "?";
-            const runtime = movie.Runtime || "Süre bilinmiyor";
-            const genre = movie.Genre || "Genel";
+            const title = movie.title || "Bilinmiyor";
+            const year = extractYear(movie.year);
+            const rating = movie.rating || "?";
+            const runtime = formatRuntime(movie.runtime);
+            const genre = movie.genre || "Genel";
             
             return `
                 <div class="movie-card" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
@@ -295,7 +300,7 @@
             card.clickHandler = (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
                 const id = card.getAttribute("data-id");
-                const movie = allMovies.find(m => m.Title.replace(/[^a-z0-9]/gi, '_') === id);
+                const movie = allMovies.find(m => m.title.replace(/[^a-z0-9]/gi, '_') === id);
                 if (movie) showDetail(movie);
             };
             card.addEventListener("click", card.clickHandler);
@@ -323,16 +328,14 @@
     async function showDetail(movie) {
         const detailOverlay = document.getElementById("detailOverlay");
         const detailContent = document.getElementById("detailContent");
-        const posterPath = await fetchPoster(movie.Title);
+        const posterPath = await fetchPoster(movie.title);
         const posterUrl = posterPath ? `${IMAGE_BASE_URL}${posterPath}` : null;
-        const title = movie.Title || "Bilinmiyor";
-        const year = extractYear(movie.Runtime);
-        const rating = movie.IMDB_Rating || "?";
-        const runtime = movie.Runtime || "Süre bilinmiyor";
-        const genre = movie.Genre || "Genel";
-        const plot = movie.Overview || "Konu bilgisi yok";
-        const director = movie.Director || "Bilinmiyor";
-        const stars = movie.Stars || "Bilinmiyor";
+        const title = movie.title || "Bilinmiyor";
+        const year = extractYear(movie.year);
+        const rating = movie.rating || "?";
+        const runtime = formatRuntime(movie.runtime);
+        const genre = movie.genre || "Genel";
+        const plot = movie.text || "Konu bilgisi yok";
         const isWatched = watchedIds.includes(title.replace(/[^a-z0-9]/gi, '_'));
         
         detailContent.innerHTML = `
@@ -345,8 +348,6 @@
                 <div class="detail-imdb">⭐ ${rating}</div>
                 <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genre}</div>
                 <div class="detail-duration"><i class="fas fa-clock"></i> Süre: ${runtime}</div>
-                <div class="detail-plot"><i class="fas fa-align-left"></i> Yönetmen: ${director}</div>
-                <div class="detail-plot"><i class="fas fa-users"></i> Oyuncular: ${stars}</div>
                 <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${plot}</div>
                 <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                     <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
@@ -380,7 +381,8 @@
             return res.json();
         })
         .then(data => {
-            allMovies = data;
+            // SADECE FİLMLERİ AL (dizi olanları filtrele)
+            allMovies = data.filter(movie => !movie.year.includes("TV Series"));
             filterByCategory();
             setTimeout(() => {
                 document.getElementById("loadingScreen").style.display = "none";
