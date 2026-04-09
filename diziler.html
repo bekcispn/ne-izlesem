@@ -2,14 +2,14 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ne İzlesem? | Diziler</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(145deg, #0f1117 0%, #1a1d2b 100%); font-family: 'Inter', sans-serif; min-height: 100vh; }
-
+        
         .loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(145deg, #0f1117, #1a1d2b); z-index: 2000;
@@ -17,11 +17,9 @@
         }
         .loading-card { background: #1e212e; border-radius: 32px; padding: 50px 60px; text-align: center; border: 1px solid rgba(255, 107, 0, 0.4); animation: fadeInScale 0.4s ease; }
         @keyframes fadeInScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .loading-animation { margin-bottom: 30px; }
         .loading-animation i { font-size: 60px; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; animation: spin 1.5s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loading-title { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 25px; }
-        .loading-messages { text-align: left; }
         .loading-msg { color: #9ca3af; font-size: 13px; margin: 8px 0; opacity: 0; animation: slideIn 0.4s ease forwards; }
         .loading-msg i { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; width: 25px; margin-right: 8px; }
         .loading-msg:nth-child(1) { animation-delay: 0s; }
@@ -41,27 +39,27 @@
         .header p { color: #9ca3af; margin-top: 8px; font-size: 14px; }
         .home-btn { position: absolute; top: 20px; right: 25px; background: #2a2e3d; border: none; padding: 8px 18px; border-radius: 40px; color: #ffb347; cursor: pointer; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; }
         .home-btn:hover { background: #ff6b00; color: white; }
+        
         .category-menu { background: #1e212e; border-radius: 24px; padding: 20px; margin-bottom: 25px; border: 1px solid #2a2e3d; }
         .category-header { margin-bottom: 15px; color: #ffb347; font-weight: 600; font-size: 14px; }
-        .category-header i { margin-right: 8px; }
         .category-wrapper { display: flex; flex-wrap: wrap; gap: 10px; }
-        .category-btn { background: #2a2e3d; border: 1px solid #3a3e4d; padding: 8px 18px; border-radius: 40px; color: #9ca3af; font-size: 13px; cursor: pointer; transition: 0.2s; }
-        .category-btn:hover { border-color: #ff6b00; color: #ffb347; }
-        .category-btn.active { background: linear-gradient(135deg, #ff6b00, #ffb347); border-color: transparent; color: #000; font-weight: 600; }
+        .cat-btn { background: #2a2e3d; border: 1px solid #3a3e4d; padding: 8px 18px; border-radius: 40px; color: #9ca3af; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .cat-btn:hover { border-color: #ff6b00; color: #ffb347; }
+        .cat-btn.active { background: linear-gradient(135deg, #ff6b00, #ffb347); border-color: transparent; color: #000; font-weight: 600; }
+        
         .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        .results-header h2 { font-size: 20px; color: white; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .results-header h2 { font-size: 20px; color: white; display: flex; align-items: center; gap: 12px; }
         .results-header h2 i { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; margin-right: 10px; }
         .item-count-badge { background: #ff6b00; color: #000; padding: 4px 12px; border-radius: 40px; font-size: 14px; font-weight: 700; }
         .watched-badge { background: #2a2e3d; padding: 8px 18px; border-radius: 40px; font-size: 13px; color: #ffb347; }
-        .watched-badge i { margin-right: 8px; }
+        
         .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .series-card { background: #1e212e; border-radius: 20px; overflow: hidden; border: 1px solid #2a2e3d; transition: 0.3s; cursor: pointer; }
         .series-card:hover { border-color: #ff6b00; transform: translateY(-5px); }
         .card-poster { height: 250px; background: linear-gradient(135deg, #1e212e, #2a2e3d); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .card-poster img { width: 100%; height: 100%; object-fit: cover; }
         .card-poster i { font-size: 50px; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .card-info { padding: 16px; }
-        .card-title { font-size: 16px; font-weight: 700; color: white; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-title { font-size: 16px; font-weight: 700; color: white; margin-bottom: 5px; }
         .card-year { font-size: 11px; color: #6b7280; margin-bottom: 8px; }
         .imdb-rating { display: inline-block; background: linear-gradient(135deg, #ff6b00, #ffb347); color: #000; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 8px; }
         .card-detail { font-size: 11px; color: #9ca3af; margin-bottom: 12px; }
@@ -100,17 +98,13 @@
             justify-content: center;
         }
         .detail-back-btn:hover { background: #ffb347; transform: scale(0.98); }
-        .detail-back-btn i { font-size: 18px; }
-        
         .detail-poster { width: 100%; height: 400px; background: linear-gradient(135deg, #1e212e, #2a2e3d); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .detail-poster img { width: 100%; height: 100%; object-fit: cover; }
-        .detail-poster i { font-size: 80px; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .detail-info { padding: 25px; }
         .detail-title { font-size: 28px; font-weight: 700; color: white; margin-bottom: 10px; }
         .detail-year { color: #9ca3af; margin-bottom: 15px; }
         .detail-imdb { display: inline-block; background: linear-gradient(135deg, #ff6b00, #ffb347); color: #000; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: 700; margin-bottom: 15px; }
-        .detail-genre, .detail-director, .detail-actors, .detail-plot, .detail-duration { color: #cbd5e1; font-size: 14px; margin-bottom: 12px; line-height: 1.5; }
-        .detail-genre i, .detail-director i, .detail-actors i, .detail-plot i, .detail-duration i { color: #ff6b00; width: 28px; margin-right: 8px; }
+        .detail-genre, .detail-plot, .detail-duration { color: #cbd5e1; font-size: 14px; margin-bottom: 12px; line-height: 1.5; }
+        .detail-genre i, .detail-plot i, .detail-duration i { color: #ff6b00; width: 28px; margin-right: 8px; }
         .detail-platforms { margin: 15px 0; display: flex; flex-wrap: wrap; gap: 10px; }
         .detail-watched-btn { background: linear-gradient(135deg, #ff6b00, #ffb347); border: none; padding: 12px 24px; border-radius: 40px; color: #000; font-weight: 700; cursor: pointer; margin-top: 20px; width: 100%; transition: 0.2s; }
         .detail-watched-btn.watched { background: #10b981; color: white; }
@@ -122,12 +116,8 @@
             .card-poster { height: 200px; }
             .detail-card { margin: 20px; }
             .detail-poster { height: 250px; }
-            .detail-title { font-size: 22px; }
-            .category-btn { padding: 6px 12px; font-size: 11px; }
+            .cat-btn { padding: 6px 12px; font-size: 11px; }
             .loading-card { padding: 30px 25px; margin: 20px; }
-            .detail-back-btn { padding: 10px 20px; font-size: 14px; }
-            .results-header h2 { font-size: 16px; }
-            .item-count-badge { font-size: 11px; }
         }
     </style>
 </head>
@@ -138,9 +128,8 @@
         <div class="loading-animation"><i class="fas fa-tv"></i></div>
         <div class="loading-title">Diziler hazırlanıyor...</div>
         <div class="loading-messages">
-            <div class="loading-msg"><i class="fas fa-database"></i> TMDB veritabanına bağlanılıyor...</div>
-            <div class="loading-msg"><i class="fas fa-search"></i> 1000+ dizi taranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-star"></i> IMDB puanları toplanıyor...</div>
+            <div class="loading-msg"><i class="fas fa-database"></i> 3000+ dizi taranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-star"></i> IMDb puanları toplanıyor...</div>
             <div class="loading-msg"><i class="fas fa-trophy"></i> En iyi diziler seçiliyor...</div>
             <div class="loading-msg"><i class="fas fa-tv"></i> Afişler yükleniyor...</div>
             <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
@@ -159,32 +148,24 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-tv"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>1000+ top rated TV series by genre - TMDB</p>
+            <p>3000+ dizi - IMDb Top Rated</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
         <div class="category-menu">
             <div class="category-header"><i class="fas fa-tags"></i> Kategoriler</div>
             <div class="category-wrapper">
-                <button class="category-btn active" data-genre-id="">🔥 Tümü</button>
-                <button class="category-btn" data-genre-id="28">⚡ Aksiyon</button>
-                <button class="category-btn" data-genre-id="35">😂 Komedi</button>
-                <button class="category-btn" data-genre-id="18">🎭 Dram</button>
-                <button class="category-btn" data-genre-id="27">👻 Korku</button>
-                <button class="category-btn" data-genre-id="878">🚀 Bilim Kurgu</button>
-                <button class="category-btn" data-genre-id="10749">💕 Romantik</button>
-                <button class="category-btn" data-genre-id="53">🔪 Gerilim</button>
-                <button class="category-btn" data-genre-id="16">🐭 Animasyon</button>
-                <button class="category-btn" data-genre-id="80">🔫 Suç</button>
-                <button class="category-btn" data-genre-id="14">🐉 Fantastik</button>
-                <button class="category-btn" data-genre-id="12">🗺️ Macera</button>
-                <button class="category-btn" data-genre-id="36">📜 Tarih</button>
-                <button class="category-btn" data-genre-id="10402">🎵 Müzik</button>
-                <button class="category-btn" data-genre-id="9648">🕵️ Gizem</button>
-                <button class="category-btn" data-genre-id="10751">👨‍👩‍👧‍👦 Aile</button>
-                <button class="category-btn" data-genre-id="37">🤠 Western</button>
-                <!-- SITCOM KATEGORİSİ - Komedi + Aile + Durum komedisi -->
-                <button class="category-btn" data-genre-id="sitcom">😂 Sitcom</button>
+                <button class="cat-btn active" data-cat="all">🔥 Tümü</button>
+                <button class="cat-btn" data-cat="Action">⚡ Aksiyon</button>
+                <button class="cat-btn" data-cat="Comedy">😂 Komedi</button>
+                <button class="cat-btn" data-cat="Drama">🎭 Dram</button>
+                <button class="cat-btn" data-cat="Horror">👻 Korku</button>
+                <button class="cat-btn" data-cat="Sci-Fi">🚀 Bilim Kurgu</button>
+                <button class="cat-btn" data-cat="Romance">💕 Romantik</button>
+                <button class="cat-btn" data-cat="Thriller">🔪 Gerilim</button>
+                <button class="cat-btn" data-cat="Animation">🐭 Animasyon</button>
+                <button class="cat-btn" data-cat="Crime">🔫 Suç</button>
+                <button class="cat-btn" data-cat="Fantasy">🐉 Fantastik</button>
             </div>
         </div>
 
@@ -203,157 +184,18 @@
 </div>
 
 <script>
-    const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
-    const TMDB_READ_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNDI5Yzk3M2M2Yzk4NDM5Y2Y2ZTUwNGU3ZmZlMTY3OCIsIm5iZiI6MTc3NTY3MzQ0NS42OTcsInN1YiI6IjY5ZDZhMDY1NTI4NTljYmM5ZWY4YjI1NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.oBzy5-Cm4bu6Me6X-yJR22D_BTsyGiwhJ5PvmQHdcz0";
-    const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-    const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
+    // JSON DOSYANIN LİNKİ - BUNU KENDİ GITHUB LİNKİNLE DEĞİŞTİR!
+    const JSON_URL = 'https://raw.githubusercontent.com/bekcispn/ne-izlesem/main/imdb_tvshows.json';
     
-    // IMDb puanları (manuel)
-    const IMDB_RATINGS_TV = {"1396": 9.5, "60574": 8.8, "1399": 9.2, "66732": 8.7, "95396": 8.0, "94997": 8.5, "1668": 8.9, "1418": 8.1, "2316": 9.0, "4607": 8.3, "46952": 8.7, "87108": 9.4, "76479": 8.7, "82856": 8.7, "1402": 8.2, "44217": 8.5, "75006": 8.8, "66081": 8.5, "90228": 8.7, "1434": 8.1, "2190": 8.7, "456": 8.7, "100088": 8.7, "135157": 8.6, "84958": 7.9, "88329": 7.9, "114461": 8.3, "71446": 8.3, "67744": 8.7, "73586": 8.4, "63351": 8.5, "46648": 8.9, "67195": 8.0, "64682": 9.0, "18165": 8.1, "1622": 8.4, "4614": 8.3, "60059": 8.6, "18347": 8.0, "1412": 7.5, "63056": 8.5, "1398": 9.3, "61663": 9.1, "60625": 9.1, "2133": 8.4, "75689": 8.5, "87917": 9.0, "136315": 8.6, "98510": 9.0, "126308": 8.8, "90021": 8.1, "129392": 8.1, "120089": 8.7, "202555": 8.0, "199200": 7.9, "109168": 8.1, "202251": 8.7, "46261": 9.0, "31911": 9.1, "37854": 8.9, "30984": 8.2, "46260": 8.0, "46298": 9.0, "30991": 8.8, "13916": 8.9, "105971": 8.6, "198011": 9.4, "195770": 8.0, "217870": 7.6, "93405": 9.0, "63174": 8.6, "79744": 8.1, "88396": 7.5, "92749": 7.5, "92782": 7.8, "92783": 7.3, "114472": 6.4, "203737": 6.0, "85271": 7.5, "57243": 8.5, "1416": 7.6, "75219": 8.0, "210591": 8.5, "50955": 8.5, "61889": 8.0, "88283": 7.9, "49051": 8.2, "1403": 6.7, "202250": 8.0, "77169": 8.3, "62560": 8.5};
-
-    // Sitcom ID'leri (popüler sitcom'lar)
-    const SITCOM_IDS = [1668, 1402, 456, 488, 459, 1426, 1405, 1418, 1422, 1440, 1434, 1428, 1465, 1445, 1453, 1485, 1492, 1500, 1512, 1520];
-    
-    // Sitcom isimleri
-    const SITCOM_NAMES = {
-        1668: "Friends", 1402: "The Office", 456: "How I Met Your Mother", 
-        488: "The Big Bang Theory", 459: "Brooklyn Nine-Nine", 1426: "Modern Family",
-        1405: "Parks and Recreation", 1418: "Seinfeld", 1422: "30 Rock",
-        1440: "That '70s Show", 1434: "Scrubs", 1428: "Community",
-        1465: "The Good Place", 1445: "New Girl", 1453: "Superstore",
-        1485: "Schitt's Creek", 1492: "Ted Lasso", 1500: "The Office (UK)",
-        1512: "It's Always Sunny", 1520: "Arrested Development"
-    };
-
-    function getImdbRating(id, table) {
-        const r = table[id];
-        return r ? r.toFixed(1) : null;
-    }
-
-    function getSeasons(id) {
-        const seasonsMap = {1668: 10, 1402: 9, 456: 9, 488: 12, 459: 8, 1426: 11, 1405: 7, 1418: 9, 1422: 7, 1440: 8, 1434: 9, 1428: 6, 1465: 4, 1445: 7, 1453: 6, 1485: 6, 1492: 3, 1500: 2, 1512: 15, 1520: 5};
-        return seasonsMap[id] || "?";
-    }
-
-    const GENRE_MAP = {
-        10759:"Action & Adventure",35:"Comedy",18:"Drama",10751:"Family",
-        10762:"Kids",9648:"Mystery",10763:"News",10764:"Reality",
-        10765:"Sci-Fi & Fantasy",10766:"Soap",10767:"Talk",10768:"War & Politics",
-        37:"Western",16:"Animation",80:"Crime",27:"Horror",10749:"Romance",
-        28:"Action",878:"Sci-Fi",53:"Thriller",14:"Fantasy",12:"Adventure",
-        36:"History",10402:"Music"
-    };
-
-    function getDeviceId() {
-        try {
-            const screenRes = `${screen.width}x${screen.height}`;
-            const userAgent = navigator.userAgent;
-            const language = navigator.language;
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            let str = `${screenRes}|${language}|${timezone}|${userAgent.substring(0, 80)}`;
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                hash |= 0;
-            }
-            return Math.abs(hash).toString(16).substring(0, 8);
-        } catch (e) { return "default"; }
-    }
-
-    const deviceId = getDeviceId();
-    const STORAGE_WATCHED_KEY = `watched_tv_${deviceId}`;
+    let allSeries = [];
+    let filteredSeries = [];
     let watchedIds = [];
-    let currentItems = [];
-    let currentGenreId = "";
-    const cache = {};
-
-    // Sitcom'ları yükle
-    async function loadSitcoms() {
-        const results = [];
-        for (const id of SITCOM_IDS) {
-            if (watchedIds.includes(id.toString())) continue;
-            try {
-                const url = `${TMDB_BASE_URL}/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`;
-                const res = await fetch(url, {
-                    headers: { "Authorization": `Bearer ${TMDB_READ_TOKEN}` }
-                });
-                const data = await res.json();
-                if (data && data.id) {
-                    data._genreNames = "Sitcom, Comedy";
-                    results.push(data);
-                }
-            } catch(e) { console.error("Sitcom error:", e); }
-        }
-        return results;
-    }
-
-    async function fetchPage(genreId, page) {
-        const cacheKey = `tv_${genreId}_${page}`;
-        if (cache[cacheKey]) return cache[cacheKey];
-        try {
-            let url;
-            if (genreId === "sitcom") {
-                return [];
-            } else if (genreId === "") {
-                url = `${TMDB_BASE_URL}/discover/tv?sort_by=vote_average.desc&vote_count.gte=500&language=en-US&page=${page}`;
-            } else {
-                url = `${TMDB_BASE_URL}/discover/tv?with_genres=${genreId}&sort_by=vote_average.desc&vote_count.gte=300&language=en-US&page=${page}`;
-            }
-            const res = await fetch(url, {
-                headers: { "Authorization": `Bearer ${TMDB_READ_TOKEN}`, "Content-Type": "application/json" }
-            });
-            const data = await res.json();
-            const results = (data && data.results) ? data.results : [];
-            cache[cacheKey] = results;
-            return results;
-        } catch (e) {
-            console.error("Fetch error:", e);
-            return [];
-        }
-    }
-
-    async function loadSeriesByGenre(genreId) {
-        if (genreId === "sitcom") {
-            return await loadSitcoms();
-        }
-        
-        const TOTAL_PAGES = 50; // 50 × 20 = 1000 dizi
-        const BATCH_SIZE = 10;
-        const seen = new Set();
-        const allResults = [];
-
-        for (let batch = 0; batch < Math.ceil(TOTAL_PAGES / BATCH_SIZE); batch++) {
-            const pages = [];
-            for (let i = 0; i < BATCH_SIZE; i++) {
-                const page = batch * BATCH_SIZE + i + 1;
-                if (page <= TOTAL_PAGES) pages.push(page);
-            }
-            const batchResults = await Promise.all(pages.map(p => fetchPage(genreId, p)));
-            for (const pageData of batchResults) {
-                for (const series of pageData) {
-                    if (seen.has(series.id)) continue;
-                    if (watchedIds.includes(series.id.toString())) continue;
-                    if (!series.vote_average || series.vote_average === 0) continue;
-                    seen.add(series.id);
-                    series._genreNames = (series.genre_ids || []).map(id => GENRE_MAP[id]).filter(Boolean).join(", ") || "Genel";
-                    allResults.push(series);
-                }
-            }
-            currentItems = [...allResults].sort((a, b) => b.vote_average - a.vote_average);
-            renderItems(true);
-        }
-
-        currentItems = allResults.sort((a, b) => b.vote_average - a.vote_average);
-        return currentItems;
-    }
-
-    async function loadContent() {
-        const grid = document.getElementById("resultsGrid");
-        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 1000+ dizi yükleniyor...</div>';
-        currentItems = await loadSeriesByGenre(currentGenreId);
-        renderItems(false);
-    }
-
+    let currentCategory = "all";
+    
+    const deviceId = localStorage.getItem('deviceId') || Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('deviceId', deviceId);
+    const STORAGE_KEY = `watched_series_${deviceId}`;
+    
     function getRandomPlatform() {
         const platforms = ["netflix", "disney", "hbo", "prime", "apple"];
         const randomPlatforms = [];
@@ -364,7 +206,7 @@
         }
         return randomPlatforms;
     }
-
+    
     function getPlatformIcon(platform) {
         const icons = {
             netflix: '<span class="platform netflix">📺 Netflix</span>',
@@ -375,43 +217,76 @@
         };
         return icons[platform] || '';
     }
-
-    function renderItems(updateOnly = false) {
+    
+    function getSeasonsFromYears(yearsStr) {
+        if (!yearsStr) return "?";
+        const parts = yearsStr.split('-');
+        if (parts.length === 2 && parts[1] && parts[1] !== ' ') {
+            return parseInt(parts[1]) - parseInt(parts[0]) + 1;
+        }
+        return "?";
+    }
+    
+    function loadWatchedData() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        watchedIds = saved ? JSON.parse(saved) : [];
+        document.getElementById("watchedCount").innerText = watchedIds.length;
+    }
+    
+    function saveWatchedData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(watchedIds));
+        document.getElementById("watchedCount").innerText = watchedIds.length;
+    }
+    
+    function filterByCategory() {
+        if (currentCategory === "all") {
+            filteredSeries = [...allSeries];
+        } else {
+            filteredSeries = allSeries.filter(series => {
+                const genres = series.Genres || "";
+                return genres.toLowerCase().includes(currentCategory.toLowerCase());
+            });
+        }
+        filteredSeries.sort((a, b) => (b.Rating || 0) - (a.Rating || 0));
+        renderSeries();
+    }
+    
+    function renderSeries() {
         const grid = document.getElementById("resultsGrid");
         const countSpan = document.getElementById("itemCount");
         
-        if (currentItems.length === 0) {
-            if (countSpan) countSpan.innerText = "0";
-            if (!updateOnly) grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin dizi kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
+        const unwatchedSeries = filteredSeries.filter(s => !watchedIds.includes(s.Title));
+        
+        if (unwatchedSeries.length === 0) {
+            grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin dizi kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
+            countSpan.innerText = "0";
             return;
         }
         
-        if (countSpan) countSpan.innerText = currentItems.length;
+        countSpan.innerText = unwatchedSeries.length;
         
-        const itemsHtml = currentItems.map(series => {
-            const posterUrl = series.poster_path ? `${IMAGE_BASE_URL}${series.poster_path}` : null;
+        grid.innerHTML = unwatchedSeries.slice(0, 100).map(series => {
+            const title = series.Title || "Bilinmiyor";
+            const rating = series.Rating || "?";
+            const episodeDuration = series.EpisodeDuration || "?";
+            const genres = series.Genres || "Genel";
+            const years = series.Years || "?";
+            const seasons = getSeasonsFromYears(years);
             const platforms = getRandomPlatform();
             const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
-            const year = series.first_air_date ? series.first_air_date.split('-')[0] : "Bilinmiyor";
-            const imdbRating = getImdbRating(series.id, IMDB_RATINGS_TV);
-            const rating = imdbRating || (series.vote_average ? series.vote_average.toFixed(1) : "?");
-            const ratingLabel = imdbRating ? `⭐ ${rating} IMDb` : `⭐ ${rating} TMDB`;
-            let seasons = series.number_of_seasons ? series.number_of_seasons : "?";
-            if (currentGenreId === "sitcom") seasons = getSeasons(series.id);
             
             return `
-                <div class="series-card" data-id="${series.id}">
+                <div class="series-card" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                     <div class="card-poster">
-                        ${posterUrl ? `<img src="${posterUrl}" alt="${series.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                        <i class="fas fa-tv" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
+                        <i class="fas fa-tv"></i>
                     </div>
                     <div class="card-info">
-                        <div class="card-title">${series.name}</div>
-                        <div class="card-year">${year}</div>
-                        <div class="imdb-rating" data-id="${series.id}">${ratingLabel}</div>
-                        <div class="card-detail">📺 ${seasons} Sezon &nbsp;|&nbsp; ${series._genreNames || ''}</div>
+                        <div class="card-title">${title}</div>
+                        <div class="card-year">${years}</div>
+                        <div class="imdb-rating">⭐ ${rating}</div>
+                        <div class="card-detail">📺 ${seasons} Sezon | ${episodeDuration} dk</div>
                         <div class="platform-badge">${platformHtml}</div>
-                        <button class="watched-btn" data-id="${series.id}">
+                        <button class="watched-btn" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                             <i class="fas fa-check-circle"></i> İzledim
                         </button>
                     </div>
@@ -419,23 +294,17 @@
             `;
         }).join("");
         
-        if (updateOnly) {
-            grid.innerHTML = itemsHtml;
-        } else {
-            grid.innerHTML = itemsHtml;
-        }
-        
         attachCardEvents();
         attachWatchedEvents();
     }
-
+    
     function attachCardEvents() {
         document.querySelectorAll(".series-card").forEach(card => {
             card.removeEventListener("click", card.clickHandler);
             card.clickHandler = (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
-                const id = parseInt(card.getAttribute("data-id"));
-                const series = currentItems.find(s => s.id === id);
+                const id = card.getAttribute("data-id");
+                const series = allSeries.find(s => s.Title.replace(/[^a-z0-9]/gi, '_') === id);
                 if (series) showDetail(series);
             };
             card.addEventListener("click", card.clickHandler);
@@ -452,57 +321,50 @@
                     btn.classList.add("watched");
                     btn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
                     watchedIds.push(id);
-                    localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
-                    updateWatchedCount();
-                    const index = currentItems.findIndex(s => s.id.toString() === id);
-                    if (index !== -1) {
-                        currentItems.splice(index, 1);
-                        renderItems(false);
-                    }
+                    saveWatchedData();
+                    renderSeries();
                 }
             };
             btn.addEventListener("click", btn.clickHandler);
         });
     }
-
+    
     function showDetail(series) {
         const detailOverlay = document.getElementById("detailOverlay");
         const detailContent = document.getElementById("detailContent");
-        const posterUrl = series.poster_path ? `${IMAGE_BASE_URL}${series.poster_path}` : null;
-        const isWatched = watchedIds.includes(series.id.toString());
+        const title = series.Title || "Bilinmiyor";
+        const rating = series.Rating || "?";
+        const episodeDuration = series.EpisodeDuration || "?";
+        const genres = series.Genres || "Genel";
+        const about = series.About || "Konu bilgisi yok";
+        const years = series.Years || "?";
+        const seasons = getSeasonsFromYears(years);
+        const actors = series.Actors || "Bilgi yok";
+        const isWatched = watchedIds.includes(title.replace(/[^a-z0-9]/gi, '_'));
         const platforms = getRandomPlatform();
         const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
-        const year = series.first_air_date ? series.first_air_date.split('-')[0] : "Bilinmiyor";
-        const imdbRating = getImdbRating(series.id, IMDB_RATINGS_TV);
-        const rating = imdbRating || (series.vote_average ? series.vote_average.toFixed(1) : "?");
-        const ratingLabel = imdbRating ? `⭐ ${rating} IMDb` : `⭐ ${rating} TMDB`;
-        let seasons = series.number_of_seasons ? series.number_of_seasons : "?";
-        if (currentGenreId === "sitcom") seasons = getSeasons(series.id);
-        const genres = series._genreNames || (series.genres ? series.genres.map(g => g.name).join(", ") : "Bilinmiyor");
-
+        
         detailContent.innerHTML = `
             <div class="detail-poster">
-                ${posterUrl ? `<img src="${posterUrl}" alt="${series.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                <i class="fas fa-tv" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
+                <i class="fas fa-tv"></i>
             </div>
             <div class="detail-info">
-                <div class="detail-title">${series.name}</div>
-                <div class="detail-year">${year}</div>
-                <div class="detail-imdb" data-id="${series.id}">${ratingLabel}</div>
+                <div class="detail-title">${title}</div>
+                <div class="detail-year">${years} (${seasons} Sezon)</div>
+                <div class="detail-imdb">⭐ ${rating}</div>
                 <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genres}</div>
-                <div class="detail-duration"><i class="fas fa-layer-group"></i> ${seasons} Sezon</div>
-                <div class="detail-director"><i class="fas fa-user"></i> Yaratıcı: -</div>
-                <div class="detail-actors"><i class="fas fa-users"></i> Oyuncular: -</div>
-                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${series.overview || "Bilgi yok"}</div>
+                <div class="detail-duration"><i class="fas fa-clock"></i> Bölüm Süresi: ${episodeDuration} dakika</div>
+                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${about}</div>
+                <div class="detail-plot"><i class="fas fa-users"></i> Oyuncular: ${actors}</div>
                 <div class="detail-platforms">${platformHtml}</div>
-                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${series.id}">
+                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                     <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
                 </button>
             </div>
         `;
-
+        
         detailOverlay.style.display = "flex";
-
+        
         const detailBtn = detailContent.querySelector(".detail-watched-btn");
         if (detailBtn) {
             detailBtn.removeEventListener("click", detailBtn.clickHandler);
@@ -510,53 +372,48 @@
                 const id = detailBtn.getAttribute("data-id");
                 if (!watchedIds.includes(id)) {
                     watchedIds.push(id);
-                    localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
-                    updateWatchedCount();
+                    saveWatchedData();
                     detailBtn.classList.add("watched");
                     detailBtn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
-                    const index = currentItems.findIndex(s => s.id.toString() === id);
-                    if (index !== -1) {
-                        currentItems.splice(index, 1);
-                        renderItems(false);
-                    }
+                    renderSeries();
                 }
             };
             detailBtn.addEventListener("click", detailBtn.clickHandler);
         }
     }
-
-    function updateWatchedCount() {
-        document.getElementById("watchedCount").innerText = watchedIds.length;
-    }
-
-    function loadWatchedData() {
-        const saved = localStorage.getItem(STORAGE_WATCHED_KEY);
-        watchedIds = saved ? JSON.parse(saved) : [];
-        updateWatchedCount();
-    }
-
-    setTimeout(() => {
-        document.getElementById("loadingScreen").style.display = "none";
-        document.getElementById("mainContent").style.display = "block";
-        loadWatchedData();
-        loadContent();
-    }, 2500);
-
+    
+    // JSON'u yükle
+    fetch(JSON_URL)
+        .then(res => res.json())
+        .then(data => {
+            allSeries = data;
+            filterByCategory();
+            setTimeout(() => {
+                document.getElementById("loadingScreen").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+            }, 2000);
+        })
+        .catch(err => {
+            console.error("JSON yüklenemedi:", err);
+            document.getElementById("resultsGrid").innerHTML = `<div class="loading-state">❌ Diziler yüklenemedi! JSON dosyasını kontrol et.<br><br>${err.message}</div>`;
+            setTimeout(() => {
+                document.getElementById("loadingScreen").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+            }, 2000);
+        });
+    
+    loadWatchedData();
+    
     document.getElementById("closeDetailBtn").addEventListener("click", () => {
         document.getElementById("detailOverlay").style.display = "none";
     });
-
-    document.querySelectorAll(".category-btn").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
+    
+    document.querySelectorAll(".cat-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
-            currentGenreId = btn.getAttribute("data-genre-id");
-            
-            const grid = document.getElementById("resultsGrid");
-            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Diziler yükleniyor...</div>';
-            
-            currentItems = await loadSeriesByGenre(currentGenreId);
-            renderItems(false);
+            currentCategory = btn.getAttribute("data-cat");
+            filterByCategory();
         });
     });
 </script>
