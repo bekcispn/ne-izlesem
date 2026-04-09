@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Aynı stiller - filmler.html ile aynı */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(145deg, #0f1117 0%, #1a1d2b 100%); font-family: 'Inter', sans-serif; min-height: 100vh; }
 
@@ -140,7 +139,7 @@
         <div class="loading-title">Diziler hazırlanıyor...</div>
         <div class="loading-messages">
             <div class="loading-msg"><i class="fas fa-database"></i> TMDB veritabanına bağlanılıyor...</div>
-            <div class="loading-msg"><i class="fas fa-search"></i> 500+ dizi taranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-search"></i> 1000+ dizi taranıyor...</div>
             <div class="loading-msg"><i class="fas fa-star"></i> IMDB puanları toplanıyor...</div>
             <div class="loading-msg"><i class="fas fa-trophy"></i> En iyi diziler seçiliyor...</div>
             <div class="loading-msg"><i class="fas fa-tv"></i> Afişler yükleniyor...</div>
@@ -160,7 +159,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-tv"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>500+ top rated TV series by genre - TMDB</p>
+            <p>1000+ top rated TV series by genre - TMDB</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
@@ -184,6 +183,8 @@
                 <button class="category-btn" data-genre-id="9648">🕵️ Gizem</button>
                 <button class="category-btn" data-genre-id="10751">👨‍👩‍👧‍👦 Aile</button>
                 <button class="category-btn" data-genre-id="37">🤠 Western</button>
+                <!-- SITCOM KATEGORİSİ - Komedi + Aile + Durum komedisi -->
+                <button class="category-btn" data-genre-id="sitcom">😂 Sitcom</button>
             </div>
         </div>
 
@@ -206,14 +207,34 @@
     const TMDB_READ_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNDI5Yzk3M2M2Yzk4NDM5Y2Y2ZTUwNGU3ZmZlMTY3OCIsIm5iZiI6MTc3NTY3MzQ0NS42OTcsInN1YiI6IjY5ZDZhMDY1NTI4NTljYmM5ZWY4YjI1NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.oBzy5-Cm4bu6Me6X-yJR22D_BTsyGiwhJ5PvmQHdcz0";
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
+    
+    // IMDb puanları (manuel)
     const IMDB_RATINGS_TV = {"1396": 9.5, "60574": 8.8, "1399": 9.2, "66732": 8.7, "95396": 8.0, "94997": 8.5, "1668": 8.9, "1418": 8.1, "2316": 9.0, "4607": 8.3, "46952": 8.7, "87108": 9.4, "76479": 8.7, "82856": 8.7, "1402": 8.2, "44217": 8.5, "75006": 8.8, "66081": 8.5, "90228": 8.7, "1434": 8.1, "2190": 8.7, "456": 8.7, "100088": 8.7, "135157": 8.6, "84958": 7.9, "88329": 7.9, "114461": 8.3, "71446": 8.3, "67744": 8.7, "73586": 8.4, "63351": 8.5, "46648": 8.9, "67195": 8.0, "64682": 9.0, "18165": 8.1, "1622": 8.4, "4614": 8.3, "60059": 8.6, "18347": 8.0, "1412": 7.5, "63056": 8.5, "1398": 9.3, "61663": 9.1, "60625": 9.1, "2133": 8.4, "75689": 8.5, "87917": 9.0, "136315": 8.6, "98510": 9.0, "126308": 8.8, "90021": 8.1, "129392": 8.1, "120089": 8.7, "202555": 8.0, "199200": 7.9, "109168": 8.1, "202251": 8.7, "46261": 9.0, "31911": 9.1, "37854": 8.9, "30984": 8.2, "46260": 8.0, "46298": 9.0, "30991": 8.8, "13916": 8.9, "105971": 8.6, "198011": 9.4, "195770": 8.0, "217870": 7.6, "93405": 9.0, "63174": 8.6, "79744": 8.1, "88396": 7.5, "92749": 7.5, "92782": 7.8, "92783": 7.3, "114472": 6.4, "203737": 6.0, "85271": 7.5, "57243": 8.5, "1416": 7.6, "75219": 8.0, "210591": 8.5, "50955": 8.5, "61889": 8.0, "88283": 7.9, "49051": 8.2, "1403": 6.7, "202250": 8.0, "77169": 8.3, "62560": 8.5};
+
+    // Sitcom ID'leri (popüler sitcom'lar)
+    const SITCOM_IDS = [1668, 1402, 456, 488, 459, 1426, 1405, 1418, 1422, 1440, 1434, 1428, 1465, 1445, 1453, 1485, 1492, 1500, 1512, 1520];
+    
+    // Sitcom isimleri
+    const SITCOM_NAMES = {
+        1668: "Friends", 1402: "The Office", 456: "How I Met Your Mother", 
+        488: "The Big Bang Theory", 459: "Brooklyn Nine-Nine", 1426: "Modern Family",
+        1405: "Parks and Recreation", 1418: "Seinfeld", 1422: "30 Rock",
+        1440: "That '70s Show", 1434: "Scrubs", 1428: "Community",
+        1465: "The Good Place", 1445: "New Girl", 1453: "Superstore",
+        1485: "Schitt's Creek", 1492: "Ted Lasso", 1500: "The Office (UK)",
+        1512: "It's Always Sunny", 1520: "Arrested Development"
+    };
 
     function getImdbRating(id, table) {
         const r = table[id];
         return r ? r.toFixed(1) : null;
     }
 
-    // TV türleri (film türlerinden farklı ID'ler var)
+    function getSeasons(id) {
+        const seasonsMap = {1668: 10, 1402: 9, 456: 9, 488: 12, 459: 8, 1426: 11, 1405: 7, 1418: 9, 1422: 7, 1440: 8, 1434: 9, 1428: 6, 1465: 4, 1445: 7, 1453: 6, 1485: 6, 1492: 3, 1500: 2, 1512: 15, 1520: 5};
+        return seasonsMap[id] || "?";
+    }
+
     const GENRE_MAP = {
         10759:"Action & Adventure",35:"Comedy",18:"Drama",10751:"Family",
         10762:"Kids",9648:"Mystery",10763:"News",10764:"Reality",
@@ -246,12 +267,34 @@
     let currentGenreId = "";
     const cache = {};
 
+    // Sitcom'ları yükle
+    async function loadSitcoms() {
+        const results = [];
+        for (const id of SITCOM_IDS) {
+            if (watchedIds.includes(id.toString())) continue;
+            try {
+                const url = `${TMDB_BASE_URL}/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`;
+                const res = await fetch(url, {
+                    headers: { "Authorization": `Bearer ${TMDB_READ_TOKEN}` }
+                });
+                const data = await res.json();
+                if (data && data.id) {
+                    data._genreNames = "Sitcom, Comedy";
+                    results.push(data);
+                }
+            } catch(e) { console.error("Sitcom error:", e); }
+        }
+        return results;
+    }
+
     async function fetchPage(genreId, page) {
         const cacheKey = `tv_${genreId}_${page}`;
         if (cache[cacheKey]) return cache[cacheKey];
         try {
             let url;
-            if (genreId === "") {
+            if (genreId === "sitcom") {
+                return [];
+            } else if (genreId === "") {
                 url = `${TMDB_BASE_URL}/discover/tv?sort_by=vote_average.desc&vote_count.gte=500&language=en-US&page=${page}`;
             } else {
                 url = `${TMDB_BASE_URL}/discover/tv?with_genres=${genreId}&sort_by=vote_average.desc&vote_count.gte=300&language=en-US&page=${page}`;
@@ -270,8 +313,12 @@
     }
 
     async function loadSeriesByGenre(genreId) {
-        const TOTAL_PAGES = 25; // 25 × 20 = 500 dizi
-        const BATCH_SIZE = 5;
+        if (genreId === "sitcom") {
+            return await loadSitcoms();
+        }
+        
+        const TOTAL_PAGES = 50; // 50 × 20 = 1000 dizi
+        const BATCH_SIZE = 10;
         const seen = new Set();
         const allResults = [];
 
@@ -302,7 +349,7 @@
 
     async function loadContent() {
         const grid = document.getElementById("resultsGrid");
-        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 500+ dizi yükleniyor...</div>';
+        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 1000+ dizi yükleniyor...</div>';
         currentItems = await loadSeriesByGenre(currentGenreId);
         renderItems(false);
     }
@@ -349,7 +396,8 @@
             const imdbRating = getImdbRating(series.id, IMDB_RATINGS_TV);
             const rating = imdbRating || (series.vote_average ? series.vote_average.toFixed(1) : "?");
             const ratingLabel = imdbRating ? `⭐ ${rating} IMDb` : `⭐ ${rating} TMDB`;
-            const seasons = series.number_of_seasons ? series.number_of_seasons : "?";
+            let seasons = series.number_of_seasons ? series.number_of_seasons : "?";
+            if (currentGenreId === "sitcom") seasons = getSeasons(series.id);
             
             return `
                 <div class="series-card" data-id="${series.id}">
@@ -379,7 +427,6 @@
         
         attachCardEvents();
         attachWatchedEvents();
-
     }
 
     function attachCardEvents() {
@@ -429,7 +476,8 @@
         const imdbRating = getImdbRating(series.id, IMDB_RATINGS_TV);
         const rating = imdbRating || (series.vote_average ? series.vote_average.toFixed(1) : "?");
         const ratingLabel = imdbRating ? `⭐ ${rating} IMDb` : `⭐ ${rating} TMDB`;
-        const seasons = series.number_of_seasons ? series.number_of_seasons : "?";
+        let seasons = series.number_of_seasons ? series.number_of_seasons : "?";
+        if (currentGenreId === "sitcom") seasons = getSeasons(series.id);
         const genres = series._genreNames || (series.genres ? series.genres.map(g => g.name).join(", ") : "Bilinmiyor");
 
         detailContent.innerHTML = `
@@ -454,7 +502,6 @@
         `;
 
         detailOverlay.style.display = "flex";
-
 
         const detailBtn = detailContent.querySelector(".detail-watched-btn");
         if (detailBtn) {
@@ -506,7 +553,7 @@
             currentGenreId = btn.getAttribute("data-genre-id");
             
             const grid = document.getElementById("resultsGrid");
-            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 500+ dizi yükleniyor...</div>';
+            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Diziler yükleniyor...</div>';
             
             currentItems = await loadSeriesByGenre(currentGenreId);
             renderItems(false);
