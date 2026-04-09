@@ -123,9 +123,9 @@
         <div class="loading-animation"><i class="fas fa-tv"></i></div>
         <div class="loading-title">Diziler hazırlanıyor...</div>
         <div class="loading-messages">
-            <div class="loading-msg"><i class="fas fa-database"></i> 3000+ dizi taranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-star"></i> IMDb puanları toplanıyor...</div>
-            <div class="loading-msg"><i class="fas fa-image"></i> Afişler alınıyor...</div>
+            <div class="loading-msg"><i class="fas fa-database"></i> IMDb veritabanına bağlanılıyor...</div>
+            <div class="loading-msg"><i class="fas fa-star"></i> En yüksek puanlı diziler aranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-image"></i> Afişler yükleniyor...</div>
             <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
         </div>
     </div>
@@ -142,7 +142,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-tv"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>3000+ dizi - IMDb Top Rated</p>
+            <p>IMDb Top Rated TV Series</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
@@ -178,12 +178,8 @@
 </div>
 
 <script>
-    // JSON DOSYANIN LİNKİ - BURAYA KENDİ LİNKİNİ YAZ
-    const JSON_URL = 'https://raw.githubusercontent.com/bekcispn/ne-izlesem/main/imdb_tvshows.json';
-    
-    // TMDB POSTER API
-    const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
-    const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
+    // JSON DOSYANIN LİNKİ - KENDİ GITHUB LİNKİNLE DEĞİŞTİR!
+    const JSON_URL = 'https://raw.githubusercontent.com/bekcispn/ne-izlesem/main/tvshows.json';
     
     let allSeries = [];
     let filteredSeries = [];
@@ -194,11 +190,13 @@
     localStorage.setItem('deviceId', deviceId);
     const STORAGE_KEY = `watched_series_${deviceId}`;
     
-    // TMDB'den poster_path al (dizi için)
-    async function fetchPosterPathForSeries(seriesName) {
-        if (!seriesName) return null;
+    // TMDB'den poster almak için (isteğe bağlı)
+    const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
+    const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
+    
+    async function fetchPoster(title) {
         try {
-            const url = `https://api.themoviedb.org/3/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(seriesName)}`;
+            const url = `https://api.themoviedb.org/3/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}`;
             const response = await fetch(url);
             const data = await response.json();
             if (data.results && data.results.length > 0) {
@@ -206,18 +204,14 @@
             }
             return null;
         } catch (error) {
-            console.error("Poster alınamadı:", error);
             return null;
         }
     }
     
-    function getSeasonsFromYears(yearsStr) {
-        if (!yearsStr) return "?";
-        const parts = yearsStr.split('-');
-        if (parts.length === 2 && parts[1] && parts[1] !== ' ') {
-            return parseInt(parts[1]) - parseInt(parts[0]) + 1;
-        }
-        return "?";
+    function extractYear(yearStr) {
+        if (!yearStr) return "?";
+        const match = yearStr.match(/\d{4}/);
+        return match ? match[0] : "?";
     }
     
     function loadWatchedData() {
@@ -236,11 +230,11 @@
             filteredSeries = [...allSeries];
         } else {
             filteredSeries = allSeries.filter(series => {
-                const genres = series.Genres || "";
-                return genres.toLowerCase().includes(currentCategory.toLowerCase());
+                const genre = series.genre || "";
+                return genre.toLowerCase().includes(currentCategory.toLowerCase());
             });
         }
-        filteredSeries.sort((a, b) => (b.Rating || 0) - (a.Rating || 0));
+        filteredSeries.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
         renderSeries();
     }
     
@@ -248,7 +242,7 @@
         const grid = document.getElementById("resultsGrid");
         const countSpan = document.getElementById("itemCount");
         
-        const unwatchedSeries = filteredSeries.filter(s => !watchedIds.includes(s.Title));
+        const unwatchedSeries = filteredSeries.filter(s => !watchedIds.includes(s.title));
         
         if (unwatchedSeries.length === 0) {
             grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin dizi kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
@@ -260,18 +254,16 @@
         
         // Posterleri al (ilk 20 dizi için)
         const seriesWithPosters = await Promise.all(unwatchedSeries.slice(0, 20).map(async (series) => {
-            const posterPath = await fetchPosterPathForSeries(series.Title);
+            const posterPath = await fetchPoster(series.title);
             return { ...series, posterPath };
         }));
         
         grid.innerHTML = seriesWithPosters.map(series => {
             const posterUrl = series.posterPath ? `${IMAGE_BASE_URL}${series.posterPath}` : null;
-            const title = series.Title || "Bilinmiyor";
-            const rating = series.Rating || "?";
-            const episodeDuration = series.EpisodeDuration || "?";
-            const genres = series.Genres || "Genel";
-            const years = series.Years || "?";
-            const seasons = getSeasonsFromYears(years);
+            const title = series.title || "Bilinmiyor";
+            const year = extractYear(series.year);
+            const rating = series.rating || "?";
+            const genre = series.genre || "Genel";
             
             return `
                 <div class="series-card" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
@@ -281,9 +273,9 @@
                     </div>
                     <div class="card-info">
                         <div class="card-title">${title}</div>
-                        <div class="card-year">${years}</div>
+                        <div class="card-year">${year}</div>
                         <div class="imdb-rating">⭐ ${rating}</div>
-                        <div class="card-detail">📺 ${seasons} Sezon | ${episodeDuration} dk</div>
+                        <div class="card-detail">📺 ${genre}</div>
                         <button class="watched-btn" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                             <i class="fas fa-check-circle"></i> İzledim
                         </button>
@@ -302,7 +294,7 @@
             card.clickHandler = (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
                 const id = card.getAttribute("data-id");
-                const series = allSeries.find(s => s.Title.replace(/[^a-z0-9]/gi, '_') === id);
+                const series = allSeries.find(s => s.title.replace(/[^a-z0-9]/gi, '_') === id);
                 if (series) showDetail(series);
             };
             card.addEventListener("click", card.clickHandler);
@@ -330,16 +322,13 @@
     async function showDetail(series) {
         const detailOverlay = document.getElementById("detailOverlay");
         const detailContent = document.getElementById("detailContent");
-        const posterPath = await fetchPosterPathForSeries(series.Title);
+        const posterPath = await fetchPoster(series.title);
         const posterUrl = posterPath ? `${IMAGE_BASE_URL}${posterPath}` : null;
-        const title = series.Title || "Bilinmiyor";
-        const rating = series.Rating || "?";
-        const episodeDuration = series.EpisodeDuration || "?";
-        const genres = series.Genres || "Genel";
-        const about = series.About || "Konu bilgisi yok";
-        const years = series.Years || "?";
-        const seasons = getSeasonsFromYears(years);
-        const actors = series.Actors || "Bilgi yok";
+        const title = series.title || "Bilinmiyor";
+        const year = extractYear(series.year);
+        const rating = series.rating || "?";
+        const genre = series.genre || "Genel";
+        const plot = series.text || "Konu bilgisi yok";
         const isWatched = watchedIds.includes(title.replace(/[^a-z0-9]/gi, '_'));
         
         detailContent.innerHTML = `
@@ -348,12 +337,10 @@
             </div>
             <div class="detail-info">
                 <div class="detail-title">${title}</div>
-                <div class="detail-year">${years} (${seasons} Sezon)</div>
+                <div class="detail-year">${year}</div>
                 <div class="detail-imdb">⭐ ${rating}</div>
-                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genres}</div>
-                <div class="detail-duration"><i class="fas fa-clock"></i> Bölüm Süresi: ${episodeDuration} dakika</div>
-                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${about}</div>
-                <div class="detail-plot"><i class="fas fa-users"></i> Oyuncular: ${actors}</div>
+                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genre}</div>
+                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${plot}</div>
                 <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                     <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
                 </button>

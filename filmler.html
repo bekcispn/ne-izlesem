@@ -123,9 +123,9 @@
         <div class="loading-animation"><i class="fas fa-film"></i></div>
         <div class="loading-title">Filmler hazırlanıyor...</div>
         <div class="loading-messages">
-            <div class="loading-msg"><i class="fas fa-database"></i> 600 bin film taranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-star"></i> IMDb puanları toplanıyor...</div>
-            <div class="loading-msg"><i class="fas fa-image"></i> Afişler alınıyor...</div>
+            <div class="loading-msg"><i class="fas fa-database"></i> IMDb veritabanına bağlanılıyor...</div>
+            <div class="loading-msg"><i class="fas fa-star"></i> En yüksek puanlı filmler aranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-image"></i> Afişler yükleniyor...</div>
             <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
         </div>
     </div>
@@ -142,7 +142,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-film"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>600.000+ film - IMDb Top Rated</p>
+            <p>IMDb Top Rated Movies</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
@@ -178,12 +178,8 @@
 </div>
 
 <script>
-    // JSON DOSYANIN LİNKİ - BURAYA KENDİ LİNKİNİ YAZ
-    const JSON_URL = 'https://raw.githubusercontent.com/bekcispn/ne-izlesem/main/movies_batch_1.json';
-    
-    // TMDB POSTER API
-    const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
-    const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
+    // JSON DOSYANIN LİNKİ - KENDİ GITHUB LİNKİNLE DEĞİŞTİR!
+    const JSON_URL = 'https://raw.githubusercontent.com/bekcispn/ne-izlesem/main/movies.json';
     
     let allMovies = [];
     let filteredMovies = [];
@@ -194,28 +190,30 @@
     localStorage.setItem('deviceId', deviceId);
     const STORAGE_KEY = `watched_${deviceId}`;
     
-    // TMDB'den poster_path al
-    async function fetchPosterPath(imdbId) {
-        if (!imdbId) return null;
+    // TMDB'den poster almak için (isteğe bağlı)
+    const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
+    const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
+    
+    async function fetchPoster(title) {
         try {
-            const url = `https://api.themoviedb.org/3/find/${imdbId}?api_key=${TMDB_API_KEY}&external_source=imdb_id`;
+            const url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}`;
             const response = await fetch(url);
             const data = await response.json();
-            if (data.movie_results && data.movie_results.length > 0) {
-                return data.movie_results[0].poster_path;
+            if (data.results && data.results.length > 0) {
+                return data.results[0].poster_path;
             }
             return null;
         } catch (error) {
-            console.error("Poster alınamadı:", error);
             return null;
         }
     }
     
-    function formatRuntime(seconds) {
-        if (!seconds || seconds === 0) return "Süre bilinmiyor";
-        const hours = Math.floor(seconds / 3600);
-        const mins = Math.floor((seconds % 3600) / 60);
-        if (hours > 0) return `${hours}s ${mins}dk`;
+    function formatRuntime(minutes) {
+        if (!minutes || minutes === 0) return "Süre bilinmiyor";
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        if (hours > 0 && mins > 0) return `${hours}s ${mins}dk`;
+        if (hours > 0) return `${hours}s`;
         return `${mins}dk`;
     }
     
@@ -235,11 +233,11 @@
             filteredMovies = [...allMovies];
         } else {
             filteredMovies = allMovies.filter(movie => {
-                const genres = movie.genres?.genres?.map(g => g.text) || [];
-                return genres.some(g => g.toLowerCase().includes(currentCategory.toLowerCase()));
+                const genre = movie.Genre || "";
+                return genre.toLowerCase().includes(currentCategory.toLowerCase());
             });
         }
-        filteredMovies.sort((a, b) => (b.ratingsSummary?.aggregateRating || 0) - (a.ratingsSummary?.aggregateRating || 0));
+        filteredMovies.sort((a, b) => parseFloat(b.IMDB_Rating) - parseFloat(a.IMDB_Rating));
         renderMovies();
     }
     
@@ -247,7 +245,7 @@
         const grid = document.getElementById("resultsGrid");
         const countSpan = document.getElementById("itemCount");
         
-        const unwatchedMovies = filteredMovies.filter(m => !watchedIds.includes(m.id));
+        const unwatchedMovies = filteredMovies.filter(m => !watchedIds.includes(m.Series_Title));
         
         if (unwatchedMovies.length === 0) {
             grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
@@ -259,20 +257,20 @@
         
         // Posterleri al (ilk 20 film için)
         const moviesWithPosters = await Promise.all(unwatchedMovies.slice(0, 20).map(async (movie) => {
-            const posterPath = await fetchPosterPath(movie.id);
+            const posterPath = await fetchPoster(movie.Series_Title);
             return { ...movie, posterPath };
         }));
         
         grid.innerHTML = moviesWithPosters.map(movie => {
             const posterUrl = movie.posterPath ? `${IMAGE_BASE_URL}${movie.posterPath}` : null;
-            const title = movie.titleText?.text || "Bilinmiyor";
-            const year = movie.releaseYear?.year || "?";
-            const rating = movie.ratingsSummary?.aggregateRating || "?";
-            const runtime = formatRuntime(movie.runtime);
-            const genres = movie.genres?.genres?.map(g => g.text).slice(0, 2).join(", ") || "Genel";
+            const title = movie.Series_Title || "Bilinmiyor";
+            const year = movie.Released_Year || "?";
+            const rating = movie.IMDB_Rating || "?";
+            const runtime = formatRuntime(parseInt(movie.Runtime));
+            const genre = movie.Genre || "Genel";
             
             return `
-                <div class="movie-card" data-id="${movie.id}">
+                <div class="movie-card" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                     <div class="card-poster">
                         ${posterUrl ? `<img src="${posterUrl}" alt="${title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
                         <i class="fas fa-film" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
@@ -281,8 +279,8 @@
                         <div class="card-title">${title}</div>
                         <div class="card-year">${year}</div>
                         <div class="imdb-rating">⭐ ${rating}</div>
-                        <div class="card-detail">🎬 ${runtime} | ${genres}</div>
-                        <button class="watched-btn" data-id="${movie.id}">
+                        <div class="card-detail">🎬 ${runtime} | ${genre}</div>
+                        <button class="watched-btn" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                             <i class="fas fa-check-circle"></i> İzledim
                         </button>
                     </div>
@@ -300,7 +298,7 @@
             card.clickHandler = (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
                 const id = card.getAttribute("data-id");
-                const movie = allMovies.find(m => m.id === id);
+                const movie = allMovies.find(m => m.Series_Title.replace(/[^a-z0-9]/gi, '_') === id);
                 if (movie) showDetail(movie);
             };
             card.addEventListener("click", card.clickHandler);
@@ -328,15 +326,17 @@
     async function showDetail(movie) {
         const detailOverlay = document.getElementById("detailOverlay");
         const detailContent = document.getElementById("detailContent");
-        const posterPath = await fetchPosterPath(movie.id);
+        const posterPath = await fetchPoster(movie.Series_Title);
         const posterUrl = posterPath ? `${IMAGE_BASE_URL}${posterPath}` : null;
-        const title = movie.titleText?.text || "Bilinmiyor";
-        const year = movie.releaseYear?.year || "?";
-        const rating = movie.ratingsSummary?.aggregateRating || "?";
-        const runtime = formatRuntime(movie.runtime);
-        const genres = movie.genres?.genres?.map(g => g.text).join(", ") || "Genel";
-        const plot = movie.plot?.plotText?.plainText || "Konu bilgisi yok";
-        const isWatched = watchedIds.includes(movie.id);
+        const title = movie.Series_Title || "Bilinmiyor";
+        const year = movie.Released_Year || "?";
+        const rating = movie.IMDB_Rating || "?";
+        const runtime = formatRuntime(parseInt(movie.Runtime));
+        const genre = movie.Genre || "Genel";
+        const plot = movie.Overview || "Konu bilgisi yok";
+        const director = movie.Director || "Bilinmiyor";
+        const actors = [movie.Star1, movie.Star2, movie.Star3, movie.Star4].filter(Boolean).join(", ");
+        const isWatched = watchedIds.includes(title.replace(/[^a-z0-9]/gi, '_'));
         
         detailContent.innerHTML = `
             <div class="detail-poster">
@@ -346,10 +346,12 @@
                 <div class="detail-title">${title}</div>
                 <div class="detail-year">${year}</div>
                 <div class="detail-imdb">⭐ ${rating}</div>
-                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genres}</div>
+                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genre}</div>
                 <div class="detail-duration"><i class="fas fa-clock"></i> Süre: ${runtime}</div>
+                <div class="detail-plot"><i class="fas fa-align-left"></i> Yönetmen: ${director}</div>
+                <div class="detail-plot"><i class="fas fa-align-left"></i> Oyuncular: ${actors}</div>
                 <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${plot}</div>
-                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${movie.id}">
+                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                     <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
                 </button>
             </div>
