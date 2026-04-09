@@ -205,45 +205,11 @@
     const TMDB_READ_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNDI5Yzk3M2M2Yzk4NDM5Y2Y2ZTUwNGU3ZmZlMTY3OCIsIm5iZiI6MTc3NTY3MzQ0NS42OTcsInN1YiI6IjY5ZDZhMDY1NTI4NTljYmM5ZWY4YjI1NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.oBzy5-Cm4bu6Me6X-yJR22D_BTsyGiwhJ5PvmQHdcz0";
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
-    const OMDB_API_KEY = "aee8123e";
-    const omdbCache = {};
+    const IMDB_RATINGS_FILM = {"278": 9.3, "238": 9.2, "240": 9.0, "424": 8.9, "389": 8.9, "129": 8.6, "637": 8.5, "11216": 8.1, "562": 8.5, "155": 9.0, "680": 8.9, "769": 8.8, "213": 8.8, "429": 8.7, "497": 8.7, "120": 8.8, "121": 8.7, "122": 8.9, "372058": 8.6, "807": 8.6, "598": 8.5, "77338": 8.5, "550": 8.8, "13": 8.5, "510": 8.6, "745": 8.1, "197": 8.2, "105": 8.5, "857": 8.2, "244786": 8.6, "581734": 8.4, "539": 8.5, "762": 8.5, "289": 8.4, "901": 8.4, "37799": 7.8, "68718": 8.4, "49026": 8.4, "438631": 8.3, "603": 8.7, "604": 7.2, "11": 8.6, "1891": 8.7, "1892": 8.3, "27205": 8.8, "157336": 8.6, "284054": 7.3, "299536": 8.4, "299534": 8.4, "24428": 8.0, "1726": 7.9, "100402": 7.9, "99861": 7.3, "271110": 7.8, "363088": 7.0, "315635": 7.4, "284053": 7.7, "299537": 7.4, "429617": 7.4, "566525": 8.3, "524434": 6.3, "634649": 8.2, "616037": 7.3, "505642": 6.7, "816": 8.3, "280": 8.3, "218": 8.1, "489": 7.9, "346": 7.9, "629": 8.3, "9806": 8.0, "862": 8.3, "863": 7.9, "10193": 8.3, "301528": 7.7, "585": 8.1, "14160": 8.2, "12": 8.1, "127380": 7.6, "150540": 8.2, "260514": 7.8, "920": 8.3, "49013": 7.1, "82702": 7.1, "354912": 8.0, "508439": 7.4, "508947": 7.3, "177572": 7.5, "102651": 7.6, "109445": 7.5, "330457": 6.8, "131": 8.4, "8587": 6.9, "10681": 8.4, "10195": 7.5, "8392": 8.0, "4935": 8.3, "149": 8.2, "37780": 7.9, "70981": 8.1, "335984": 7.2, "78": 8.4, "9320": 8.0, "194": 8.1, "87": 7.9, "89": 8.0, "58": 8.0, "601": 8.5, "111": 8.3, "3082": 8.1, "207": 8.0, "756": 8.0, "4922": 8.0, "475557": 8.4, "324857": 8.4, "569094": 8.6, "447332": 8.0, "398978": 8.3, "522627": 8.1, "496243": 8.5, "872585": 8.9, "726209": 7.4, "1004739": 7.8, "1084736": 7.5, "792307": 7.8, "346698": 7.3, "385687": 5.9, "533535": 8.5, "917496": 8.0, "940721": 7.5, "653346": 7.8, "558449": 7.8, "402431": 7.5, "836": 8.4, "453": 8.2, "236": 8.0, "8470": 8.1, "76341": 8.1, "157350": 8.0, "38": 8.2, "14": 8.1, "348": 8.4, "679": 8.0, "694": 8.0, "185": 8.0, "1091": 7.8, "640146": 7.9, "713704": 7.5, "667538": 7.1, "976573": 7.9, "1022789": 7.8, "1111873": 7.4, "311": 8.2, "19404": 8.1, "617": 8.0, "274": 8.6, "68721": 7.1, "615457": 7.4, "1396048": 7.8, "974453": 7.4, "1226578": 7.2, "945961": 7.7, "774752": 7.3, "940551": 7.2, "1029575": 7.2, "447277": 7.9, "758323": 7.1, "298618": 7.0, "614931": 7.5, "1011985": 7.3, "823464": 7.0, "573435": 6.4, "748783": 7.5, "762441": 7.9, "1035048": 7.4, "957452": 7.6, "974635": 7.2, "823219": 7.3, "508442": 8.0, "718789": 7.8, "581389": 7.6, "519182": 7.2, "4148": 7.9, "39254": 7.8, "2062": 7.7, "10144": 7.9, "392044": 8.0, "253": 7.2, "23193": 7.1, "799876": 7.2};
 
-    // TMDB'den imdb_id çek, sonra OMDb'den gerçek IMDb puanını al
-    async function getImdbRating(tmdbId, mediaType = "movie") {
-        if (omdbCache[tmdbId] !== undefined) return omdbCache[tmdbId];
-        try {
-            // Önce TMDB'den external_ids al → imdb_id
-            const extRes = await fetch(
-                `${TMDB_BASE_URL}/${mediaType}/${tmdbId}/external_ids`,
-                { headers: { "Authorization": `Bearer ${TMDB_READ_TOKEN}` } }
-            );
-            const extData = await extRes.json();
-            const imdbId = extData.imdb_id;
-            if (!imdbId) { omdbCache[tmdbId] = null; return null; }
-
-            // OMDb'den IMDb puanı
-            const omdbRes = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_API_KEY}`);
-            const omdbData = await omdbRes.json();
-            const rating = (omdbData.imdbRating && omdbData.imdbRating !== "N/A") ? omdbData.imdbRating : null;
-            omdbCache[tmdbId] = rating;
-            return rating;
-        } catch (e) {
-            omdbCache[tmdbId] = null;
-            return null;
-        }
-    }
-
-    // Kartı render ettikten sonra arka planda IMDb puanını güncelle
-    function updateImdbRatingAsync(tmdbId, mediaType = "movie") {
-        getImdbRating(tmdbId, mediaType).then(rating => {
-            if (!rating) return;
-            // Kart üzerindeki badge
-            const badge = document.querySelector(`.imdb-rating[data-id="${tmdbId}"]`);
-            if (badge) badge.textContent = `⭐ ${rating} IMDb`;
-            // Açık detay ekranındaki badge
-            const detailBadge = document.querySelector(`.detail-imdb[data-id="${tmdbId}"]`);
-            if (detailBadge) detailBadge.textContent = `⭐ ${rating} IMDb`;
-        });
+    function getImdbRating(id, table) {
+        const r = table[id];
+        return r ? r.toFixed(1) : null;
     }
 
     // Tür ID → isim haritası (genres endpoint çağırmaya gerek yok)
@@ -389,7 +355,9 @@
             const platforms = getRandomPlatform();
             const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
             const year = movie.release_date ? movie.release_date.split('-')[0] : "Bilinmiyor";
-            const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "?";
+            const imdbRating = getImdbRating(movie.id, IMDB_RATINGS_FILM);
+            const rating = imdbRating || (movie.vote_average ? movie.vote_average.toFixed(1) : "?");
+            const ratingLabel = imdbRating ? `⭐ ${rating} IMDb` : `⭐ ${rating} TMDB`;
             const runtime = formatRuntime(movie.runtime);
             
             return `
@@ -401,7 +369,7 @@
                     <div class="card-info">
                         <div class="card-title">${movie.title}</div>
                         <div class="card-year">${year}</div>
-                        <div class="imdb-rating" data-id="${movie.id}">⭐ ${rating}</div>
+                        <div class="imdb-rating" data-id="${movie.id}">${ratingLabel}</div>
                         <div class="card-detail">🎬 ${runtime} &nbsp;|&nbsp; ${movie._genreNames || ''}</div>
                         <div class="platform-badge">${platformHtml}</div>
                         <button class="watched-btn" data-id="${movie.id}">
@@ -421,8 +389,7 @@
         
         attachCardEvents();
         attachWatchedEvents();
-        // Arka planda IMDb puanlarını güncelle (kullanıcıyı beklетmez)
-        currentItems.forEach(movie => updateImdbRatingAsync(movie.id, "movie"));
+
     }
 
     function attachCardEvents() {
@@ -469,7 +436,9 @@
         const platforms = getRandomPlatform();
         const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
         const year = movie.release_date ? movie.release_date.split('-')[0] : "Bilinmiyor";
-        const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "?";
+        const imdbRating = getImdbRating(movie.id, IMDB_RATINGS_FILM);
+        const rating = imdbRating || (movie.vote_average ? movie.vote_average.toFixed(1) : "?");
+        const ratingLabel = imdbRating ? `⭐ ${rating} IMDb` : `⭐ ${rating} TMDB`;
         const runtime = formatRuntime(movie.runtime);
         const genres = movie._genreNames || (movie.genres ? movie.genres.map(g => g.name).join(", ") : "Bilinmiyor");
 
@@ -481,7 +450,7 @@
             <div class="detail-info">
                 <div class="detail-title">${movie.title}</div>
                 <div class="detail-year">${year}</div>
-                <div class="detail-imdb" data-id="${movie.id}">⭐ ${rating}</div>
+                <div class="detail-imdb" data-id="${movie.id}">${ratingLabel}</div>
                 <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genres}</div>
                 <div class="detail-duration"><i class="fas fa-clock"></i> Süre: ${runtime}</div>
                 <div class="detail-director"><i class="fas fa-user"></i> Yönetmen: -</div>
@@ -495,8 +464,7 @@
         `;
 
         detailOverlay.style.display = "flex";
-        // Detay açılınca gerçek IMDb puanını güncelle
-        updateImdbRatingAsync(movie.id, "movie");
+
 
         const detailBtn = detailContent.querySelector(".detail-watched-btn");
         if (detailBtn) {
