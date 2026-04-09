@@ -2,198 +2,35 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ne İzlesem? | Filmler</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(145deg, #0f1117 0%, #1a1d2b 100%); font-family: 'Inter', sans-serif; min-height: 100vh; }
-
-        .loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(145deg, #0f1117, #1a1d2b); z-index: 2000;
-            display: flex; justify-content: center; align-items: center; flex-direction: column;
-        }
-        .loading-card { background: #1e212e; border-radius: 32px; padding: 50px 60px; text-align: center; border: 1px solid rgba(255, 107, 0, 0.4); animation: fadeInScale 0.4s ease; }
-        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .loading-animation { margin-bottom: 30px; }
-        .loading-animation i { font-size: 60px; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; animation: spin 1.5s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-title { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 25px; }
-        .loading-messages { text-align: left; }
-        .loading-msg { color: #9ca3af; font-size: 13px; margin: 8px 0; opacity: 0; animation: slideIn 0.4s ease forwards; }
-        .loading-msg i { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; width: 25px; margin-right: 8px; }
-        .loading-msg:nth-child(1) { animation-delay: 0s; }
-        .loading-msg:nth-child(2) { animation-delay: 0.5s; }
-        .loading-msg:nth-child(3) { animation-delay: 1s; }
-        .loading-msg:nth-child(4) { animation-delay: 1.5s; }
-        .loading-msg:nth-child(5) { animation-delay: 2s; }
-        .loading-msg:nth-child(6) { animation-delay: 2.5s; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-
-        .main-content { padding: 20px; display: none; }
+        .main-content { padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; }
-        .header { background: #1e212e; border-radius: 28px; padding: 25px 30px; margin-bottom: 25px; border: 1px solid rgba(255, 107, 0, 0.3); position: relative; }
+        .header { background: #1e212e; border-radius: 28px; padding: 25px 30px; margin-bottom: 25px; border: 1px solid rgba(255, 107, 0, 0.3); }
         .header h1 { font-size: 28px; color: white; }
-        .header h1 i { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; margin-right: 12px; }
-        .header h1 .highlight { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 8px; }
-        .header p { color: #9ca3af; margin-top: 8px; font-size: 14px; }
-        .home-btn { position: absolute; top: 20px; right: 25px; background: #2a2e3d; border: none; padding: 8px 18px; border-radius: 40px; color: #ffb347; cursor: pointer; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; }
-        .home-btn:hover { background: #ff6b00; color: white; }
-        .category-menu { background: #1e212e; border-radius: 24px; padding: 20px; margin-bottom: 25px; border: 1px solid #2a2e3d; }
-        .category-header { margin-bottom: 15px; color: #ffb347; font-weight: 600; font-size: 14px; }
-        .category-header i { margin-right: 8px; }
-        .category-wrapper { display: flex; flex-wrap: wrap; gap: 10px; }
-        .category-btn { background: #2a2e3d; border: 1px solid #3a3e4d; padding: 8px 18px; border-radius: 40px; color: #9ca3af; font-size: 13px; cursor: pointer; transition: 0.2s; }
-        .category-btn:hover { border-color: #ff6b00; color: #ffb347; }
-        .category-btn.active { background: linear-gradient(135deg, #ff6b00, #ffb347); border-color: transparent; color: #000; font-weight: 600; }
-        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        .results-header h2 { font-size: 20px; color: white; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .results-header h2 i { background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; margin-right: 10px; }
-        .item-count-badge { background: #ff6b00; color: #000; padding: 4px 12px; border-radius: 40px; font-size: 14px; font-weight: 700; }
-        .watched-badge { background: #2a2e3d; padding: 8px 18px; border-radius: 40px; font-size: 13px; color: #ffb347; }
-        .watched-badge i { margin-right: 8px; }
+        .header h1 i { color: #ff6b00; margin-right: 12px; }
         .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .movie-card { background: #1e212e; border-radius: 20px; overflow: hidden; border: 1px solid #2a2e3d; transition: 0.3s; cursor: pointer; }
+        .movie-card { background: #1e212e; border-radius: 20px; overflow: hidden; border: 1px solid #2a2e3d; cursor: pointer; transition: 0.3s; }
         .movie-card:hover { border-color: #ff6b00; transform: translateY(-5px); }
-        .card-poster { height: 250px; background: linear-gradient(135deg, #1e212e, #2a2e3d); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .card-poster img { width: 100%; height: 100%; object-fit: cover; }
-        .card-poster i { font-size: 50px; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .card-info { padding: 16px; }
-        .card-title { font-size: 16px; font-weight: 700; color: white; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-title { font-size: 16px; font-weight: 700; color: white; }
         .card-year { font-size: 11px; color: #6b7280; margin-bottom: 8px; }
-        .imdb-rating { display: inline-block; background: linear-gradient(135deg, #ff6b00, #ffb347); color: #000; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-bottom: 8px; }
-        .card-detail { font-size: 11px; color: #9ca3af; margin-bottom: 12px; }
-        .platform-badge { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-        .platform { font-size: 10px; padding: 3px 8px; border-radius: 12px; background: #2a2e3d; color: #9ca3af; }
-        .platform.netflix { background: #e50914; color: white; }
-        .platform.disney { background: #113ccf; color: white; }
-        .platform.hbo { background: #6a0dad; color: white; }
-        .platform.prime { background: #00a8e1; color: white; }
-        .platform.apple { background: #000; color: white; }
-        .watched-btn { width: 100%; background: #2a2e3d; border: none; padding: 8px; border-radius: 40px; color: #9ca3af; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 12px; }
-        .watched-btn:hover { background: linear-gradient(135deg, #ff6b00, #ffb347); color: #000; }
-        .watched-btn.watched { background: #10b981; color: white; cursor: default; }
+        .imdb-rating { background: #ff6b00; color: #000; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; margin-bottom: 8px; }
         .loading-state { text-align: center; padding: 50px; color: #6b7280; }
-        
-        .detail-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(145deg, #0f1117, #1a1d2b); z-index: 1100;
-            display: none; justify-content: center; align-items: center; overflow-y: auto; padding: 20px;
-        }
-        .detail-card {
-            background: #1e212e; border-radius: 32px; max-width: 600px; width: 100%;
-            border: 2px solid #ff6b00; overflow: hidden;
-            animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .detail-back-btn {
-            background: linear-gradient(135deg, #ff6b00, #ffb347);
-            border: none; padding: 12px 24px; border-radius: 50px;
-            color: #000; font-weight: 700; cursor: pointer; margin: 20px 20px 0 20px;
-            display: inline-flex; align-items: center; gap: 10px; font-size: 16px;
-            transition: 0.2s; width: calc(100% - 40px);
-            justify-content: center;
-        }
-        .detail-back-btn:hover { background: #ffb347; transform: scale(0.98); }
-        .detail-back-btn i { font-size: 18px; }
-        
-        .detail-poster { width: 100%; height: 400px; background: linear-gradient(135deg, #1e212e, #2a2e3d); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .detail-poster img { width: 100%; height: 100%; object-fit: cover; }
-        .detail-poster i { font-size: 80px; background: linear-gradient(135deg, #ff6b00, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .detail-info { padding: 25px; }
-        .detail-title { font-size: 28px; font-weight: 700; color: white; margin-bottom: 10px; }
-        .detail-year { color: #9ca3af; margin-bottom: 15px; }
-        .detail-imdb { display: inline-block; background: linear-gradient(135deg, #ff6b00, #ffb347); color: #000; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: 700; margin-bottom: 15px; }
-        .detail-genre, .detail-director, .detail-actors, .detail-plot, .detail-duration { color: #cbd5e1; font-size: 14px; margin-bottom: 12px; line-height: 1.5; }
-        .detail-genre i, .detail-director i, .detail-actors i, .detail-plot i, .detail-duration i { color: #ff6b00; width: 28px; margin-right: 8px; }
-        .detail-platforms { margin: 15px 0; display: flex; flex-wrap: wrap; gap: 10px; }
-        .detail-watched-btn { background: linear-gradient(135deg, #ff6b00, #ffb347); border: none; padding: 12px 24px; border-radius: 40px; color: #000; font-weight: 700; cursor: pointer; margin-top: 20px; width: 100%; transition: 0.2s; }
-        .detail-watched-btn.watched { background: #10b981; color: white; }
-        
-        @media (max-width: 768px) {
-            .main-content { padding: 12px; }
-            .header h1 { font-size: 22px; }
-            .results-grid { grid-template-columns: 1fr; }
-            .card-poster { height: 200px; }
-            .detail-card { margin: 20px; }
-            .detail-poster { height: 250px; }
-            .detail-title { font-size: 22px; }
-            .category-btn { padding: 6px 12px; font-size: 11px; }
-            .loading-card { padding: 30px 25px; margin: 20px; }
-            .detail-back-btn { padding: 10px 20px; font-size: 14px; }
-            .results-header h2 { font-size: 16px; }
-            .item-count-badge { font-size: 11px; }
-        }
     </style>
 </head>
 <body>
-
-<div id="loadingScreen" class="loading-overlay">
-    <div class="loading-card">
-        <div class="loading-animation"><i class="fas fa-film"></i></div>
-        <div class="loading-title">Filmler hazırlanıyor...</div>
-        <div class="loading-messages">
-            <div class="loading-msg"><i class="fas fa-database"></i> TMDB veritabanına bağlanılıyor...</div>
-            <div class="loading-msg"><i class="fas fa-search"></i> 500+ film taranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-star"></i> IMDB puanları toplanıyor...</div>
-            <div class="loading-msg"><i class="fas fa-trophy"></i> En iyi filmler seçiliyor...</div>
-            <div class="loading-msg"><i class="fas fa-film"></i> Afişler yükleniyor...</div>
-            <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
-        </div>
-    </div>
-</div>
-
-<div id="detailOverlay" class="detail-overlay">
-    <div class="detail-card">
-        <button class="detail-back-btn" id="closeDetailBtn"><i class="fas fa-arrow-left"></i> ← GERİ DÖN</button>
-        <div id="detailContent"></div>
-    </div>
-</div>
-
-<div id="mainContent" class="main-content">
+<div class="main-content">
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-film"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>500+ top rated movies by genre - TMDB</p>
-            <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
+            <h1><i class="fas fa-film"></i> What to Watch? <span style="color:#ffb347;">Abican</span></h1>
+            <p>10.000+ film - IMDb Top Rated</p>
         </div>
-
-        <div class="category-menu">
-            <div class="category-header"><i class="fas fa-tags"></i> Kategoriler</div>
-            <div class="category-wrapper">
-                <button class="category-btn active" data-genre-id="">🔥 Tümü</button>
-                <button class="category-btn" data-genre-id="28">⚡ Aksiyon</button>
-                <button class="category-btn" data-genre-id="35">😂 Komedi</button>
-                <button class="category-btn" data-genre-id="18">🎭 Dram</button>
-                <button class="category-btn" data-genre-id="27">👻 Korku</button>
-                <button class="category-btn" data-genre-id="878">🚀 Bilim Kurgu</button>
-                <button class="category-btn" data-genre-id="10749">💕 Romantik</button>
-                <button class="category-btn" data-genre-id="53">🔪 Gerilim</button>
-                <button class="category-btn" data-genre-id="16">🐭 Animasyon</button>
-                <button class="category-btn" data-genre-id="80">🔫 Suç</button>
-                <button class="category-btn" data-genre-id="14">🐉 Fantastik</button>
-                <button class="category-btn" data-genre-id="12">🗺️ Macera</button>
-                <button class="category-btn" data-genre-id="36">📜 Tarih</button>
-                <button class="category-btn" data-genre-id="10402">🎵 Müzik</button>
-                <button class="category-btn" data-genre-id="9648">🕵️ Gizem</button>
-                <button class="category-btn" data-genre-id="10751">👨‍👩‍👧‍👦 Aile</button>
-                <button class="category-btn" data-genre-id="37">🤠 Western</button>
-            </div>
-        </div>
-
-        <div class="results-header">
-            <h2 id="resultTitle">
-                <i class="fas fa-star"></i> En Yüksek Puanlı Filmler
-                <span class="item-count-badge" id="itemCount">0</span>
-            </h2>
-            <div class="watched-badge"><i class="fas fa-check-circle"></i><span id="watchedCount">0</span> izledim</div>
-        </div>
-
         <div id="resultsGrid" class="results-grid">
             <div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Filmler yükleniyor...</div>
         </div>
@@ -201,326 +38,31 @@
 </div>
 
 <script>
-    const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
-    const TMDB_READ_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNDI5Yzk3M2M2Yzk4NDM5Y2Y2ZTUwNGU3ZmZlMTY3OCIsIm5iZiI6MTc3NTY3MzQ0NS42OTcsInN1YiI6IjY5ZDZhMDY1NTI4NTljYmM5ZWY4YjI1NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.oBzy5-Cm4bu6Me6X-yJR22D_BTsyGiwhJ5PvmQHdcz0";
-    const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-    const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
-    const IMDB_RATINGS_FILM = {"278": 9.3, "238": 9.2, "240": 9.0, "424": 8.9, "389": 8.9, "129": 8.6, "637": 8.5, "11216": 8.1, "562": 8.5, "155": 9.0, "680": 8.9, "769": 8.8, "213": 8.8, "429": 8.7, "497": 8.7, "120": 8.8, "121": 8.7, "122": 8.9, "372058": 8.6, "807": 8.6, "598": 8.5, "77338": 8.5, "550": 8.8, "13": 8.5, "510": 8.6, "745": 8.1, "197": 8.2, "105": 8.5, "857": 8.2, "244786": 8.6, "581734": 8.4, "539": 8.5, "762": 8.5, "289": 8.4, "901": 8.4, "37799": 7.8, "68718": 8.4, "49026": 8.4, "438631": 8.3, "603": 8.7, "604": 7.2, "11": 8.6, "1891": 8.7, "1892": 8.3, "27205": 8.8, "157336": 8.6, "284054": 7.3, "299536": 8.4, "299534": 8.4, "24428": 8.0, "1726": 7.9, "100402": 7.9, "99861": 7.3, "271110": 7.8, "363088": 7.0, "315635": 7.4, "284053": 7.7, "299537": 7.4, "429617": 7.4, "566525": 8.3, "524434": 6.3, "634649": 8.2, "616037": 7.3, "505642": 6.7, "816": 8.3, "280": 8.3, "218": 8.1, "489": 7.9, "346": 7.9, "629": 8.3, "9806": 8.0, "862": 8.3, "863": 7.9, "10193": 8.3, "301528": 7.7, "585": 8.1, "14160": 8.2, "12": 8.1, "127380": 7.6, "150540": 8.2, "260514": 7.8, "920": 8.3, "49013": 7.1, "82702": 7.1, "354912": 8.0, "508439": 7.4, "508947": 7.3, "177572": 7.5, "102651": 7.6, "109445": 7.5, "330457": 6.8, "131": 8.4, "8587": 6.9, "10681": 8.4, "10195": 7.5, "8392": 8.0, "4935": 8.3, "149": 8.2, "37780": 7.9, "70981": 8.1, "335984": 7.2, "78": 8.4, "9320": 8.0, "194": 8.1, "87": 7.9, "89": 8.0, "58": 8.0, "601": 8.5, "111": 8.3, "3082": 8.1, "207": 8.0, "756": 8.0, "4922": 8.0, "475557": 8.4, "324857": 8.4, "569094": 8.6, "447332": 8.0, "398978": 8.3, "522627": 8.1, "496243": 8.5, "872585": 8.9, "726209": 7.4, "1004739": 7.8, "1084736": 7.5, "792307": 7.8, "346698": 7.3, "385687": 5.9, "533535": 8.5, "917496": 8.0, "940721": 7.5, "653346": 7.8, "558449": 7.8, "402431": 7.5, "836": 8.4, "453": 8.2, "236": 8.0, "8470": 8.1, "76341": 8.1, "157350": 8.0, "38": 8.2, "14": 8.1, "348": 8.4, "679": 8.0, "694": 8.0, "185": 8.0, "1091": 7.8, "640146": 7.9, "713704": 7.5, "667538": 7.1, "976573": 7.9, "1022789": 7.8, "1111873": 7.4, "311": 8.2, "19404": 8.1, "617": 8.0, "274": 8.6, "68721": 7.1, "615457": 7.4, "1396048": 7.8, "974453": 7.4, "1226578": 7.2, "945961": 7.7, "774752": 7.3, "940551": 7.2, "1029575": 7.2, "447277": 7.9, "758323": 7.1, "298618": 7.0, "614931": 7.5, "1011985": 7.3, "823464": 7.0, "573435": 6.4, "748783": 7.5, "762441": 7.9, "1035048": 7.4, "957452": 7.6, "974635": 7.2, "823219": 7.3, "508442": 8.0, "718789": 7.8, "581389": 7.6, "519182": 7.2, "4148": 7.9, "39254": 7.8, "2062": 7.7, "10144": 7.9, "392044": 8.0, "253": 7.2, "23193": 7.1, "799876": 7.2};
-
-    function getImdbRating(id, table) {
-        const r = table[id];
-        return r ? r.toFixed(1) : null;
-    }
-
-    // Tür ID → isim haritası (genres endpoint çağırmaya gerek yok)
-    const GENRE_MAP = {
-        28:"Action",18:"Drama",35:"Comedy",27:"Horror",878:"Sci-Fi",
-        10749:"Romance",53:"Thriller",16:"Animation",80:"Crime",
-        14:"Fantasy",12:"Adventure",36:"History",10402:"Music",
-        9648:"Mystery",10751:"Family",37:"Western",10752:"War",99:"Documentary"
-    };
-
-    function getDeviceId() {
-        try {
-            const screenRes = `${screen.width}x${screen.height}`;
-            const userAgent = navigator.userAgent;
-            const language = navigator.language;
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            let str = `${screenRes}|${language}|${timezone}|${userAgent.substring(0, 80)}`;
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                hash |= 0;
-            }
-            return Math.abs(hash).toString(16).substring(0, 8);
-        } catch (e) { return "default"; }
-    }
-
-    const deviceId = getDeviceId();
-    const STORAGE_WATCHED_KEY = `watched_film_${deviceId}`;
-    let watchedIds = [];
-    let currentItems = [];
-    let currentGenreId = "";
-    const cache = {};
-
-    // Bearer token ile tek sayfa fetch
-    async function fetchPage(genreId, page) {
-        const cacheKey = `movie_${genreId}_${page}`;
-        if (cache[cacheKey]) return cache[cacheKey];
-        try {
-            let url;
-            if (genreId === "") {
-                // Tümü: vote_average sıralamasıyla yüksek puanlı filmler
-                url = `${TMDB_BASE_URL}/discover/movie?sort_by=vote_average.desc&vote_count.gte=1000&language=en-US&page=${page}`;
-            } else {
-                url = `${TMDB_BASE_URL}/discover/movie?with_genres=${genreId}&sort_by=vote_average.desc&vote_count.gte=500&language=en-US&page=${page}`;
-            }
-            const res = await fetch(url, {
-                headers: { "Authorization": `Bearer ${TMDB_READ_TOKEN}`, "Content-Type": "application/json" }
-            });
-            const data = await res.json();
-            const results = (data && data.results) ? data.results : [];
-            cache[cacheKey] = results;
-            return results;
-        } catch (e) {
-            console.error("Fetch error:", e);
-            return [];
-        }
-    }
-
-    // 13 sayfayı 3'erli batch ile çek → ~250 film hızlıca
-    async function loadMoviesByGenre(genreId) {
-        const TOTAL_PAGES = 25; // 25 × 20 = 500 film
-        const BATCH_SIZE = 5;
-        const seen = new Set();
-        const allResults = [];
-
-        for (let batch = 0; batch < Math.ceil(TOTAL_PAGES / BATCH_SIZE); batch++) {
-            const pages = [];
-            for (let i = 0; i < BATCH_SIZE; i++) {
-                const page = batch * BATCH_SIZE + i + 1;
-                if (page <= TOTAL_PAGES) pages.push(page);
-            }
-            const batchResults = await Promise.all(pages.map(p => fetchPage(genreId, p)));
-            for (const pageData of batchResults) {
-                for (const movie of pageData) {
-                    if (seen.has(movie.id)) continue;
-                    if (watchedIds.includes(movie.id.toString())) continue;
-                    if (!movie.vote_average || movie.vote_average === 0) continue;
-                    seen.add(movie.id);
-                    // genre_ids → isimler
-                    movie._genreNames = (movie.genre_ids || []).map(id => GENRE_MAP[id]).filter(Boolean).join(", ") || "Genel";
-                    allResults.push(movie);
-                }
-            }
-            // Her batch sonrası ekranı güncelle
-            currentItems = [...allResults].sort((a, b) => b.vote_average - a.vote_average);
-            renderItems(true);
-        }
-
-        currentItems = allResults.sort((a, b) => b.vote_average - a.vote_average);
-        return currentItems;
-    }
-
-    async function loadContent() {
+// JSON'u GitHub'dan çek
+fetch('https://raw.githubusercontent.com/bekcispn/ne-izlesem/main/movies.json')
+    .then(res => res.json())
+    .then(filmler => {
         const grid = document.getElementById("resultsGrid");
-        grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 500+ film yükleniyor...</div>';
-        currentItems = await loadMoviesByGenre(currentGenreId);
-        renderItems(false);
-    }
-
-    function getRandomPlatform() {
-        const platforms = ["netflix", "disney", "hbo", "prime", "apple"];
-        const randomPlatforms = [];
-        const num = Math.floor(Math.random() * 3) + 1;
-        for (let i = 0; i < num; i++) {
-            const p = platforms[Math.floor(Math.random() * platforms.length)];
-            if (!randomPlatforms.includes(p)) randomPlatforms.push(p);
-        }
-        return randomPlatforms;
-    }
-
-    function getPlatformIcon(platform) {
-        const icons = {
-            netflix: '<span class="platform netflix">📺 Netflix</span>',
-            disney: '<span class="platform disney">✨ Disney+</span>',
-            hbo: '<span class="platform hbo">⚡ HBO Max</span>',
-            prime: '<span class="platform prime">📦 Prime Video</span>',
-            apple: '<span class="platform apple">🍎 Apple TV+</span>'
-        };
-        return icons[platform] || '';
-    }
-
-    function formatRuntime(minutes) {
-        if (!minutes) return "Süre bilinmiyor";
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return `${hours}h ${mins}m`;
-    }
-
-    function renderItems(updateOnly = false) {
-        const grid = document.getElementById("resultsGrid");
-        const countSpan = document.getElementById("itemCount");
         
-        if (currentItems.length === 0) {
-            if (countSpan) countSpan.innerText = "0";
-            if (!updateOnly) grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin film kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
-            return;
-        }
+        // Puanlara göre sırala (yüksekten düşüğe)
+        filmler.sort((a, b) => b.vote_average - a.vote_average);
         
-        if (countSpan) countSpan.innerText = currentItems.length;
+        // İlk 100 filmi göster
+        const gosterilecekFilmler = filmler.slice(0, 100);
         
-        const itemsHtml = currentItems.map(movie => {
-            const posterUrl = movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : null;
-            const platforms = getRandomPlatform();
-            const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
-            const year = movie.release_date ? movie.release_date.split('-')[0] : "Bilinmiyor";
-            const imdbRating = getImdbRating(movie.id, IMDB_RATINGS_FILM);
-            const rating = imdbRating || (movie.vote_average ? movie.vote_average.toFixed(1) : "?");
-            const ratingLabel = imdbRating ? `⭐ ${rating} IMDb` : `⭐ ${rating} TMDB`;
-            const runtime = formatRuntime(movie.runtime);
-            
-            return `
-                <div class="movie-card" data-id="${movie.id}">
-                    <div class="card-poster">
-                        ${posterUrl ? `<img src="${posterUrl}" alt="${movie.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                        <i class="fas fa-film" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
-                    </div>
-                    <div class="card-info">
-                        <div class="card-title">${movie.title}</div>
-                        <div class="card-year">${year}</div>
-                        <div class="imdb-rating" data-id="${movie.id}">${ratingLabel}</div>
-                        <div class="card-detail">🎬 ${runtime} &nbsp;|&nbsp; ${movie._genreNames || ''}</div>
-                        <div class="platform-badge">${platformHtml}</div>
-                        <button class="watched-btn" data-id="${movie.id}">
-                            <i class="fas fa-check-circle"></i> İzledim
-                        </button>
-                    </div>
+        grid.innerHTML = gosterilecekFilmler.map(film => `
+            <div class="movie-card">
+                <div class="card-info">
+                    <div class="card-title">${film.title || film.original_title || "Bilinmiyor"}</div>
+                    <div class="card-year">${film.release_date ? film.release_date.split('-')[0] : "Bilinmiyor"}</div>
+                    <div class="imdb-rating">⭐ ${film.vote_average || "?"}</div>
                 </div>
-            `;
-        }).join("");
-        
-        if (updateOnly) {
-            // Sadece içeriği güncelle, loading state'ini değiştirme
-            grid.innerHTML = itemsHtml;
-        } else {
-            grid.innerHTML = itemsHtml;
-        }
-        
-        attachCardEvents();
-        attachWatchedEvents();
-
-    }
-
-    function attachCardEvents() {
-        document.querySelectorAll(".movie-card").forEach(card => {
-            card.removeEventListener("click", card.clickHandler);
-            card.clickHandler = (e) => {
-                if (e.target.classList.contains("watched-btn")) return;
-                const id = parseInt(card.getAttribute("data-id"));
-                const movie = currentItems.find(m => m.id === id);
-                if (movie) showDetail(movie);
-            };
-            card.addEventListener("click", card.clickHandler);
-        });
-    }
-    
-    function attachWatchedEvents() {
-        document.querySelectorAll(".watched-btn").forEach(btn => {
-            btn.removeEventListener("click", btn.clickHandler);
-            btn.clickHandler = (e) => {
-                e.stopPropagation();
-                const id = btn.getAttribute("data-id");
-                if (!btn.classList.contains("watched")) {
-                    btn.classList.add("watched");
-                    btn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
-                    watchedIds.push(id);
-                    localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
-                    updateWatchedCount();
-                    const index = currentItems.findIndex(m => m.id.toString() === id);
-                    if (index !== -1) {
-                        currentItems.splice(index, 1);
-                        renderItems(false);
-                    }
-                }
-            };
-            btn.addEventListener("click", btn.clickHandler);
-        });
-    }
-
-    function showDetail(movie) {
-        const detailOverlay = document.getElementById("detailOverlay");
-        const detailContent = document.getElementById("detailContent");
-        const posterUrl = movie.poster_path ? `${IMAGE_BASE_URL}${movie.poster_path}` : null;
-        const isWatched = watchedIds.includes(movie.id.toString());
-        const platforms = getRandomPlatform();
-        const platformHtml = platforms.map(p => getPlatformIcon(p)).join('');
-        const year = movie.release_date ? movie.release_date.split('-')[0] : "Bilinmiyor";
-        const imdbRating = getImdbRating(movie.id, IMDB_RATINGS_FILM);
-        const rating = imdbRating || (movie.vote_average ? movie.vote_average.toFixed(1) : "?");
-        const ratingLabel = imdbRating ? `⭐ ${rating} IMDb` : `⭐ ${rating} TMDB`;
-        const runtime = formatRuntime(movie.runtime);
-        const genres = movie._genreNames || (movie.genres ? movie.genres.map(g => g.name).join(", ") : "Bilinmiyor");
-
-        detailContent.innerHTML = `
-            <div class="detail-poster">
-                ${posterUrl ? `<img src="${posterUrl}" alt="${movie.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                <i class="fas fa-film" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
             </div>
-            <div class="detail-info">
-                <div class="detail-title">${movie.title}</div>
-                <div class="detail-year">${year}</div>
-                <div class="detail-imdb" data-id="${movie.id}">${ratingLabel}</div>
-                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genres}</div>
-                <div class="detail-duration"><i class="fas fa-clock"></i> Süre: ${runtime}</div>
-                <div class="detail-director"><i class="fas fa-user"></i> Yönetmen: -</div>
-                <div class="detail-actors"><i class="fas fa-users"></i> Oyuncular: -</div>
-                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${movie.overview || "Bilgi yok"}</div>
-                <div class="detail-platforms">${platformHtml}</div>
-                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${movie.id}">
-                    <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
-                </button>
-            </div>
-        `;
-
-        detailOverlay.style.display = "flex";
-
-
-        const detailBtn = detailContent.querySelector(".detail-watched-btn");
-        if (detailBtn) {
-            detailBtn.removeEventListener("click", detailBtn.clickHandler);
-            detailBtn.clickHandler = (e) => {
-                const id = detailBtn.getAttribute("data-id");
-                if (!watchedIds.includes(id)) {
-                    watchedIds.push(id);
-                    localStorage.setItem(STORAGE_WATCHED_KEY, JSON.stringify(watchedIds));
-                    updateWatchedCount();
-                    detailBtn.classList.add("watched");
-                    detailBtn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
-                    const index = currentItems.findIndex(m => m.id.toString() === id);
-                    if (index !== -1) {
-                        currentItems.splice(index, 1);
-                        renderItems(false);
-                    }
-                }
-            };
-            detailBtn.addEventListener("click", detailBtn.clickHandler);
-        }
-    }
-
-    function updateWatchedCount() {
-        document.getElementById("watchedCount").innerText = watchedIds.length;
-    }
-
-    function loadWatchedData() {
-        const saved = localStorage.getItem(STORAGE_WATCHED_KEY);
-        watchedIds = saved ? JSON.parse(saved) : [];
-        updateWatchedCount();
-    }
-
-    setTimeout(() => {
-        document.getElementById("loadingScreen").style.display = "none";
-        document.getElementById("mainContent").style.display = "block";
-        loadWatchedData();
-        loadContent();
-    }, 2500);
-
-    document.getElementById("closeDetailBtn").addEventListener("click", () => {
-        document.getElementById("detailOverlay").style.display = "none";
-    });
-
-    document.querySelectorAll(".category-btn").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            currentGenreId = btn.getAttribute("data-genre-id");
-            
-            const grid = document.getElementById("resultsGrid");
-            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> 500+ film yükleniyor...</div>';
-            
-            currentItems = await loadMoviesByGenre(currentGenreId);
-            renderItems(false);
-        });
+        `).join("");
+    })
+    .catch(err => {
+        document.getElementById("resultsGrid").innerHTML = '<div class="loading-state">❌ Filmler yüklenemedi! JSON dosyasını kontrol et.</div>';
+        console.error("Hata:", err);
     });
 </script>
 </body>
