@@ -206,6 +206,40 @@
     const TMDB_READ_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNDI5Yzk3M2M2Yzk4NDM5Y2Y2ZTUwNGU3ZmZlMTY3OCIsIm5iZiI6MTc3NTY3MzQ0NS42OTcsInN1YiI6IjY5ZDZhMDY1NTI4NTljYmM5ZWY4YjI1NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.oBzy5-Cm4bu6Me6X-yJR22D_BTsyGiwhJ5PvmQHdcz0";
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
+    const OMDB_API_KEY = "aee8123e";
+    const omdbCache = {};
+
+    async function getImdbRating(tmdbId, mediaType = "tv") {
+        if (omdbCache[tmdbId] !== undefined) return omdbCache[tmdbId];
+        try {
+            const extRes = await fetch(
+                `${TMDB_BASE_URL}/${mediaType}/${tmdbId}/external_ids`,
+                { headers: { "Authorization": `Bearer ${TMDB_READ_TOKEN}` } }
+            );
+            const extData = await extRes.json();
+            const imdbId = extData.imdb_id;
+            if (!imdbId) { omdbCache[tmdbId] = null; return null; }
+
+            const omdbRes = await fetch(`https://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_API_KEY}`);
+            const omdbData = await omdbRes.json();
+            const rating = (omdbData.imdbRating && omdbData.imdbRating !== "N/A") ? omdbData.imdbRating : null;
+            omdbCache[tmdbId] = rating;
+            return rating;
+        } catch (e) {
+            omdbCache[tmdbId] = null;
+            return null;
+        }
+    }
+
+    function updateImdbRatingAsync(tmdbId, mediaType = "tv") {
+        getImdbRating(tmdbId, mediaType).then(rating => {
+            if (!rating) return;
+            const badge = document.querySelector(`.imdb-rating[data-id="${tmdbId}"]`);
+            if (badge) badge.textContent = `⭐ ${rating} IMDb`;
+            const detailBadge = document.querySelector(`.detail-imdb[data-id="${tmdbId}"]`);
+            if (detailBadge) detailBadge.textContent = `⭐ ${rating} IMDb`;
+        });
+    }
 
     // TV türleri (film türlerinden farklı ID'ler var)
     const GENRE_MAP = {
@@ -352,7 +386,7 @@
                     <div class="card-info">
                         <div class="card-title">${series.name}</div>
                         <div class="card-year">${year}</div>
-                        <div class="imdb-rating">⭐ ${rating}</div>
+                        <div class="imdb-rating" data-id="${series.id}">⭐ ${rating}</div>
                         <div class="card-detail">📺 ${seasons} Sezon &nbsp;|&nbsp; ${series._genreNames || ''}</div>
                         <div class="platform-badge">${platformHtml}</div>
                         <button class="watched-btn" data-id="${series.id}">
@@ -371,8 +405,10 @@
         
         attachCardEvents();
         attachWatchedEvents();
+        // Arka planda IMDb puanlarını güncelle
+        currentItems.forEach(series => updateImdbRatingAsync(series.id, "tv"));
     }
-    
+
     function attachCardEvents() {
         document.querySelectorAll(".series-card").forEach(card => {
             card.removeEventListener("click", card.clickHandler);
@@ -429,7 +465,7 @@
             <div class="detail-info">
                 <div class="detail-title">${series.name}</div>
                 <div class="detail-year">${year}</div>
-                <div class="detail-imdb">⭐ ${rating}</div>
+                <div class="detail-imdb" data-id="${series.id}">⭐ ${rating}</div>
                 <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genres}</div>
                 <div class="detail-duration"><i class="fas fa-layer-group"></i> ${seasons} Sezon</div>
                 <div class="detail-director"><i class="fas fa-user"></i> Yaratıcı: -</div>
@@ -443,6 +479,7 @@
         `;
 
         detailOverlay.style.display = "flex";
+        updateImdbRatingAsync(series.id, "tv");
 
         const detailBtn = detailContent.querySelector(".detail-watched-btn");
         if (detailBtn) {
