@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Aynı stiller - filmler.html ile aynı */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(145deg, #0f1117 0%, #1a1d2b 100%); font-family: 'Inter', sans-serif; min-height: 100vh; }
         
@@ -124,9 +123,9 @@
         <div class="loading-animation"><i class="fas fa-tv"></i></div>
         <div class="loading-title">Diziler hazırlanıyor...</div>
         <div class="loading-messages">
-            <div class="loading-msg"><i class="fas fa-database"></i> TMDB veritabanına bağlanılıyor...</div>
-            <div class="loading-msg"><i class="fas fa-star"></i> Diziler taranıyor...</div>
-            <div class="loading-msg"><i class="fas fa-image"></i> Afişler yükleniyor...</div>
+            <div class="loading-msg"><i class="fas fa-database"></i> 3000+ dizi taranıyor...</div>
+            <div class="loading-msg"><i class="fas fa-star"></i> IMDb puanları toplanıyor...</div>
+            <div class="loading-msg"><i class="fas fa-image"></i> Afişler alınıyor...</div>
             <div class="loading-msg"><i class="fas fa-check-circle"></i> Hazır! Yönlendiriliyor...</div>
         </div>
     </div>
@@ -143,7 +142,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-tv"></i> What to Watch? <span class="highlight">Abican</span></h1>
-            <p>TMDB'den en yüksek puanlı diziler</p>
+            <p>3000+ dizi - IMDb Top Rated</p>
             <a href="index.html" class="home-btn"><i class="fas fa-home"></i> Ana Sayfa</a>
         </div>
 
@@ -151,16 +150,16 @@
             <div class="category-header"><i class="fas fa-tags"></i> Kategoriler</div>
             <div class="category-wrapper">
                 <button class="cat-btn active" data-cat="all">🔥 Tümü</button>
-                <button class="cat-btn" data-cat="28">⚡ Aksiyon</button>
-                <button class="cat-btn" data-cat="35">😂 Komedi</button>
-                <button class="cat-btn" data-cat="18">🎭 Dram</button>
-                <button class="cat-btn" data-cat="27">👻 Korku</button>
-                <button class="cat-btn" data-cat="878">🚀 Bilim Kurgu</button>
-                <button class="cat-btn" data-cat="10749">💕 Romantik</button>
-                <button class="cat-btn" data-cat="53">🔪 Gerilim</button>
-                <button class="cat-btn" data-cat="16">🐭 Animasyon</button>
-                <button class="cat-btn" data-cat="80">🔫 Suç</button>
-                <button class="cat-btn" data-cat="14">🐉 Fantastik</button>
+                <button class="cat-btn" data-cat="Action">⚡ Aksiyon</button>
+                <button class="cat-btn" data-cat="Comedy">😂 Komedi</button>
+                <button class="cat-btn" data-cat="Drama">🎭 Dram</button>
+                <button class="cat-btn" data-cat="Horror">👻 Korku</button>
+                <button class="cat-btn" data-cat="Sci-Fi">🚀 Bilim Kurgu</button>
+                <button class="cat-btn" data-cat="Romance">💕 Romantik</button>
+                <button class="cat-btn" data-cat="Thriller">🔪 Gerilim</button>
+                <button class="cat-btn" data-cat="Animation">🐭 Animasyon</button>
+                <button class="cat-btn" data-cat="Crime">🔫 Suç</button>
+                <button class="cat-btn" data-cat="Fantasy">🐉 Fantastik</button>
             </div>
         </div>
 
@@ -179,18 +178,47 @@
 </div>
 
 <script>
+    // JSON DOSYANIN LİNKİ - BURAYA KENDİ LİNKİNİ YAZ
+    const JSON_URL = 'https://raw.githubusercontent.com/bekcispn/ne-izlesem/main/imdb_tvshows.json';
+    
+    // TMDB POSTER API
     const TMDB_API_KEY = "b429c973c6c98439cf6e504e7ffe1678";
-    const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
     
     let allSeries = [];
     let filteredSeries = [];
     let watchedIds = [];
-    let currentGenreId = "";
+    let currentCategory = "all";
     
     const deviceId = localStorage.getItem('deviceId') || Math.random().toString(36).substring(2, 10);
     localStorage.setItem('deviceId', deviceId);
     const STORAGE_KEY = `watched_series_${deviceId}`;
+    
+    // TMDB'den poster_path al (dizi için)
+    async function fetchPosterPathForSeries(seriesName) {
+        if (!seriesName) return null;
+        try {
+            const url = `https://api.themoviedb.org/3/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(seriesName)}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.results && data.results.length > 0) {
+                return data.results[0].poster_path;
+            }
+            return null;
+        } catch (error) {
+            console.error("Poster alınamadı:", error);
+            return null;
+        }
+    }
+    
+    function getSeasonsFromYears(yearsStr) {
+        if (!yearsStr) return "?";
+        const parts = yearsStr.split('-');
+        if (parts.length === 2 && parts[1] && parts[1] !== ' ') {
+            return parseInt(parts[1]) - parseInt(parts[0]) + 1;
+        }
+        return "?";
+    }
     
     function loadWatchedData() {
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -203,76 +231,60 @@
         document.getElementById("watchedCount").innerText = watchedIds.length;
     }
     
-    async function fetchSeries(page = 1) {
-        let url;
-        if (currentGenreId === "") {
-            url = `${TMDB_BASE_URL}/tv/top_rated?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`;
-        } else {
-            url = `${TMDB_BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_genres=${currentGenreId}&sort_by=vote_average.desc&vote_count.gte=500&language=en-US&page=${page}`;
-        }
-        
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            return data.results || [];
-        } catch (error) {
-            console.error("Error:", error);
-            return [];
-        }
-    }
-    
-    async function loadAllSeries() {
-        const allResults = [];
-        for (let page = 1; page <= 3; page++) {
-            const series = await fetchSeries(page);
-            for (const serie of series) {
-                if (!watchedIds.includes(serie.id.toString())) {
-                    allResults.push(serie);
-                }
-            }
-        }
-        allSeries = allResults;
-        filterByCategory();
-    }
-    
     function filterByCategory() {
-        filteredSeries = [...allSeries];
-        filteredSeries.sort((a, b) => b.vote_average - a.vote_average);
+        if (currentCategory === "all") {
+            filteredSeries = [...allSeries];
+        } else {
+            filteredSeries = allSeries.filter(series => {
+                const genres = series.Genres || "";
+                return genres.toLowerCase().includes(currentCategory.toLowerCase());
+            });
+        }
+        filteredSeries.sort((a, b) => (b.Rating || 0) - (a.Rating || 0));
         renderSeries();
     }
     
-    function renderSeries() {
+    async function renderSeries() {
         const grid = document.getElementById("resultsGrid");
         const countSpan = document.getElementById("itemCount");
         
-        if (filteredSeries.length === 0) {
+        const unwatchedSeries = filteredSeries.filter(s => !watchedIds.includes(s.Title));
+        
+        if (unwatchedSeries.length === 0) {
             grid.innerHTML = `<div class="loading-state"><i class="fas fa-check-circle"></i><br>Bu kategoride izlemediğin dizi kalmadı! 🎉<br><small>Başka kategori dene</small></div>`;
             countSpan.innerText = "0";
             return;
         }
         
-        countSpan.innerText = filteredSeries.length;
+        countSpan.innerText = unwatchedSeries.length;
         
-        grid.innerHTML = filteredSeries.slice(0, 100).map(serie => {
-            const posterUrl = serie.poster_path ? `${IMAGE_BASE_URL}${serie.poster_path}` : null;
-            const title = serie.name || "Bilinmiyor";
-            const year = serie.first_air_date ? serie.first_air_date.split('-')[0] : "?";
-            const rating = serie.vote_average ? serie.vote_average.toFixed(1) : "?";
-            const seasons = "Sezon bilgisi yok";
-            const genres = "Genel";
+        // Posterleri al (ilk 20 dizi için)
+        const seriesWithPosters = await Promise.all(unwatchedSeries.slice(0, 20).map(async (series) => {
+            const posterPath = await fetchPosterPathForSeries(series.Title);
+            return { ...series, posterPath };
+        }));
+        
+        grid.innerHTML = seriesWithPosters.map(series => {
+            const posterUrl = series.posterPath ? `${IMAGE_BASE_URL}${series.posterPath}` : null;
+            const title = series.Title || "Bilinmiyor";
+            const rating = series.Rating || "?";
+            const episodeDuration = series.EpisodeDuration || "?";
+            const genres = series.Genres || "Genel";
+            const years = series.Years || "?";
+            const seasons = getSeasonsFromYears(years);
             
             return `
-                <div class="series-card" data-id="${serie.id}">
+                <div class="series-card" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                     <div class="card-poster">
                         ${posterUrl ? `<img src="${posterUrl}" alt="${title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
                         <i class="fas fa-tv" style="display: ${posterUrl ? 'none' : 'flex'}"></i>
                     </div>
                     <div class="card-info">
                         <div class="card-title">${title}</div>
-                        <div class="card-year">${year}</div>
+                        <div class="card-year">${years}</div>
                         <div class="imdb-rating">⭐ ${rating}</div>
-                        <div class="card-detail">📺 ${seasons} | ${genres}</div>
-                        <button class="watched-btn" data-id="${serie.id}">
+                        <div class="card-detail">📺 ${seasons} Sezon | ${episodeDuration} dk</div>
+                        <button class="watched-btn" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                             <i class="fas fa-check-circle"></i> İzledim
                         </button>
                     </div>
@@ -289,9 +301,9 @@
             card.removeEventListener("click", card.clickHandler);
             card.clickHandler = (e) => {
                 if (e.target.classList.contains("watched-btn")) return;
-                const id = parseInt(card.getAttribute("data-id"));
-                const serie = allSeries.find(s => s.id === id);
-                if (serie) showDetail(serie);
+                const id = card.getAttribute("data-id");
+                const series = allSeries.find(s => s.Title.replace(/[^a-z0-9]/gi, '_') === id);
+                if (series) showDetail(series);
             };
             card.addEventListener("click", card.clickHandler);
         });
@@ -302,32 +314,33 @@
             btn.removeEventListener("click", btn.clickHandler);
             btn.clickHandler = (e) => {
                 e.stopPropagation();
-                const id = parseInt(btn.getAttribute("data-id"));
+                const id = btn.getAttribute("data-id");
                 if (!btn.classList.contains("watched")) {
                     btn.classList.add("watched");
                     btn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
                     watchedIds.push(id);
                     saveWatchedData();
-                    const index = filteredSeries.findIndex(s => s.id === id);
-                    if (index !== -1) {
-                        filteredSeries.splice(index, 1);
-                        renderSeries();
-                    }
+                    filterByCategory();
                 }
             };
             btn.addEventListener("click", btn.clickHandler);
         });
     }
     
-    function showDetail(serie) {
+    async function showDetail(series) {
         const detailOverlay = document.getElementById("detailOverlay");
         const detailContent = document.getElementById("detailContent");
-        const posterUrl = serie.poster_path ? `${IMAGE_BASE_URL}${serie.poster_path}` : null;
-        const title = serie.name || "Bilinmiyor";
-        const year = serie.first_air_date ? serie.first_air_date.split('-')[0] : "?";
-        const rating = serie.vote_average ? serie.vote_average.toFixed(1) : "?";
-        const overview = serie.overview || "Konu bilgisi yok";
-        const isWatched = watchedIds.includes(serie.id);
+        const posterPath = await fetchPosterPathForSeries(series.Title);
+        const posterUrl = posterPath ? `${IMAGE_BASE_URL}${posterPath}` : null;
+        const title = series.Title || "Bilinmiyor";
+        const rating = series.Rating || "?";
+        const episodeDuration = series.EpisodeDuration || "?";
+        const genres = series.Genres || "Genel";
+        const about = series.About || "Konu bilgisi yok";
+        const years = series.Years || "?";
+        const seasons = getSeasonsFromYears(years);
+        const actors = series.Actors || "Bilgi yok";
+        const isWatched = watchedIds.includes(title.replace(/[^a-z0-9]/gi, '_'));
         
         detailContent.innerHTML = `
             <div class="detail-poster">
@@ -335,10 +348,13 @@
             </div>
             <div class="detail-info">
                 <div class="detail-title">${title}</div>
-                <div class="detail-year">${year}</div>
+                <div class="detail-year">${years} (${seasons} Sezon)</div>
                 <div class="detail-imdb">⭐ ${rating}</div>
-                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${overview}</div>
-                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${serie.id}">
+                <div class="detail-genre"><i class="fas fa-tag"></i> Tür: ${genres}</div>
+                <div class="detail-duration"><i class="fas fa-clock"></i> Bölüm Süresi: ${episodeDuration} dakika</div>
+                <div class="detail-plot"><i class="fas fa-align-left"></i> Konu: ${about}</div>
+                <div class="detail-plot"><i class="fas fa-users"></i> Oyuncular: ${actors}</div>
+                <button class="detail-watched-btn ${isWatched ? 'watched' : ''}" data-id="${title.replace(/[^a-z0-9]/gi, '_')}">
                     <i class="fas ${isWatched ? 'fa-check' : 'fa-check-circle'}"></i> ${isWatched ? 'İzledim ✓' : 'İzledim'}
                 </button>
             </div>
@@ -350,44 +366,54 @@
         if (detailBtn) {
             detailBtn.removeEventListener("click", detailBtn.clickHandler);
             detailBtn.clickHandler = (e) => {
-                const id = parseInt(detailBtn.getAttribute("data-id"));
+                const id = detailBtn.getAttribute("data-id");
                 if (!watchedIds.includes(id)) {
                     watchedIds.push(id);
                     saveWatchedData();
                     detailBtn.classList.add("watched");
                     detailBtn.innerHTML = '<i class="fas fa-check"></i> İzledim ✓';
-                    const index = filteredSeries.findIndex(s => s.id === id);
-                    if (index !== -1) {
-                        filteredSeries.splice(index, 1);
-                        renderSeries();
-                    }
+                    filterByCategory();
                 }
             };
             detailBtn.addEventListener("click", detailBtn.clickHandler);
         }
     }
     
-    setTimeout(() => {
-        document.getElementById("loadingScreen").style.display = "none";
-        document.getElementById("mainContent").style.display = "block";
-        loadWatchedData();
-        loadAllSeries();
-    }, 2500);
+    // JSON'u yükle
+    fetch(JSON_URL)
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            allSeries = data;
+            filterByCategory();
+            setTimeout(() => {
+                document.getElementById("loadingScreen").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+            }, 2000);
+        })
+        .catch(err => {
+            console.error("JSON yüklenemedi:", err);
+            document.getElementById("resultsGrid").innerHTML = `<div class="loading-state">❌ Diziler yüklenemedi!<br><br>Hata: ${err.message}<br><br>Link: ${JSON_URL}</div>`;
+            setTimeout(() => {
+                document.getElementById("loadingScreen").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+            }, 2000);
+        });
+    
+    loadWatchedData();
     
     document.getElementById("closeDetailBtn").addEventListener("click", () => {
         document.getElementById("detailOverlay").style.display = "none";
     });
     
     document.querySelectorAll(".cat-btn").forEach(btn => {
-        btn.addEventListener("click", async () => {
+        btn.addEventListener("click", () => {
             document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
-            currentGenreId = btn.getAttribute("data-cat");
-            
-            const grid = document.getElementById("resultsGrid");
-            grid.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Diziler yükleniyor...</div>';
-            
-            await loadAllSeries();
+            currentCategory = btn.getAttribute("data-cat");
+            filterByCategory();
         });
     });
 </script>
